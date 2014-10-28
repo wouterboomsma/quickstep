@@ -168,11 +168,13 @@ void KinematicForest::forwardPropagateTransformations(int atom)
     }else{
         int p = parent(atom);
 
-        if(p>=0){
-            transformations[atom] = transformations[p];
-            for(int i=0;i<transformations_queue[atom].size();i++){
-                transformations[atom] *= transformations_queue[atom][i];
-            }
+        if(p>=0)
+        	transformations[atom] = transformations[p];
+        else
+        	transformations[atom].setIdentity();
+
+        for(int i=0;i<transformations_queue[atom].size();i++){
+        	transformations[atom] *= transformations_queue[atom][i];
         }
 
         positions[atom] = transformations[atom]*positions[atom];
