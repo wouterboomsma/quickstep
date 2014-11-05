@@ -667,7 +667,9 @@ Real Matrix4::cofactor(int i, int j) const
 
 
 RigidTransform::RigidTransform()
-{}
+{
+	setIdentity();
+}
 
 RigidTransform::RigidTransform(const RigidTransform& x)
 :R(x.R), t(x.t)
@@ -738,6 +740,85 @@ RigidTransform2D::RigidTransform2D(Real theta,const Vector2& t)
 bool RigidTransform2D::isValid(Real eps) const
 {
 	return FuzzyEquals(R.determinant(),One,eps);
+}
+
+
+
+double Random01()
+{
+	return (1.0 * rand()) / RAND_MAX;
+}
+
+///Generate a random number between -1 and 1
+double RandomN1P1()
+{
+	return (2.0 * rand()) / RAND_MAX - 1;
+}
+
+///Generate a random angle between -Pi and Pi according to the normal distribution with mean and sdv2
+double RandomNormalNPiPPi (double mean, double sdv2) {
+	double random, p_random, p_control;
+	while (true) {
+		random = RandomN1P1()*dPi;
+		p_random = exp(-0.5*pow((random-mean),2)/sdv2)/(sqrt(2*dPi*sdv2));
+		p_control = Random01();
+		if (p_random>=p_control) {
+			break;
+		}
+	}
+	return random;
+}
+
+///Generate a random number between -1 and 1 according to Normal distribution with mean and sdv2
+double RandomNormalN1P1 (double mean, double sdv2) {
+	double random, p_random, p_control;
+	while (true) {
+		random = RandomN1P1();
+		p_random = exp(-0.5*pow((random-mean),2)/sdv2)/(sqrt(2*dPi*sdv2));
+                p_control = Random01();
+                if (p_random>=p_control) {
+                        break;
+                }
+        }
+        return random;
+}
+
+///Generate a random angle between -A and A according to uniform distribution
+double RandomAngleUniform (double A) {
+	return RandomN1P1()*A;
+}
+
+///Compute the torsional angle p1-p2-p3-p4 in radians
+double TorsionalAngle (Vector3 &p1, Vector3 &p2, Vector3 &p3, Vector3 &p4) {
+	Vector3 p21 = p1-p2;
+	Vector3 p23 = p3-p2;
+	Vector3 p43 = p3-p4;
+	Vector3 normal_213 = cross(p21,p23);
+	Vector3 normal_432 = cross(p23,p43);
+	normalize(normal_213);
+	normalize(normal_432);
+	normalize(p23);
+	double angle = VectorRotationAngle(normal_213,normal_432,p23);
+	return angle;
+}
+
+// The function computes the angle to rotate p1 to p2 around axis clockwisely.
+// p1 and p2 are perpendicular to the axis.
+// All 3 input vectors are unit vectors
+double VectorRotationAngle (Vector3 p1, Vector3 p2, Vector3 axis) {
+	double cos = dot(p1,p2);
+	if (cos<-1.0) {
+		cos = -1.0;
+	}
+	else if (cos>1.0) {
+		cos = 1.0;
+	}
+	double angle = acos(cos);
+	double s = axis.x*(p1.z*p2.y-p1.y*p2.z)+axis.y*(p1.x*p2.z-p1.z*p2.x)+axis.z*(p1.y*p2.x-p1.x*p2.y);
+	if (s>0.0) {
+		angle *= -1;
+	}
+	return angle;
 }
 
 

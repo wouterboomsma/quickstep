@@ -2661,6 +2661,34 @@ inline Vector2 operator * (const RigidTransform2D& a, const Vector2& b)
 }
 
 
+//Other utility functions
+
+/// Generate a random double between 0 and 1
+double Random01();
+
+///Generate a random variable between -1 and 1
+double RandomN1P1();
+
+///Generate a random angle between -Pi and Pi according to the normal distribution with mean and sdv2
+double RandomNormalNPiPPi (double mean, double sdv2);
+
+///Generate a random number between -1 and 1 according to Normal distribution with mean and sdv2
+double RandomNormalN1P1 (double mean, double sdv2);
+
+///Generate a random angle between -A and A according to uniform distribution
+double RandomAngleUniform (double A);
+
+///Compute the torsional angle p1-p2-p3-p4 in radians
+double TorsionalAngle (Vector3 &p1, Vector3 &p2, Vector3 &p3, Vector3 &p4);
+
+// The function computes the angle to rotate p1 to p2 around axis clockwisely.
+double VectorRotationAngle (Vector3 p1, Vector3 p2, Vector3 axis);
+
+/// Compute the signum
+inline int Signum(double val){
+	return ((val>0) - (val<0));
+}
+
 
 
 //IO functions

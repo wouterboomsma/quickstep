@@ -13,7 +13,8 @@ using namespace quickstep;
 KinematicForest::KinematicForest(BondGraph &graph):
     adjacencyList(graph.numberOfAtoms()),
     positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
-    p0(0,0,0), p1(1,0,0), p2(0,1,0),
+//    p0(0,0,0), p1(1,0,0), p2(0,1,0),
+    atoms(graph.numberOfAtoms()),
     transformations(graph.numberOfAtoms()),
     transformations_queue(graph.numberOfAtoms())
 {
@@ -47,6 +48,7 @@ KinematicForest::KinematicForest(BondGraph &graph):
 
         if(vShouldBeRoot){
             roots.push_back(v);
+
             rootTree(v,-1);
         }
     }
@@ -63,9 +65,20 @@ std::vector< Math3D::Vector3 >& KinematicForest::getPositions()
     return positions;
 }
 
+int KinematicForest::getRoots()
+{
+	return roots.size();
+}
+
+int KinematicForest::getAtoms()
+{
+	return atoms;
+}
+
 double KinematicForest::getDOFLength(int atom)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
     Math3D::Vector3& v0 = pos(atom);
@@ -77,6 +90,7 @@ double KinematicForest::getDOFLength(int atom)
 double KinematicForest::getDOFAngle(int atom)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
     int a2 = parent(a1);
@@ -91,6 +105,7 @@ double KinematicForest::getDOFAngle(int atom)
 double KinematicForest::getDOFTorsion(int atom)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
     int a2 = parent(a1);
@@ -109,6 +124,8 @@ double KinematicForest::getDOFTorsion(int atom)
 void KinematicForest::changeDOFLength(int atom, double value)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
+    if(atom==0) return;
 
     int a1 = parent(atom);
 
@@ -123,6 +140,8 @@ void KinematicForest::changeDOFLength(int atom, double value)
 void KinematicForest::changeDOFAngle(int atom, double value)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
+    if(atom==0) return;
 
     int a1 = parent(atom);
     int a2 = parent(a1);
@@ -140,6 +159,8 @@ void KinematicForest::changeDOFAngle(int atom, double value)
 void KinematicForest::changeDOFTorsion(int atom, double value)
 {
     assert(atom>=0 && atom<positions.size());
+    if(!pseudoRootsSet)	updatePseudoRoots();
+    if(atom==0) return;
 
     int a1 = parent(atom);
     int a2 = parent(a1);
@@ -154,8 +175,20 @@ void KinematicForest::changeDOFTorsion(int atom, double value)
 
 }
 
+void KinematicForest::changeDOFglobal(int chain, Math3D::RigidTransform t)
+{
+	if(!pseudoRootsSet)	updatePseudoRoots();
+//	cout<<"changeDOFglobal 1 .. "<<chain<<endl;
+//	cout<<"changeDOFglobal 2 .. "<<roots[chain]<<endl;
+//	cout<<"changeDOFglobal 3 .. "<<parent(roots[chain])<<endl;
+	int idx1 = parent(parent(roots[chain]));
+	transformations_queue[idx1].push_back(t);
+}
+
 void KinematicForest::updatePositions()
 {
+	if(!pseudoRootsSet)	updatePseudoRoots();
+
     forwardPropagateTransformations(-1);
 }
 
@@ -163,7 +196,7 @@ void KinematicForest::forwardPropagateTransformations(int atom)
 {
     if(atom<0){
         for(size_t i=0;i<roots.size();i++){
-            forwardPropagateTransformations(roots[i]);
+            forwardPropagateTransformations(parent(parent(roots[i])));
         }
     }else{
         int p = parent(atom);
@@ -193,12 +226,14 @@ Math3D::Vector3& KinematicForest::pos(int i)
 {
     assert(i>-4 && i<(int)positions.size());
 
-    switch(i){
-    case -3: return p2;
-    case -2: return p1;
-    case -1: return p0;
-    default: return positions[i];
-    }
+//    switch(i){
+//    case -3: return p2;
+//    case -2: return p1;
+//    case -1: return p0;
+//    default: return positions[i];
+//    }
+
+    return positions[i];
 }
 
 void KinematicForest::rootTree(int v, int p)
@@ -225,7 +260,7 @@ void KinematicForest::rootTree(int v, int p)
 
 int KinematicForest::parent(int v)
 {
-    if(v<0) return v-1;
+//    if(v<0) return v-1;
 
     for(int c=0;c<adjacencyList[v].size();c++){
         if(adjacencyList[v][c].second==v)
@@ -250,3 +285,39 @@ void KinematicForest::print()
     }
 
 }
+
+void KinematicForest::updatePseudoRoots()
+{
+	for(int r=0;r<roots.size();r++){
+		int idxr = roots[r];
+		int idx0 = positions.size();
+		int idx1 = idx0+1;
+
+		Math3D::Vector3 p0 = positions[ idxr ] + Math3D::Vector3(0.1, 0.0, 0.0);
+		Math3D::Vector3 p1 = positions[ idxr ] + Math3D::Vector3(0.1, 0.1, 0.0);
+		positions.push_back(p0);
+		positions.push_back(p1);
+
+		adjacencyList.push_back( std::vector< pair<int,int> >() );
+		adjacencyList[idx0].push_back( std::make_pair( idx0, idxr ) );
+		adjacencyList[idxr].push_back( std::make_pair( idx0, idxr ) );
+
+		adjacencyList.push_back( std::vector< pair<int,int> >() );
+		adjacencyList[idx1].push_back( std::make_pair( idx1, idx0 ) );
+		adjacencyList[idx0].push_back( std::make_pair( idx1, idx0 ) );
+
+		transformations.push_back(Math3D::RigidTransform());
+		transformations[idx0].setIdentity();
+
+		transformations.push_back(Math3D::RigidTransform());
+		transformations[idx1].setIdentity();
+
+		transformations_queue.push_back(std::vector<Math3D::RigidTransform>());
+		transformations_queue.push_back(std::vector<Math3D::RigidTransform>());
+	}
+
+	pseudoRootsSet = true;
+}
+
+
+

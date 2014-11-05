@@ -34,6 +34,9 @@ public:
      * reflected in the returned vector. */
     std::vector< Math3D::Vector3 >& getPositions();
 
+    int getRoots();
+    int getAtoms();
+
     double getDOFLength(int atom);
     double getDOFAngle(int atom);
     double getDOFTorsion(int atom);
@@ -42,9 +45,16 @@ public:
     void changeDOFAngle(int atom, double value);
     void changeDOFTorsion(int atom, double value);
 
+    void changeDOFglobal(int chain, Math3D::RigidTransform t);
+
     void updatePositions();
 
+
+    // Various helper functions below here
+
+    /** Print a textual representation of the forest for debugging purposes. */
     void print();
+
 private:
     /**
      * Set v to be the parent of all adjacent vertices except p. This function is
@@ -59,6 +69,10 @@ private:
      */
     int parent(int v);
 
+    ///Number of atoms
+    int atoms;
+
+    /// Indices of root-atoms
     std::vector<int> roots;
 
     /// Adjacency list specifying edges in the tree
@@ -71,9 +85,9 @@ private:
     /// if i==-2 return p1, and if i==-3 return p2
     Math3D::Vector3& pos(int i);
 
-    Math3D::Vector3 p0;
-    Math3D::Vector3 p1;
-    Math3D::Vector3 p2;
+//    Math3D::Vector3 p0;
+//    Math3D::Vector3 p1;
+//    Math3D::Vector3 p2;
 
     /// Each atom has an associated transformation
     std::vector< Math3D::RigidTransform > transformations;
@@ -92,6 +106,11 @@ private:
      */
     void forwardPropagateTransformations(int a=-1);
 
+    bool pseudoRootsSet = false;
+    void updatePseudoRoots();
+
+    friend class CofMChasse;
+    friend class FreeBondRotateChasse;
 };
 
 }
