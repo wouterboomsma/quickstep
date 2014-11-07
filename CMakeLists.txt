@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
+# cmake_minimum_required(VERSION 2.8)
 
-project(quickstep)
+#project(quickstep)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -22,3 +22,4 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
 
 add_subdirectory(src)
+
