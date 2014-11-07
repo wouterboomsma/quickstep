@@ -1,4 +1,4 @@
-#include "quickstep/CoreGraph.h
+#include "quickstep/Graph.h"
 
 namespace quickstep {
 

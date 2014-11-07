@@ -2,6 +2,10 @@
 #ifndef QUICKSTEP_GRAPH_H
 #define QUICKSTEP_GRAPH_H
 
+#include <iostream>
+#include <vector>
+#include <set>
+
 namespace quickstep {
 
 class Graph {
