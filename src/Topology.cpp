@@ -5,8 +5,16 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+//<<<<<<< HEAD:external/quickstep/src/Topology.cpp
 #include "quickstep/phaistos_config.h"
 #include "quickstep/Topology.h"
+//=======
+//#include <phaistos_config.h>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/operations.hpp>
+//#include "phaistos/internal/FatalError.h"
+//#include "phaistos/Topology.h"
+//>>>>>>> 4f62ba27dab83711a0e465479c0e9b3550e3b881:src/Topology.cpp
 #include "prettyprint.hpp"
 
 namespace quickstep {
@@ -14,6 +22,11 @@ namespace quickstep {
 std::map<std::string, std::vector<std::pair<std::string, std::string> > > Topology::standard_bond_definitions = std::map<std::string, std::vector<std::pair<std::string, std::string> > >();
 
 void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
+
+    if (!boost::filesystem::exists(filename)) {
+        BOOST_THROW_EXCEPTION(phaistos::FatalError() <<
+                              "File not found: " << filename.string());
+    }
 
     boost::property_tree::ptree ptree;
     std::ifstream ifs(filename.string());
@@ -33,8 +46,6 @@ void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
             }
         }
     }
-    std::cout << standard_bond_definitions << "\n";
-
 }
 
 void Topology::create_standard_bonds() {
@@ -46,13 +57,19 @@ void Topology::create_standard_bonds() {
     for(Chain &chain:chains) {
         for (Residue &residue:chain.residues) {
             atom_maps.push_back(std::map<std::string, std::reference_wrapper<Atom> >());
-            for (Atom &atom:residue.atoms) {
-//                atom_maps.back().insert(std::make_pair(atom.name, std::reference_wrapper<Atom>(atom)));
-                atom_maps.back().insert(std::pair<std::string,std::reference_wrapper<Atom> >(atom.name, std::reference_wrapper<Atom>(atom)));
-
-                std::cout << "****" << atom_maps.back() << " ";
-                std::cout << atom << "\n";
-                std::cout << residue.index << "\n";
+//<<<<<<< HEAD:external/quickstep/src/Topology.cpp
+//            for (Atom &atom:residue.atoms) {
+////                atom_maps.back().insert(std::make_pair(atom.name, std::reference_wrapper<Atom>(atom)));
+//                atom_maps.back().insert(std::pair<std::string,std::reference_wrapper<Atom> >(atom.name, std::reference_wrapper<Atom>(atom)));
+//
+//                std::cout << "****" << atom_maps.back() << " ";
+//                std::cout << atom << "\n";
+//                std::cout << residue.index << "\n";
+//=======
+            for (unsigned int &atom_index: residue.atom_indices) {
+                Atom &atom = atoms[atom_index];
+                atom_maps.back().insert(std::make_pair(atom.name, std::reference_wrapper<Atom>(atom)));
+//>>>>>>> 4f62ba27dab83711a0e465479c0e9b3550e3b881:src/Topology.cpp
             }
         }
 
@@ -94,9 +111,6 @@ void Topology::create_standard_bonds() {
 
                     auto from_atom_it = atom_maps[from_residue].find(from_atom);
                     auto to_atom_it = atom_maps[to_residue].find(to_atom);
-                    std::cout << "1: " << (from_atom_it == atom_maps[from_residue].end()) << "\n";
-                    std::cout << atom_maps[from_residue] << " " << from_residue << " " << from_atom << " " << to_atom << "\n";
-                    std::cout << "2: " << (to_atom_it == atom_maps[to_residue].end()) << "\n";
                     if (from_atom_it != atom_maps[from_residue].end() &&
                         to_atom_it != atom_maps[to_residue].end())
                         this->add_bond(from_atom_it->second,
@@ -111,9 +125,10 @@ void Topology::create_standard_bonds() {
 void Topology::create_disulfide_bonds(const std::vector<std::array<coordinate_t, 3> > &positions) {
 
 
-    auto is_cyx = [](const Residue &residue) {
+    auto is_cyx = [&](const Residue &residue) {
         std::set<std::string> atom_names;
-        for (const Atom &atom: residue.atoms) {
+        for (unsigned int atom_index: residue.atom_indices) {
+            const Atom &atom = this->atoms[atom_index];
             atom_names.insert(atom.name);
         }
         return (atom_names.count("SG") and !atom_names.count("HG"));
@@ -131,7 +146,8 @@ void Topology::create_disulfide_bonds(const std::vector<std::array<coordinate_t,
     std::vector<std::map<std::string, std::reference_wrapper<const Atom> > > cyx_atoms_by_name;
     for (const Residue &residue: cyx) {
         cyx_atoms_by_name.push_back(std::map<std::string, std::reference_wrapper<const Atom> >());
-        for (const Atom &atom: residue.atoms) {
+        for (unsigned int atom_index: residue.atom_indices) {
+            const Atom &atom = atoms[atom_index];
             cyx_atoms_by_name.back().insert(std::make_pair(atom.name, std::reference_wrapper<const Atom>(atom)));
         }
     }

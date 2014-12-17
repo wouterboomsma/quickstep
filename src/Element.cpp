@@ -23,6 +23,7 @@ Element::Element(unsigned int number, std::string name, std::string symbol, mass
      }
 }
 
+
 const Element &Element::get_by_symbol(std::string symbol) {
      std::string symbol_upper = boost::to_upper_copy(boost::trim_copy(symbol));
      if (elements_by_symbol.count(symbol_upper))
@@ -33,7 +34,9 @@ const Element &Element::get_by_symbol(std::string symbol) {
 
 const Element &Element::get_by_atomic_number(unsigned int number) {
      return elements_by_number.at(number);
-}     
+}
+
+
 
 
 std::map<std::string, Element> Element::elements_by_symbol = std::map<std::string, Element>();

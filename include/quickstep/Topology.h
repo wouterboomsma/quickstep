@@ -4,11 +4,23 @@
 #include <iostream>
 #include <vector>
 #include <set>
-#include <boost/filesystem/path.hpp>
+#include <array>
 
+#include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
+#include "prettyprint.hpp"
+
+//<<<<<<< HEAD:external/quickstep/include/quickstep/Topology.h
 #include "quickstep/Element.h"
 
 namespace quickstep {
+//=======
+//#include "phaistos/Element.h"
+
+
+
+//namespace phaistos {
+//>>>>>>> 4f62ba27dab83711a0e465479c0e9b3550e3b881:include/phaistos/Topology.h
 
 class Topology {
 public:
@@ -55,10 +67,31 @@ public:
                   index(index),
                   chain(chain) {
         }
+
+//        std::string create_signature() const {
+//            std::map<Element, int> counts;
+//            for (const Atom &atom: atoms) {
+//                if (!counts.count(atom.element))
+//                    counts.insert(std::make_pair(atom.element, 0));
+//                counts.at(atom.element) += 1;
+//            }
+//            std::vector<std::pair<Element, int> > signature_vec;
+//            for (const auto &entry:counts) {
+//                signature_vec.push_back(entry);
+//            }
+//            std::sort(signature_vec.begin(), signature_vec.end());
+//            std::string signature = "";
+//            for (const auto &entry:counts) {
+//                signature += entry.first.symbol+std::to_string(entry.second);
+//            }
+////            std::cout << signature_vec << " " << signature << "\n";
+//            return signature;
+//        }
+
         std::string name;
         unsigned int index;
         const Chain &chain;
-        std::vector<Atom> atoms;
+        std::vector<unsigned int> atom_indices;
     };
 
     class Chain {
@@ -84,10 +117,10 @@ public:
     }
 
     Atom &add_atom(std::string name, const Element &element, Residue &residue) {
-        residue.atoms.push_back(Atom(name, element, n_atoms, residue));
+        atoms.push_back(Atom(name, element, n_atoms, residue));
+        residue.atom_indices.push_back(n_atoms);
         n_atoms++;
-        std::cout << "Adding: " << name << " " <<  n_atoms << "\n";
-        return residue.atoms.back();
+        return atoms.back();
     }
 
     void add_bond(const Atom &atom1, const Atom &atom2) {
@@ -105,22 +138,41 @@ public:
         return chains;
     }
 
+    std::vector<Atom> const &get_atoms() const {
+        return atoms;
+    }
+
     std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > const &get_bonds() const {
-//    std::set<std::pair<int,int > > const &get_bonds() const {
         return bonds;
     }
 
-private:
-    std::vector<Chain> chains;
+    const boost::optional<std::array<boost::units::quantity<angstrom_unit>, 3> > &get_unit_cell_dimensions() const {
+        return unit_cell_dimensions;
+    }
+
+    void set_unit_cell_dimensions(const std::array<boost::units::quantity<angstrom_unit>, 3> & dimensions) {
+        unit_cell_dimensions = dimensions;
+    }
+
+
     unsigned int n_residues;
     unsigned int n_atoms;
-    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
-//    std::set<std::pair<int,int> > bonds;
 
+    std::vector<Atom> atoms;
+    std::vector<Chain> chains;
+
+    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
+    boost::optional<std::array<boost::units::quantity<angstrom_unit>, 3> > unit_cell_dimensions;
+
+private:
 
     static void load_bond_definitions(const boost::filesystem::path &filename);
     static std::map<std::string, std::vector<std::pair<std::string, std::string> > > standard_bond_definitions;
 
+
+    // Prevent copying
+    Topology(const Topology &other);
+    Topology &operator=(const Topology &other);
 };
 
 }
