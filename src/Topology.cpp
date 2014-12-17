@@ -6,7 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 //<<<<<<< HEAD:external/quickstep/src/Topology.cpp
-#include "quickstep/phaistos_config.h"
+#include <quickstep_config.h>
 #include "quickstep/Topology.h"
 //=======
 //#include <phaistos_config.h>
