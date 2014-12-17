@@ -3,10 +3,12 @@
 
 #include <vector>
 #include <utility>
+#include <unordered_map>
 
 
-#include "BondGraph.h"
+//#include "BondGraph.h"
 #include "math/primitives.h"
+#include "quickstep/Topology.h"
 
 namespace quickstep{
 
@@ -26,9 +28,10 @@ namespace quickstep{
 class KinematicForest
 {
 public:
-    /** Construct a kinematic forest spanning all atoms in the bond graph. */
-    KinematicForest(quickstep::BondGraph& graph);
-	KinematicForest(){}
+    /** Construct a kinematic forest spanning all atoms in the topology. */
+    KinematicForest(quickstep::Topology& topology);
+    //KinematicForest(quickstep::BondGraph& graph);
+    KinematicForest();
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
@@ -55,7 +58,18 @@ public:
     /** Print a textual representation of the forest for debugging purposes. */
     void print();
 
+    Topology* getTopology();
+
+    const Topology::Atom& getAtom(int atom);
+
+    /** Indicate if atom is the last in the sequence of atom_names */
+    bool atomMatchesNames(int atom, std::vector<std::string>& atom_names);
+
 private:
+    quickstep::Topology* topology;
+
+    std::unordered_map<int, const quickstep::Topology::Atom*> id_atom_map;
+
     /**
      * Set v to be the parent of all adjacent vertices except p. This function is
      * called recursively on all children of v with an indication that v should be
@@ -70,7 +84,7 @@ private:
     int parent(int v);
 
     ///Number of atoms
-    int atoms;
+    int n_atoms;
 
     /// Indices of root-atoms
     std::vector<int> roots;

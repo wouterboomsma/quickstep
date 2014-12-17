@@ -3,6 +3,10 @@
 #include <iostream>
 #include <math.h>
 #include <assert.h>     /* assert */
+#include <functional>   // reference_wrapper
+#include <cassert>
+
+
 
 #include "quickstep/DisjointSet.h"
 
@@ -10,34 +14,122 @@
 using namespace std;
 using namespace quickstep;
 
-KinematicForest::KinematicForest(BondGraph &graph):
-    adjacencyList(graph.numberOfAtoms()),
-    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
-//    p0(0,0,0), p1(1,0,0), p2(0,1,0),
-    atoms(graph.numberOfAtoms()),
-    transformations(graph.numberOfAtoms()),
-    transformations_queue(graph.numberOfAtoms())
+//Old version using BondGraph
+//KinematicForest::KinematicForest(BondGraph &graph):
+//    adjacencyList(graph.numberOfAtoms()),
+//    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
+////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
+//    atoms(graph.numberOfAtoms()),
+//    transformations(graph.numberOfAtoms()),
+//    transformations_queue(graph.numberOfAtoms())
+//{
+//
+//    //Kruskals algorithm for finding minimum spanning forest
+//    DisjointSet ds(graph.numberOfAtoms());
+//    for(int v1=0;v1<graph.numberOfAtoms();v1++){
+//        for(int i=0;i<graph.adjacencyList[v1].size();i++){
+//            int v2 = graph.adjacencyList[v1][i];
+//            if(!ds.connected(v1,v2)){
+//                adjacencyList[v1].push_back( std::make_pair(v1,v2) );
+//                adjacencyList[v2].push_back( std::make_pair(v1,v2) );
+//                ds.merge(v1,v2);
+//            }
+//        }
+//    }
+//
+//    print();
+//
+//    //Root all trees
+//    roots.push_back(0);
+//    rootTree(0, -1);
+//    for(int v=1;v<graph.numberOfAtoms();v++){
+//        bool vShouldBeRoot = true;
+//        for(int r=0;r<roots.size();r++){
+//            if(ds.connected(roots[r], v)){
+//                vShouldBeRoot = false;
+//                break;
+//            }
+//        }
+//
+//        if(vShouldBeRoot){
+//            roots.push_back(v);
+//
+//            rootTree(v,-1);
+//        }
+//    }
+//
+//    //Reset transformations
+//    for(int i=0;i<graph.numberOfAtoms();i++){
+//        transformations[i].setIdentity();
+//    }
+//
+//}
+
+KinematicForest::KinematicForest():
+		n_atoms(0),
+		topology(NULL)
 {
 
+}
+
+KinematicForest::KinematicForest(quickstep::Topology &topology):
+		topology(&topology)
+//    adjacencyList(topology.graph.numberOfAtoms()),
+//    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
+////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
+//    atoms(graph.numberOfAtoms()),
+//    transformations(graph.numberOfAtoms()),
+//    transformations_queue(graph.numberOfAtoms())
+{
+	//Associate each atom with a unique index between 0 and the total number of atoms
+	n_atoms = 0;
+	unordered_map<int, int> atomIdxMap;
+	for( const quickstep::Topology::Chain& chain: topology.get_chains() ){
+		for( const quickstep::Topology::Residue& res: chain.residues ){
+			for( const quickstep::Topology::Atom& atom: res.atoms ){
+				atomIdxMap[atom.index] = n_atoms;
+				id_atom_map[n_atoms] = &atom;
+				n_atoms++;
+			}
+		}
+	}
+
+	//Allocate space for tree, positions and transformations
+	adjacencyList.resize(n_atoms);
+	positions.resize(n_atoms, Math3D::Vector3(0,0,0));
+	transformations.resize(n_atoms);
+	transformations_queue.resize(n_atoms);
+
     //Kruskals algorithm for finding minimum spanning forest
-    DisjointSet ds(graph.numberOfAtoms());
-    for(int v1=0;v1<graph.numberOfAtoms();v1++){
-        for(int i=0;i<graph.adjacencyList[v1].size();i++){
-            int v2 = graph.adjacencyList[v1][i];
-            if(!ds.connected(v1,v2)){
-                adjacencyList[v1].push_back( std::make_pair(v1,v2) );
-                adjacencyList[v2].push_back( std::make_pair(v1,v2) );
-                ds.merge(v1,v2);
-            }
-        }
+    DisjointSet ds(n_atoms);
+    for( auto bond: topology.get_bonds() ){
+    	const quickstep::Topology::Atom& a1 = bond.first;
+    	const quickstep::Topology::Atom& a2 = bond.second;
+    	int a1Idx = atomIdxMap[a1.index];
+    	int a2Idx = atomIdxMap[a2.index];
+    	if(!ds.connected(a1Idx, a2Idx)){
+    		adjacencyList[a1Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
+    		adjacencyList[a2Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
+    		ds.merge(a1Idx, a2Idx);
+    	}
     }
+//    for(int v1=0;v1<n_atoms;v1++){
+//        for(int i=0;i<graph.adjacencyList[v1].size();i++){
+//            int v2 = graph.adjacencyList[v1][i];
+//            if(!ds.connected(v1,v2)){
+//                adjacencyList[v1].push_back( std::make_pair(v1,v2) );
+//                adjacencyList[v2].push_back( std::make_pair(v1,v2) );
+//                ds.merge(v1,v2);
+//            }
+//        }
+//    }
 
     print();
 
     //Root all trees
     roots.push_back(0);
     rootTree(0, -1);
-    for(int v=1;v<graph.numberOfAtoms();v++){
+    for(int v=1;v<n_atoms;v++){
         bool vShouldBeRoot = true;
         for(int r=0;r<roots.size();r++){
             if(ds.connected(roots[r], v)){
@@ -54,7 +146,7 @@ KinematicForest::KinematicForest(BondGraph &graph):
     }
 
     //Reset transformations
-    for(int i=0;i<graph.numberOfAtoms();i++){
+    for(int i=0;i<n_atoms;i++){
         transformations[i].setIdentity();
     }
 
@@ -72,7 +164,7 @@ int KinematicForest::getRoots()
 
 int KinematicForest::getAtoms()
 {
-	return atoms;
+	return n_atoms;
 }
 
 double KinematicForest::getDOFLength(int atom)
@@ -285,6 +377,24 @@ void KinematicForest::print()
     }
 
 }
+
+Topology* KinematicForest::getTopology()
+{
+	return topology;
+}
+
+//const Topology::Atom& KinematicForest::getAtom(int atom)
+//{
+//	assert(atom>=0 && atom<n_atoms);
+//
+//	return id_atom_map[atom];
+//}
+//
+//bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNames)
+//{
+//	return false;
+//}
+
 
 void KinematicForest::updatePseudoRoots()
 {

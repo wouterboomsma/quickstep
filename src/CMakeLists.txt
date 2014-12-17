@@ -3,11 +3,13 @@ include_directories(${quickstep_SOURCE_DIR}/include)
 
 
 add_library(quickstep
-  CoreGraph.cpp
   Bond.cpp
   BondGraph.cpp
+  CoreGraph.cpp
   DisjointSet.cpp
+  Element.cpp
   KinematicForest.cpp
+  Topology.cpp
   VarietyChasse.cpp
   CofMChasse.cpp
   FreeBondRotateChasse.cpp
