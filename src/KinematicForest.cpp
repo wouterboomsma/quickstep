@@ -86,9 +86,12 @@ KinematicForest::KinematicForest(quickstep::Topology &topology):
 	unordered_map<int, int> atomIdxMap;
 	for( const quickstep::Topology::Chain& chain: topology.get_chains() ){
 		for( const quickstep::Topology::Residue& res: chain.residues ){
-			for( const quickstep::Topology::Atom& atom: res.atoms ){
-				atomIdxMap[atom.index] = n_atoms;
-				id_atom_map[n_atoms] = &atom;
+			//for( const quickstep::Topology::Atom& atom: res.atoms ){
+			for( unsigned int atom_idx: res.atom_indices){
+//				atomIdxMap[atom.index] = n_atoms;
+//				id_atom_map[n_atoms] = &atom;
+				atomIdxMap[atom_idx] = n_atoms;
+				id_atom_map[n_atoms] = &topology.atoms[atom_idx];
 				n_atoms++;
 			}
 		}

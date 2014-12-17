@@ -24,8 +24,9 @@ std::map<std::string, std::vector<std::pair<std::string, std::string> > > Topolo
 void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
 
     if (!boost::filesystem::exists(filename)) {
-        BOOST_THROW_EXCEPTION(phaistos::FatalError() <<
-                              "File not found: " << filename.string());
+    	throw "File not found";
+//        BOOST_THROW_EXCEPTION(phaistos::FatalError() <<
+//                              "File not found: " << filename.string());
     }
 
     boost::property_tree::ptree ptree;
