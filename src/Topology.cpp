@@ -5,16 +5,11 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-//<<<<<<< HEAD:external/quickstep/src/Topology.cpp
 #include <quickstep_config.h>
 #include "quickstep/Topology.h"
-//=======
-//#include <phaistos_config.h>
+#include "utility/FatalError.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
-//#include "phaistos/internal/FatalError.h"
-//#include "phaistos/Topology.h"
-//>>>>>>> 4f62ba27dab83711a0e465479c0e9b3550e3b881:src/Topology.cpp
 #include "prettyprint.hpp"
 
 namespace quickstep {
@@ -24,9 +19,9 @@ std::map<std::string, std::vector<std::pair<std::string, std::string> > > Topolo
 void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
 
     if (!boost::filesystem::exists(filename)) {
-    	throw "File not found";
-//        BOOST_THROW_EXCEPTION(phaistos::FatalError() <<
-//                              "File not found: " << filename.string());
+//    	throw "File not found";
+        BOOST_THROW_EXCEPTION(utility::FatalError() <<
+                              "File not found: " << filename.string());
     }
 
     boost::property_tree::ptree ptree;
