@@ -18,7 +18,11 @@ public:
 
     static std::string create_signature(const std::vector<Element> &elements);
 
-//    bool operator==(const Element &other) {
+    static std::map<Element, int> get_counts(const std::vector<Element> &elements);
+
+
+
+    //    bool operator==(const Element &other) {
 //        return (mass == other.mass);
 //    }
 
