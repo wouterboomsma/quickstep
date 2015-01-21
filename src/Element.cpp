@@ -1,5 +1,6 @@
 #include "quickstep/Element.h"
 #include <string>
+#include <algorithm>
 
 namespace quickstep {
 
@@ -34,6 +35,31 @@ const Element &Element::get_by_symbol(std::string symbol) {
 
 const Element &Element::get_by_atomic_number(unsigned int number) {
      return elements_by_number.at(number);
+}
+
+
+std::map<Element, int> Element::get_counts(const std::vector<Element> &elements) {
+     std::map<Element, int> counts;
+     for (const Element &element: elements) {
+          if (!counts.count(element))
+               counts.insert(std::make_pair(element, 0));
+          counts.at(element) += 1;
+     }
+     return counts;
+}
+
+std::string Element::create_signature(const std::vector<Element> &elements) {
+     std::map<Element, int> counts = get_counts(elements);
+     std::vector<std::pair<Element, int> > signature_vec;
+     for (const auto &entry:counts) {
+          signature_vec.push_back(entry);
+     }
+     std::sort(signature_vec.begin(), signature_vec.end());
+     std::string signature = "";
+     for (const auto &entry:counts) {
+          signature += entry.first.symbol+std::to_string(entry.second);
+     }
+     return signature;
 }
 
 
