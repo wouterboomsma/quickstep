@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 /**
  * @brief Convenient wrapper for matrix data used by SVD and for multiplication.
  * The matrix data is stored in an array of doubles using column-major format which
@@ -94,8 +92,8 @@ private:
 	friend class SVD;
 };
 
-ostream& operator<<(ostream& os, const Matrix& m);
-ostream& operator<<(ostream& os, const Matrix* m);
+std::ostream& operator<<(std::ostream& os, const Matrix& m);
+std::ostream& operator<<(std::ostream& os, const Matrix* m);
 
 
 #endif // MATRIX_H

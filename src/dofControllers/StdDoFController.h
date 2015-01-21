@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 namespace quickstep{
 
 /**
@@ -28,12 +26,12 @@ namespace quickstep{
 class StdDoFController {
 public:
 	/**
-	 * TODO document
+	 * Construct a standard DoF controller.
 	 * Example of dofs for a protein backbone: "N-CA,CA-C,C-N,N-CA-C,N-CA-C-N,C-N-CA-C".
 	 * This will make all backbone bond-lengths variable as well as the CA bond
-	 * angle and phi+psi torsions.
+	 * angle plus phi and psi torsions.
 	 */
-	StdDoFController(KinematicForest &kf, vector< string > dofs);
+	StdDoFController(KinematicForest &kf, std::vector< std::string > dofs);
 
 	virtual ~StdDoFController();
 
@@ -50,11 +48,11 @@ public:
 private:
 	KinematicForest* kinematicForest;
 
-	vector<int> dofAtoms;
-	vector<int> dofTypes;
+	std::vector<int> dofAtoms;
+	std::vector<int> dofTypes;
 
-	vector<string>& split(const string &s, char delim, vector<string> &elems);
-	vector<string>  split(const string &s, char delim);
+	std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems);
+	std::vector<std::string>  split(const std::string &s, char delim);
 };
 
 }
