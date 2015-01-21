@@ -50,7 +50,7 @@ unique_ptr<VarietyChasse> VarietyChasse::createStandardVariety(std::default_rand
 {
 	unique_ptr<VarietyChasse> ret(new VarietyChasse());
 
-	std::unique_ptr<Chasse> chasse_cofm( new CofMChasse(0.0001,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
+	std::unique_ptr<Chasse> chasse_cofm( new CofMChasse(0.01,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
 	std::unique_ptr<Chasse> chasse_bondRot( new FreeBondRotateChasse(0.17) ); 	//max-rotation: ~1 degree
 
 	ret->addChasse(chasse_cofm		, 0.5);

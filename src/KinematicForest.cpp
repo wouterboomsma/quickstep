@@ -276,6 +276,7 @@ void KinematicForest::changeDOFglobal(int chain, Math3D::RigidTransform t)
 //	cout<<"changeDOFglobal 1 .. "<<chain<<endl;
 //	cout<<"changeDOFglobal 2 .. "<<roots[chain]<<endl;
 //	cout<<"changeDOFglobal 3 .. "<<parent(roots[chain])<<endl;
+//	cout<<"changeDOFglobal 4 .. "<<endl<<t<<endl;
 	int idx1 = parent(parent(roots[chain]));
 	transformations_queue[idx1].push_back(t);
 }
@@ -283,12 +284,13 @@ void KinematicForest::changeDOFglobal(int chain, Math3D::RigidTransform t)
 void KinematicForest::updatePositions()
 {
 	if(!pseudoRootsSet)	updatePseudoRoots();
-
+//	std::cout<<"updatePositions"<<std::endl;
     forwardPropagateTransformations(-1);
 }
 
 void KinematicForest::forwardPropagateTransformations(int atom)
 {
+//	std::cout<<"forwardPropagateTransformations "<<atom<<std::endl;
     if(atom<0){
         for(size_t i=0;i<roots.size();i++){
             forwardPropagateTransformations(parent(parent(roots[i])));
@@ -305,7 +307,9 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         	transformations[atom] *= transformations_queue[atom][i];
         }
 
+//        std::cout<<"pos["<<atom<<"] = "<<positions[atom]<<std::endl;
         positions[atom] = transformations[atom]*positions[atom];
+
 
         for(int c=0;c<adjacencyList[atom].size();c++){
             if(adjacencyList[atom][c].second!=atom)
@@ -386,17 +390,39 @@ Topology* KinematicForest::getTopology()
 	return topology;
 }
 
-//const Topology::Atom& KinematicForest::getAtom(int atom)
-//{
-//	assert(atom>=0 && atom<n_atoms);
+const Topology::Atom& KinematicForest::getAtom(int atom)
+{
+	assert(atom>=0 && atom<n_atoms);
+
+	return *id_atom_map[atom];
+}
+
+
+bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNames)
+{
+
+	int p1 = 0;
+	int p2 = dofNames.size()-1;
+	int a = atom;
+
+	bool matchesForward = true;
+
+	for(int p=0;p<dofNames.size();p++){
+		if(a<0 || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+		a = parent(a);
+	}
+
+	return matchesForward;
+
+	//FIXME: Also look backward through dofNames and take special care of DoFs around roots of trees
+//	a = atom;
+//	for(int p=dofNames.size()-1;p>=0;p--){
+//		if(getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+//		a = parent(a);
+//	}
 //
-//	return id_atom_map[atom];
-//}
-//
-//bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNames)
-//{
 //	return false;
-//}
+}
 
 
 void KinematicForest::updatePseudoRoots()

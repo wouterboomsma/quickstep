@@ -15,8 +15,10 @@ namespace quickstep{
 
 StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): kinematicForest(&kf)
 {
+	kinematicForest = &kf;
+
 	//Vectors containing atom-names. For instance
-	//{ {"N","CA","C","N"}, {"CA","C","N","CA"}, ... }
+	//{ {"CA","CB"}, {"N","CA","C","N"}, {"CA","C","N","CA"}, ... }
 	vector< vector<string> > dof_matches;
 
 	//Parse dofs. Put result in dofMatches
@@ -27,12 +29,25 @@ StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): 
 		dof_matches.push_back(tokens);
 	}
 
-	//Go through each atom. If it matches the head or tail of an element in dofMatches check for a DoF
+	//Go through each atom. If it matches dofMatches, add a DoF
 	Topology* top = kf.getTopology();
 	for(int a=0; a<kf.getAtoms(); a++){
-		string a0_name = kf.getAtom(a);
-		kf.
+		for(int d=0;d<dof_matches;d++){
+			if(kf.atomMatchesNames(a, dof_matches[d])){
+				int atoms_in_dof = dof_matches[d].size();
+				int dof_type = -1;
+				switch(atoms_in_dof){
+				case 2: dof_type = DOF_BOND_LENGTH; 	break;
+				case 3: dof_type = DOF_BOND_ANGLE; 		break;
+				case 4: dof_type = DOF_BOND_TORSION;	break;
+				}
+				dofAtoms.push_back(a);
+				dofTypes.push_back(dof_type);
+			}
+		}
 	}
+
+
 }
 
 StdDoFController::~StdDoFController() {
@@ -42,8 +57,28 @@ StdDoFController::~StdDoFController() {
 
 int StdDoFController::numberOfDoFs()
 {
-	return 0;
+	return dofAtoms.size();
 }
+
+void StdDoFController::changeDoF(int DoFIdx, double changeValueBy)
+{
+	switch(dofTypes[DoFIdx]){
+	case DOF_BOND_LENGTH: 	kinematicForest->changeDOFLength(	dofAtoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_ANGLE: 	kinematicForest->changeDOFAngle(	dofAtoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_LENGTH: 	kinematicForest->changeDOFTorsion(	dofAtoms[DoFIdx], changeValueBy); 	break;
+	}
+}
+
+int StdDoFController::DoFType(int DoFIdx)
+{
+	return dofTypes[DoFIdx];
+}
+
+void StdDoFController::updatePositions()
+{
+	kinematicForest->updatePositions();
+}
+
 
 vector<string>& StdDoFController::split(const string &s, char delim, vector<string> &elems) {
     stringstream ss(s);
