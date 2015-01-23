@@ -118,7 +118,7 @@ void Topology::create_standard_bonds() {
 }
 
 
-void Topology::create_disulfide_bonds(const std::vector<std::array<coordinate_t, 3> > &positions) {
+void Topology::create_disulfide_bonds(const std::vector<std::array<units::LengthAA, 3> > &positions) {
 
 
     auto is_cyx = [&](const Residue &residue) {
@@ -150,14 +150,14 @@ void Topology::create_disulfide_bonds(const std::vector<std::array<coordinate_t,
 
     for (int i=0; i<cyx.size(); ++i) {
         const Atom &sg1 = cyx_atoms_by_name[i].at("SG");
-        const std::array<coordinate_t, 3> &pos1 = positions[sg1.index];
+        const std::array<units::LengthAA, 3> &pos1 = positions[sg1.index];
         for (int j=0; j<i; ++j) {
             const Atom &sg2 = cyx_atoms_by_name[j].at("SG");
-            const std::array<coordinate_t, 3> &pos2 = positions[sg2.index];
-            coordinate_t distance = boost::units::sqrt(boost::units::pow<2>(pos2[0] - pos1[0]) +
-                                                       boost::units::pow<2>(pos2[1] - pos1[1]) +
-                                                       boost::units::pow<2>(pos2[2] - pos1[2]));
-            if (distance < 3*angstrom) {
+            const std::array<units::LengthAA, 3> &pos2 = positions[sg2.index];
+            units::LengthAA distance = boost::units::sqrt(boost::units::pow<2>(pos2[0] - pos1[0]) +
+                                                          boost::units::pow<2>(pos2[1] - pos1[1]) +
+                                                          boost::units::pow<2>(pos2[2] - pos1[2]));
+            if (distance < 3*units::angstrom) {
                 this->add_bond(sg1, sg2);
             }
         }
