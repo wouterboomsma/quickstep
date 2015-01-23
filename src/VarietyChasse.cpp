@@ -46,11 +46,11 @@ void VarietyChasse::addChasse(std::unique_ptr<Chasse> &c, double weight)
 	accumWeights.push_back(weightSum+weight);
 }
 
-unique_ptr<VarietyChasse> VarietyChasse::createStandardVariety(std::default_random_engine &rand_eng)
+std::unique_ptr<VarietyChasse> VarietyChasse::createStandardVariety(std::default_random_engine &rand_eng)
 {
-	unique_ptr<VarietyChasse> ret(new VarietyChasse());
+	std::unique_ptr<VarietyChasse> ret(new VarietyChasse());
 
-	std::unique_ptr<Chasse> chasse_cofm( new CofMChasse(0.0001,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
+	std::unique_ptr<Chasse> chasse_cofm( new CofMChasse(0.01,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
 	std::unique_ptr<Chasse> chasse_bondRot( new FreeBondRotateChasse(0.17) ); 	//max-rotation: ~1 degree
 
 	ret->addChasse(chasse_cofm		, 0.5);

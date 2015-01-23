@@ -12,8 +12,6 @@
 
 #include <vector>
 
-using namespace std;
-
 namespace quickstep {
 
 class FreeBondRotateChasse: public Chasse {
@@ -27,7 +25,7 @@ private:
 	float rotationMagnitude;
 
 	/// Indices of atoms following a rotatable bond
-	vector<int> rotatableBonds;
+	std::vector<int> rotatableBonds;
 
 	KinematicForest* cachedKinematicForest;
 

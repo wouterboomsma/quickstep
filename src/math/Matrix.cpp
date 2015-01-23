@@ -6,6 +6,8 @@
 
 extern "C" void cblas_dgemm (char Order, char TransA, char TransB, int M, int N, int K, double alpha, double *A, int lda, double *B, int ldb, double beta, double *C, int ldc);
 
+using namespace std;
+
 Matrix::Matrix(int _m, int _n): data(new double[_m*_n]), m(_m), n(_n)
 {
     memset(data, 0, m*n);

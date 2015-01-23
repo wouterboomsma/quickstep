@@ -14,8 +14,6 @@
 
 #include <vector>
 
-using namespace std;
-
 namespace quickstep {
 
 /**
@@ -43,7 +41,7 @@ private:
 	double rotationMagnitude;
 
 	/** Each entry is a vector containing indices of all atoms in the corresponding chain. */
-	vector< vector<int> > chainIndices;
+	std::vector< std::vector<int> > chainIndices;
 
 	/** If this reference does not match the one passed to step then chainIndices will be
 	 * recomputed. */

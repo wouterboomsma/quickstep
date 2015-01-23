@@ -39,8 +39,9 @@ bool CofMChasse::step(KinematicForest& kf)
 
 	// Compute center-of-mass
 	Math3D::Vector3 cofm;
-	for(int a=0;a<chainIndices[root].size();a++)
+	for(int a=0;a<chainIndices[root].size();a++){
 		cofm+=kf.pos(chainIndices[root][a]);
+	}
 	cofm/=chainIndices[root].size();
 
 	// Suggest random rotation round center-of-mass
