@@ -10,7 +10,7 @@ namespace quickstep {
 
 class Element {
 public:
-    Element(unsigned int number, std::string name, std::string symbol, units::MassDa mass);
+    Element(unsigned int number, std::string name, std::string symbol, units::Mass_Da mass);
 
     static const Element &get_by_symbol(std::string symbol);
 
@@ -170,7 +170,7 @@ public:
     unsigned int number;
     std::string name;
     std::string symbol;
-    units::MassDa mass;
+    units::Mass_Da mass;
 
 private:
 

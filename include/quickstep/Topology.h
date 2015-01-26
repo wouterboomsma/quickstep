@@ -123,7 +123,7 @@ public:
     }
 
     void create_standard_bonds();
-    void create_disulfide_bonds(const std::vector<std::array<units::LengthAA, 3> > &positions);
+    void create_disulfide_bonds(const std::vector<std::array<units::Length_AA, 3> > &positions);
 
 
     std::vector<Chain> const &get_chains() const {
@@ -138,11 +138,11 @@ public:
         return bonds;
     }
 
-    const boost::optional<std::array<units::LengthAA, 3> > &get_unit_cell_dimensions() const {
+    const boost::optional<std::array<units::Length_AA, 3> > &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
-    void set_unit_cell_dimensions(const std::array<units::LengthAA, 3> & dimensions) {
+    void set_unit_cell_dimensions(const std::array<units::Length_AA, 3> & dimensions) {
         unit_cell_dimensions = dimensions;
     }
 
@@ -154,7 +154,7 @@ public:
     std::vector<Chain> chains;
 
     std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
-    boost::optional<std::array<units::LengthAA, 3> > unit_cell_dimensions;
+    boost::optional<std::array<units::Length_AA, 3> > unit_cell_dimensions;
 
 private:
 

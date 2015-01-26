@@ -6,7 +6,7 @@ namespace quickstep {
 
 using namespace units;
 
-Element::Element(unsigned int number, std::string name, std::string symbol, units::MassDa mass)
+Element::Element(unsigned int number, std::string name, std::string symbol, units::Mass_Da mass)
      : number(number), name(name), symbol(symbol), mass(mass) {
           
      std::string symbol_upper = boost::to_upper_copy(boost::trim_copy(symbol));
