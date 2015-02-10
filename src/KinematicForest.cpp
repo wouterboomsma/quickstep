@@ -127,7 +127,7 @@ KinematicForest::KinematicForest(quickstep::Topology &topology):
 //        }
 //    }
 
-    print();
+//    print();
 
     //Root all trees
     roots.push_back(0);
@@ -337,6 +337,7 @@ Math3D::Vector3& KinematicForest::pos(int i)
 
 void KinematicForest::rootTree(int v, int p)
 {
+
     for(int c=0;c<adjacencyList[v].size();c++){
         if(adjacencyList[v][c].second==v && adjacencyList[v][c].first!=p){
             //Switch direction of edge
