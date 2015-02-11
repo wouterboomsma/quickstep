@@ -17,7 +17,7 @@ namespace quickstep {
 
 class StdDoFChasse: public Chasse {
 public:
-	StdDoFChasse(quickstep::KinematicForest &kf, std::string &dofs);
+	StdDoFChasse(quickstep::KinematicForest &kf, std::vector< std::string > &dofs);
 
 	bool step(KinematicForest&);
 

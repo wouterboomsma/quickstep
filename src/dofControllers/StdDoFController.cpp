@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include <StdDoFController.h>
+#include <quickstep/dofControllers/stdDoFController.h>
 
 #include <sstream>
 
@@ -32,7 +32,7 @@ StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): 
 	//Go through each atom. If it matches dofMatches, add a DoF
 	Topology* top = kf.getTopology();
 	for(int a=0; a<kf.getAtoms(); a++){
-		for(int d=0;d<dof_matches;d++){
+		for(int d=0;d<dof_matches.size();d++){
 			if(kf.atomMatchesNames(a, dof_matches[d])){
 				int atoms_in_dof = dof_matches[d].size();
 				int dof_type = -1;
@@ -65,7 +65,7 @@ void StdDoFController::changeDoF(int DoFIdx, double changeValueBy)
 	switch(dofTypes[DoFIdx]){
 	case DOF_BOND_LENGTH: 	kinematicForest->changeDOFLength(	dofAtoms[DoFIdx], changeValueBy); 	break;
 	case DOF_BOND_ANGLE: 	kinematicForest->changeDOFAngle(	dofAtoms[DoFIdx], changeValueBy); 	break;
-	case DOF_BOND_LENGTH: 	kinematicForest->changeDOFTorsion(	dofAtoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_TORSION: 	kinematicForest->changeDOFTorsion(	dofAtoms[DoFIdx], changeValueBy); 	break;
 	}
 }
 

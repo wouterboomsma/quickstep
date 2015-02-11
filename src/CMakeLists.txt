@@ -12,8 +12,10 @@ add_library(quickstep
   Topology.cpp
   VarietyChasse.cpp
   CofMChasse.cpp
+  StdDoFChasse.cpp
   FreeBondRotateChasse.cpp
   math/primitives.cpp
+  dofControllers/StdDoFController.cpp
 
   ${quickstep_SOURCE_DIR}/include/quickstep/Bond.h
   ${quickstep_SOURCE_DIR}/include/quickstep/BondGraph.h
@@ -21,8 +23,10 @@ add_library(quickstep
   ${quickstep_SOURCE_DIR}/include/quickstep/KinematicForest.h
   ${quickstep_SOURCE_DIR}/include/quickstep/VarietyChasse.h
   ${quickstep_SOURCE_DIR}/include/quickstep/CofMChasse.h
+  ${quickstep_SOURCE_DIR}/include/quickstep/StdDoFChasse.h
   ${quickstep_SOURCE_DIR}/include/quickstep/FreeBondRotateChasse.h
   ${quickstep_SOURCE_DIR}/include/quickstep/math/infnan.h
   ${quickstep_SOURCE_DIR}/include/quickstep/math/math.h
   ${quickstep_SOURCE_DIR}/include/quickstep/math/primitives.h
+  ${quickstep_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )
