@@ -1,5 +1,5 @@
 /*
- * CofMChasse.h
+ * CofMMove.h
  *
  *  Created on: Oct 29, 2014
  *      Author: rfonseca
@@ -8,7 +8,7 @@
 #ifndef COFMCHASSE_H_
 #define COFMCHASSE_H_
 
-#include <quickstep/Chasse.h>
+#include <quickstep/Move.h>
 #include <quickstep/KinematicForest.h>
 #include <quickstep/math/primitives.h>
 
@@ -20,15 +20,15 @@ namespace quickstep {
  * A chassé that picks a random chain and performs a translation and rotation around the
  * chains center-of-mass.
  */
-class CofMChasse: public Chasse{
+class CofMMove: public Move{
 public:
 	/**
 	 * Construct the chassé. The \a translationMagnitude indicates the largest possible
 	 * translation performed and the \a rotationMagnitude indicates the largest possible
 	 * rotation-angle (in radians) around the center-of-mass.
 	 */
-	CofMChasse(double translationMagnitude, double rotationMagnitude);
-//	virtual ~CofMChasse();
+	CofMMove(double translationMagnitude, double rotationMagnitude);
+//	virtual ~CofMMove();
 
 	/**
 	 * Perform a conformational move of the kinematic forest that translates and rotates

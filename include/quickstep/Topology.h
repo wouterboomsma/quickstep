@@ -11,6 +11,7 @@
 #include "prettyprint.hpp"
 
 #include "quickstep/Element.h"
+#include "quickstep/units.h"
 
 namespace quickstep {
 

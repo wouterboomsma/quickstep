@@ -1,5 +1,5 @@
 /*
- * CompositeChasse.h
+ * CompositeMove.h
  *
  *  Created on: Nov 5, 2014
  *      Author: rfonseca
@@ -8,7 +8,7 @@
 #ifndef COMPOSITECHASSE_H_
 #define COMPOSITECHASSE_H_
 
-#include <quickstep/Chasse.h>
+#include <quickstep/Move.h>
 #include <quickstep/KinematicForest.h>
 
 #include <vector>
@@ -16,19 +16,19 @@
 
 namespace quickstep {
 
-class VarietyChasse: public Chasse {
+class CompositeMove: public Move {
 public:
-	VarietyChasse();
-//	virtual ~VarietyChasse();
+	CompositeMove();
+//	virtual ~VarietyMove();
 
 	bool step(KinematicForest&);
 
-	void addChasse(std::unique_ptr<Chasse> &c, double weight);
+	void add_move(std::unique_ptr<Move> &c, double weight);
 
-	static std::unique_ptr<VarietyChasse> createStandardVariety(std::default_random_engine &rand_eng);
+	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
 private:
-	std::vector<std::unique_ptr<Chasse>> chasses;
+	std::vector<std::unique_ptr<Move>> chasses;
 	std::vector<double> accumWeights;
 };
 

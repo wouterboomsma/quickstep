@@ -1,21 +1,21 @@
 /*
- * StdDoFChasse.cpp
+ * StdDoFMove.cpp
  *
  *  Created on: Jan. 21, 2015
  *      Author: rfonseca
  */
 
-#include <quickstep/StdDoFChasse.h>
+#include <quickstep/StdDoFMove.h>
 
 
 namespace quickstep {
 
-StdDoFChasse::StdDoFChasse(quickstep::KinematicForest &kf, std::vector< std::string > &dofs):
+StdDoFMove::StdDoFMove(quickstep::KinematicForest &kf, std::vector< std::string > &dofs):
 		dofController(kf, dofs)
 {
 }
 
-bool StdDoFChasse::step(KinematicForest& kf)
+bool StdDoFMove::step(KinematicForest& kf)
 {
 //	dofController.get
 //	//Ensure that rotatableBonds is in sync with kf

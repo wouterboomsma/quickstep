@@ -1,5 +1,5 @@
 /*
- * FreeBondRotateChasse.h
+ * FreeBondRotateMove.h
  *
  *  Created on: Nov 5, 2014
  *      Author: rfonseca
@@ -8,16 +8,16 @@
 #ifndef FREEBONDROTATECHASSE_H_
 #define FREEBONDROTATECHASSE_H_
 
-#include <quickstep/Chasse.h>
+#include <quickstep/Move.h>
 
 #include <vector>
 
 namespace quickstep {
 
-class FreeBondRotateChasse: public Chasse {
+class FreeBondRotateMove: public Move {
 public:
-	FreeBondRotateChasse(float rotationMagnitude);
-//	virtual ~FreeBondRotateChasse();
+	FreeBondRotateMove(float rotationMagnitude);
+//	virtual ~FreeBondRotateMove();
 
 	bool step(KinematicForest&);
 
