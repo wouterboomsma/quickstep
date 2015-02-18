@@ -10,7 +10,7 @@ add_library(quickstep
   Element.cpp
   KinematicForest.cpp
   Topology.cpp
-  VarietyMove.cpp
+  CompositeMove.cpp
   CofMMove.cpp
   StdDoFMove.cpp
   FreeBondRotateMove.cpp
@@ -21,7 +21,7 @@ add_library(quickstep
   ${quickstep_SOURCE_DIR}/include/quickstep/BondGraph.h
   ${quickstep_SOURCE_DIR}/include/quickstep/DisjointSet.h
   ${quickstep_SOURCE_DIR}/include/quickstep/KinematicForest.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/VarietyMove.h
+  ${quickstep_SOURCE_DIR}/include/quickstep/CompositeMove.h
   ${quickstep_SOURCE_DIR}/include/quickstep/CofMMove.h
   ${quickstep_SOURCE_DIR}/include/quickstep/StdDoFMove.h
   ${quickstep_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h

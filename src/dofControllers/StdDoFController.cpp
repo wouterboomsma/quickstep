@@ -13,9 +13,12 @@ using namespace std;
 
 namespace quickstep{
 
-StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): kinematicForest(&kf)
+StdDoFController::StdDoFController(){}
+
+
+StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): kinematic_forest(&kf)
 {
-	kinematicForest = &kf;
+	kinematic_forest = &kf;
 
 	//Vectors containing atom-names. For instance
 	//{ {"CA","CB"}, {"N","CA","C","N"}, {"CA","C","N","CA"}, ... }
@@ -41,8 +44,8 @@ StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): 
 				case 3: dof_type = DOF_BOND_ANGLE; 		break;
 				case 4: dof_type = DOF_BOND_TORSION;	break;
 				}
-				dofAtoms.push_back(a);
-				dofTypes.push_back(dof_type);
+				dof_atoms.push_back(a);
+				dof_types.push_back(dof_type);
 			}
 		}
 	}
@@ -57,26 +60,26 @@ StdDoFController::~StdDoFController() {
 
 int StdDoFController::numberOfDoFs()
 {
-	return dofAtoms.size();
+	return dof_atoms.size();
 }
 
 void StdDoFController::changeDoF(int DoFIdx, double changeValueBy)
 {
-	switch(dofTypes[DoFIdx]){
-	case DOF_BOND_LENGTH: 	kinematicForest->changeDOFLength(	dofAtoms[DoFIdx], changeValueBy); 	break;
-	case DOF_BOND_ANGLE: 	kinematicForest->changeDOFAngle(	dofAtoms[DoFIdx], changeValueBy); 	break;
-	case DOF_BOND_TORSION: 	kinematicForest->changeDOFTorsion(	dofAtoms[DoFIdx], changeValueBy); 	break;
+	switch(dof_types[DoFIdx]){
+	case DOF_BOND_LENGTH: 	kinematic_forest->changeDOFLength(	dof_atoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_ANGLE: 	kinematic_forest->changeDOFAngle(	dof_atoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_TORSION: 	kinematic_forest->changeDOFTorsion(	dof_atoms[DoFIdx], changeValueBy); 	break;
 	}
 }
 
 int StdDoFController::DoFType(int DoFIdx)
 {
-	return dofTypes[DoFIdx];
+	return dof_types[DoFIdx];
 }
 
 void StdDoFController::updatePositions()
 {
-	kinematicForest->updatePositions();
+	kinematic_forest->updatePositions();
 }
 
 

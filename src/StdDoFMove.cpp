@@ -7,16 +7,24 @@
 
 #include <quickstep/StdDoFMove.h>
 
+#include <vector>
+#include <boost/algorithm/string.hpp>
 
 namespace quickstep {
 
-StdDoFMove::StdDoFMove(quickstep::KinematicForest &kf, std::vector< std::string > &dofs):
-		dofController(kf, dofs)
+StdDoFMove::StdDoFMove(std::string dofs):
+		dofs(dofs)
 {
 }
 
 bool StdDoFMove::step(KinematicForest& kf)
 {
+	if(dof_controller.kinematic_forest != &kf){
+		std::vector<std::string> dof_tokens;
+		boost::split(dof_tokens, dofs, boost::is_any_of(","));
+		dof_controller = StdDoFController(kf, dof_tokens);
+	}
+
 //	dofController.get
 //	//Ensure that rotatableBonds is in sync with kf
 //	prepareRotatableBonds(kf);
@@ -33,10 +41,10 @@ bool StdDoFMove::step(KinematicForest& kf)
 //		if(childAtom!=bondAtom) //Not the parent edge
 //			kf.changeDOFTorsion( childAtom, angle );
 //	}
-	int dof_num = dofController.numberOfDoFs();
+	int dof_num = dof_controller.numberOfDoFs();
 	int dof_idx = (int)(Math3D::Random01()*dof_num);
 	float angle = Math3D::RandomAngleUniform(1*3.1415/180.0);//1 degree
-	dofController.changeDoF(dof_idx, angle);
+	dof_controller.changeDoF(dof_idx, angle);
 
 	return true;
 }

@@ -11,18 +11,19 @@
 #include <quickstep/Move.h>
 #include <quickstep/dofControllers/StdDoFController.h>
 
-#include <vector>
+#include <string>
 
 namespace quickstep {
 
 class StdDoFMove: public Move {
 public:
-	StdDoFMove(quickstep::KinematicForest &kf, std::vector< std::string > &dofs);
+	StdDoFMove(std::string dofs);
 
 	bool step(KinematicForest&);
 
 private:
-	StdDoFController dofController;
+	StdDoFController dof_controller;
+	std::string dofs;
 };
 
 } /* namespace quickstep */
