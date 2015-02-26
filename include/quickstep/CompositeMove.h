@@ -23,7 +23,7 @@ public:
 
 	bool step(KinematicForest&);
 
-	void add_move(std::unique_ptr<Move> &c, double weight);
+	void add_move(std::unique_ptr<Move> c, double weight);
 
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
