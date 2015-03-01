@@ -1,21 +1,22 @@
 #ifndef QUICKSTEP_UNITS_H
 #define QUICKSTEP_UNITS_H
 
-#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si.hpp>
+//#include <boost/units/conversion.hpp>
 #include <boost/units/io.hpp>
+#include <boost/units/systems/si/io.hpp>
 #include <boost/units/base_units/metric/angstrom.hpp>
-#include <boost/units/conversion.hpp>
+//#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
-#include <boost/units/systems/cgs.hpp>
-#include <boost/units/systems/cgs/mass.hpp>
-#include <boost/units/quantity.hpp>
-#include <boost/units/detail/dimension_impl.hpp>
-#include <boost/units/detail/unscale.hpp>
-#include <boost/units/heterogeneous_system.hpp>
-#include <boost/units/systems/si/prefixes.hpp>
-#include <boost/units/unit.hpp>
-#include <boost/units/scaled_base_unit.hpp>
+//#include <boost/units/systems/cgs.hpp>
+//#include <boost/units/systems/cgs/mass.hpp>
+//#include <boost/units/quantity.hpp>
+//#include <boost/units/detail/dimension_impl.hpp>
+//#include <boost/units/detail/unscale.hpp>
+//#include <boost/units/heterogeneous_system.hpp>
+//#include <boost/units/systems/si/prefixes.hpp>
+//#include <boost/units/unit.hpp>
+//#include <boost/units/scaled_base_unit.hpp>
 
 namespace quickstep {
 
@@ -34,6 +35,7 @@ BOOST_UNITS_STATIC_CONSTANT(nanometer, NanometerUnit);
 BOOST_UNITS_STATIC_CONSTANT(nanometers, NanometerUnit);
 BOOST_UNITS_STATIC_CONSTANT(nm, NanometerUnit);
 typedef boost::units::quantity<NanometerUnit> Length_nm;
+typedef Length_nm Length;
 
 // Angstrom
 typedef boost::units::metric::angstrom_base_unit AngstromBaseUnit;
@@ -78,6 +80,15 @@ BOOST_UNITS_STATIC_CONSTANT(picosecond, PicosecondUnit);
 BOOST_UNITS_STATIC_CONSTANT(picoseconds, PicosecondUnit);
 typedef boost::units::quantity<PicosecondUnit> Time_ps;
 
+// Femtosecond
+typedef boost::units::scaled_base_unit<
+        boost::units::si::second_base_unit,
+        boost::units::scale<10, boost::units::static_rational<-15> > > FemtosecondBaseUnit;
+typedef FemtosecondBaseUnit::unit_type FemtosecondUnit;
+BOOST_UNITS_STATIC_CONSTANT(femtosecond, FemtosecondUnit);
+BOOST_UNITS_STATIC_CONSTANT(femtoseconds, FemtosecondUnit);
+typedef boost::units::quantity<FemtosecondUnit> Time_fs;
+
 
 
 ///////// UNIT SYSTEM /////////
@@ -87,7 +98,7 @@ typedef boost::units::quantity<PicosecondUnit> Time_ps;
 // expressed as:
 // typedef boost::units::quantity<boost::units::unit<boost::units::frequency_dimension, quickstep::units::atomic_system> > RatePs;
 typedef boost::units::make_system<
-        AngstromBaseUnit,
+        NanometerBaseUnit,
         DaltonBaseUnit,
         PicosecondBaseUnit,
         boost::units::si::kelvin_base_unit,
