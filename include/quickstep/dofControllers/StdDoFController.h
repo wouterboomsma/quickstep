@@ -33,6 +33,8 @@ public:
 	 */
 	StdDoFController(KinematicForest &kf, std::vector< std::string > dofs);
 
+	StdDoFController();
+
 	virtual ~StdDoFController();
 
 	int numberOfDoFs();
@@ -46,10 +48,12 @@ public:
 	static const int DOF_BOND_ANGLE   = 1;
 	static const int DOF_BOND_TORSION = 2;
 private:
-	KinematicForest* kinematicForest;
 
-	std::vector<int> dofAtoms;
-	std::vector<int> dofTypes;
+	friend class StdDoFMove;
+	KinematicForest* kinematic_forest;
+
+	std::vector<int> dof_atoms;
+	std::vector<int> dof_types;
 
 	std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems);
 	std::vector<std::string>  split(const std::string &s, char delim);

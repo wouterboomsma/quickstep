@@ -1,11 +1,11 @@
 /*
- * CofMChasse.cpp
+ * CofMMove.cpp
  *
  *  Created on: Oct 29, 2014
  *      Author: rfonseca
  */
 
-#include <quickstep/CofMChasse.h>
+#include <quickstep/CofMMove.h>
 
 #include <quickstep/math/primitives.h>
 
@@ -13,7 +13,7 @@
 
 namespace quickstep {
 
-CofMChasse::CofMChasse(double translationMagnitude_, double rotationMagnitude_):
+CofMMove::CofMMove(double translationMagnitude_, double rotationMagnitude_):
 		translationMagnitude(translationMagnitude_),
 		rotationMagnitude(rotationMagnitude_),
 		cachedKinematicForest(0)
@@ -21,11 +21,11 @@ CofMChasse::CofMChasse(double translationMagnitude_, double rotationMagnitude_):
 
 }
 
-//CofMChasse::~CofMChasse() {
+//CofMMove::~CofMMove() {
 //	// TODO Auto-generated destructor stub
 //}
 
-bool CofMChasse::step(KinematicForest& kf)
+bool CofMMove::step(KinematicForest& kf)
 {
 	//Ensure that chainIndices is in sync with kf
 	prepareChainIndices(kf);
@@ -59,7 +59,7 @@ bool CofMChasse::step(KinematicForest& kf)
 }
 
 
-void CofMChasse::prepareChainIndices(KinematicForest& kf)
+void CofMMove::prepareChainIndices(KinematicForest& kf)
 {
 	//Use cachedKinematicForest to return quickly if we've seen kf before.
 	if(cachedKinematicForest==&kf) return;
@@ -86,7 +86,7 @@ void CofMChasse::prepareChainIndices(KinematicForest& kf)
 }
 
 
-void CofMChasse::randRotation( float amplitude, Math3D::Matrix3 &M )
+void CofMMove::randRotation( float amplitude, Math3D::Matrix3 &M )
 {
 	float theta = acos( Math3D::Random01()*2.0f-1.0f );
 	float phi = Math3D::Random01()*2.0f*M_PI;
@@ -99,7 +99,7 @@ void CofMChasse::randRotation( float amplitude, Math3D::Matrix3 &M )
 	M.setRotate(rax, angle);
 }
 
-void CofMChasse::randTranslation( float amplitude, Math3D::Vector3 &v )
+void CofMMove::randTranslation( float amplitude, Math3D::Vector3 &v )
 {
 	float theta = acos( Math3D::Random01()*2.0f-1.0f );
 	float phi = Math3D::Random01()*2.0f*M_PI;

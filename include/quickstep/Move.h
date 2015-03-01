@@ -1,5 +1,5 @@
 /*
- * Chasse.h
+ * Move.h
  *
  *  Created on: Oct 29, 2014
  *      Author: rfonseca
@@ -15,14 +15,14 @@ namespace quickstep {
 /**
  * Interface for classes that can perform a conformational move to a kinematic forest.
  *
- * Wikipedia: Chasse or chassé (Fr. "to chase") is a dance step used in many dances in many variations.
+ * Wikipedia: Move or chassé (Fr. "to chase") is a dance step used in many dances in many variations.
  * All variations are triple-step patterns of gliding character in a "step-together-step" pattern. The
  * word came from ballet terminology.
  */
-class Chasse {
+class Move {
 public:
-	Chasse(){}
-	virtual ~Chasse(){}
+	Move(){}
+	virtual ~Move(){}
 
 	/** Perform a conformational move with the kinematic forest.  */
 	virtual bool step(KinematicForest&) = 0;

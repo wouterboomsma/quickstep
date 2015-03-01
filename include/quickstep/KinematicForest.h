@@ -123,8 +123,8 @@ private:
     bool pseudoRootsSet = false;
     void updatePseudoRoots();
 
-    friend class CofMChasse;
-    friend class FreeBondRotateChasse;
+    friend class CofMMove;
+    friend class FreeBondRotateMove;
 };
 
 }

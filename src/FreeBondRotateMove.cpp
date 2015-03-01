@@ -1,11 +1,11 @@
 /*
- * FreeBondRotateChasse.cpp
+ * FreeBondRotateMove.cpp
  *
  *  Created on: Nov 5, 2014
  *      Author: rfonseca
  */
 
-#include <quickstep/FreeBondRotateChasse.h>
+#include <quickstep/FreeBondRotateMove.h>
 
 #include <quickstep/math/primitives.h>
 
@@ -14,18 +14,18 @@
 
 namespace quickstep {
 
-FreeBondRotateChasse::FreeBondRotateChasse(float rotationMagnitude_):
+FreeBondRotateMove::FreeBondRotateMove(float rotationMagnitude_):
 		rotationMagnitude(rotationMagnitude_),
 		cachedKinematicForest(0)
 {
 
 }
 
-//FreeBondRotateChasse::~FreeBondRotateChasse() {
+//FreeBondRotateMove::~FreeBondRotateMove() {
 //	// TODO Auto-generated destructor stub
 //}
 
-bool FreeBondRotateChasse::step(KinematicForest& kf)
+bool FreeBondRotateMove::step(KinematicForest& kf)
 {
 	//Ensure that rotatableBonds is in sync with kf
 	prepareRotatableBonds(kf);
@@ -46,7 +46,7 @@ bool FreeBondRotateChasse::step(KinematicForest& kf)
 	return true;
 }
 
-void FreeBondRotateChasse::prepareRotatableBonds(KinematicForest& kf)
+void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 {
 	if(cachedKinematicForest == &kf) return;
 

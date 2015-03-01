@@ -1,5 +1,5 @@
 /*
- * FreeBondRotateChasse.h
+ * FreeBondRotateMove.h
  *
  *  Created on: Nov 5, 2014
  *      Author: rfonseca
@@ -8,21 +8,22 @@
 #ifndef STDDOFCHASSE_H_
 #define STDDOFCHASSE_H_
 
-#include <quickstep/Chasse.h>
+#include <quickstep/Move.h>
 #include <quickstep/dofControllers/StdDoFController.h>
 
-#include <vector>
+#include <string>
 
 namespace quickstep {
 
-class StdDoFChasse: public Chasse {
+class StdDoFMove: public Move {
 public:
-	StdDoFChasse(quickstep::KinematicForest &kf, std::string &dofs);
+	StdDoFMove(std::string dofs);
 
 	bool step(KinematicForest&);
 
 private:
-	StdDoFController dofController;
+	StdDoFController dof_controller;
+	std::string dofs;
 };
 
 } /* namespace quickstep */
