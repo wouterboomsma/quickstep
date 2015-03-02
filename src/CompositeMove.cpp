@@ -36,7 +36,8 @@ bool CompositeMove::step(KinematicForest& kf)
 	throw "Error: Sampled a random value higher than total accumulated weight";
 }
 
-void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
+//void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
+void CompositeMove::add_move(utility::unique_ptr<Move> m, double weight)
 {
 	moves.push_back( std::move(m) );
 
@@ -48,8 +49,10 @@ std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_
 {
 	std::unique_ptr<CompositeMove> ret(new CompositeMove());
 
-	std::unique_ptr<Move> cofm ( new CofMMove(0.01,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
-	std::unique_ptr<Move> bondRot( new FreeBondRotateMove(0.17) ); 	//max-rotation: ~1 degree
+//	std::unique_ptr<Move> cofm ( new CofMMove(0.01,0.05) ); 			//max-translation: 0.1Å, max-rotation ~1 degree
+//	std::unique_ptr<Move> bondRot( new FreeBondRotateMove(0.17) ); 	//max-rotation: ~1 degree
+	utility::unique_ptr<Move> cofm ( new CofMMove(0.01,0.05), &utility::delete_func_noop ); 			//max-translation: 0.1Å, max-rotation ~1 degree
+	utility::unique_ptr<Move> bondRot( new FreeBondRotateMove(0.17), &utility::delete_func_noop); 	//max-rotation: ~1 degree
 
 	ret->add_move( std::move(cofm), 0.5);
 	ret->add_move( std::move(bondRot), 0.5);
