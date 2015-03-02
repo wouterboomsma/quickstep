@@ -28,7 +28,7 @@ public:
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
 private:
-	std::vector<std::unique_ptr<Move>> chasses;
+	std::vector<std::unique_ptr<Move>> moves;
 	std::vector<double> accumWeights;
 };
 

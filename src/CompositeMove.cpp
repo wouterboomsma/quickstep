@@ -27,7 +27,7 @@ bool CompositeMove::step(KinematicForest& kf)
 
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
-			bool status = chasses[i]->step(kf);
+			bool status = moves[i]->step(kf);
 			kf.updatePositions();
 			return status;
 		}
@@ -38,7 +38,7 @@ bool CompositeMove::step(KinematicForest& kf)
 
 void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
 {
-	chasses.push_back( std::move(m) );
+	moves.push_back( std::move(m) );
 
 	double weightSum = accumWeights.empty()?0.0:accumWeights[accumWeights.size()-1];
 	accumWeights.push_back(weightSum+weight);
