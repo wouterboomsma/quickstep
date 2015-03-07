@@ -1,7 +1,8 @@
-set(quickstep_SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/quickstep)
-include_directories(${quickstep_SOURCE_DIR}/include)
+# Setup configuration file in build directory
+configure_file( ${PROJECT_SOURCE_DIR}/include/quickstep_config.h.in ${PROJECT_BINARY_DIR}/quickstep_config.h )
+include_directories( ${PROJECT_BINARY_DIR}/ )
 
-
+# Add library
 add_library(quickstep
   Bond.cpp
   BondGraph.cpp
@@ -17,16 +18,29 @@ add_library(quickstep
   math/primitives.cpp
   dofControllers/StdDoFController.cpp
 
-  ${quickstep_SOURCE_DIR}/include/quickstep/Bond.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/BondGraph.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/DisjointSet.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/KinematicForest.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/CompositeMove.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/CofMMove.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/StdDoFMove.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/math/infnan.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/math/math.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/math/primitives.h
-  ${quickstep_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/Bond.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/DisjointSet.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/KinematicForest.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/CompositeMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/CofMMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/StdDoFMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/math/infnan.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/math/math.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/math/primitives.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )
+
+# Link with external libraries
+target_link_libraries(quickstep ${quickstep_EXTERNAL_LIBRARIES})
+
+# Installation properties
+set_target_properties(quickstep PROPERTIES
+  PUBLIC_HEADER "Bond.h;BondGraph.h;${PROJECT_BINARY_DIR}/config.h") # TODO: add all headers (for installation purposes only)
+# install(TARGETS quickstep
+#   EXPORT quickstepTargets
+#   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+#   LIBRARY DESTINATION "${INSTALL_LIB_DIR}" COMPONENT shlib
+#   PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/quickstep"
+#     COMPONENT dev)

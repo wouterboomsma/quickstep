@@ -1,0 +1,16 @@
+# - Config file for the quickstep package
+# It defines the following variables
+#  quickstep_INCLUDE_DIRS - include directories for quickstep
+#  quickstep_LIBRARIES    - libraries to link against
+
+# Compute paths
+get_filename_component(quickstep_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(quickstep_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT quickstep_BINARY_DIR)
+  include("${quickstep_CMAKE_DIR}/quickstepTargets.cmake")
+endif()
+
+# These are IMPORTED targets created by quickstepTargets.cmake
+set(quickstep_LIBRARIES quickstep @quickstep_EXTERNAL_LIBRARIES@)
