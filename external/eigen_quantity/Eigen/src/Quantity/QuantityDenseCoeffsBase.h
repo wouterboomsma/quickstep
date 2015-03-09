@@ -68,32 +68,32 @@ public:
     using Base::z;
     using Base::w;
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
     operator()(Index row, Index col) {
-        return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator()(row, col));
+        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator()(row, col));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
     operator[](Index index) {
-        return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().operator[](index));
+        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator[](index));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
     operator()(typename ExpressionType::Index index) {
-        return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().operator()(index));
+        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator()(index));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-    x() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().x()); }
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    x() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().x()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-    y() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().y()); }
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    y() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().y()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-    z() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().z()); }
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    z() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().z()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-    w() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().w()); }
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    w() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().w()); }
 
 
 

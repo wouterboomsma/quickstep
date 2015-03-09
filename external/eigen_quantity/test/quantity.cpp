@@ -223,16 +223,14 @@ void test_quantity() {
     // Const references are wrapped in quantities as expected
     quantity<si::length, const double&> coeff_const_ref = length_array(0);
 
-    // Non-const references are returned through std::reference_wrapper
-    quantity<si::length, std::reference_wrapper<double>> coeff_ref = length_array(0);
-
-    auto coeff_ref2 = length_array(0); // simplified notation with auto type deduction
+    // Non-const references work as well - and are assignable as expected
+    quantity<si::length, double&> coeff_ref = length_array(0);
     double &coeff_ref_raw = length_array.value()(0);
-    VERIFY_IS_EQUAL(&(coeff_ref2.value().get()), &coeff_ref_raw); // test memory address
+    VERIFY_IS_EQUAL(&(coeff_ref.value()), &coeff_ref_raw); // test memory address
 
-    // Even with auto type deduction, non const references are not entirely intuitive to use
-    coeff_ref2.value().get() = 5.;      // .get() is required to get underlying reference
-    VERIFY_IS_APPROX(length_array(0).value().get(), 5.);
+    // Assign to non-const ref
+    coeff_ref.value() = 5.;
+    VERIFY_IS_APPROX(length_array(0).value(), 5.);
 
     // Undo changes
     length_array = array * si::meter;
@@ -316,6 +314,8 @@ void test_quantity() {
 
     const QMatrix<si::length, 3, 3> &length_matrix_33_ref = length_matrix_33;
     std::cout << length_matrix_33_ref(0,0) << "\n";
+
+    QuantityArray<si::length, 1, 3> length_array10 = QuantityArray<double, 1, 3>(1., 2., 3.) * si::meter;
 
     // Output
 //    cout << "length_array: " << length_array << endl;
