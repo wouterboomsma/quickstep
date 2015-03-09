@@ -8,6 +8,7 @@
 #include <boost/units/base_units/metric/angstrom.hpp>
 //#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
+#include <Eigen/Quantity>
 //#include <boost/units/systems/cgs.hpp>
 //#include <boost/units/systems/cgs/mass.hpp>
 //#include <boost/units/quantity.hpp>
@@ -105,8 +106,18 @@ typedef boost::units::make_system<
         boost::units::si::mole_base_unit
 >::type atomic_system;
 
-}
-}
+
+// Containers of coordinates
+// typedef std::array<Length,3> Coordinate;
+typedef Eigen::QuantityArray<Length, 1, 3> Coordinate;
+//typedef std::vector<std::array<Length,3>> Coordinates;
+typedef Eigen::QuantityArray<Length, Eigen::Dynamic, 3> Coordinates;
+// typedef std::array<Length_AA,3> CoordinateAA;
+typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
+//typedef std::vector<std::array<Length_AA,3>> CoordinatesAA;
+typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
+
+}}
 
 // Conversion linking Dalton units to corresponding SI mass unit
 BOOST_UNITS_DEFINE_CONVERSION_FACTOR(

@@ -118,7 +118,7 @@ void Topology::create_standard_bonds() {
 }
 
 
-void Topology::create_disulfide_bonds(const std::vector<std::array<units::Length, 3> > &positions) {
+void Topology::create_disulfide_bonds(const units::Coordinates &positions) {
 
 
     auto is_cyx = [&](const Residue &residue) {
@@ -150,10 +150,10 @@ void Topology::create_disulfide_bonds(const std::vector<std::array<units::Length
 
     for (int i=0; i<cyx.size(); ++i) {
         const Atom &sg1 = cyx_atoms_by_name[i].at("SG");
-        const std::array<units::Length, 3> &pos1 = positions[sg1.index];
+        auto pos1 = positions.row(sg1.index);
         for (int j=0; j<i; ++j) {
             const Atom &sg2 = cyx_atoms_by_name[j].at("SG");
-            const std::array<units::Length, 3> &pos2 = positions[sg2.index];
+            auto &pos2 = positions.row(sg2.index);
             units::Length distance = boost::units::root<2>(boost::units::pow<2>(pos2[0] - pos1[0]) +
                                                            boost::units::pow<2>(pos2[1] - pos1[1]) +
                                                            boost::units::pow<2>(pos2[2] - pos1[2]));

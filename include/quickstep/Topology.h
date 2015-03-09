@@ -124,7 +124,7 @@ public:
     }
 
     void create_standard_bonds();
-    void create_disulfide_bonds(const std::vector<std::array<units::Length, 3> > &positions);
+    void create_disulfide_bonds(const units::Coordinates &positions);
 
 
     std::vector<Chain> const &get_chains() const {
