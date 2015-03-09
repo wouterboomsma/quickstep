@@ -146,7 +146,7 @@ public:
         return this->nested().any();
     }
 
-    inline const Quantity<Block<ExpressionType>, Unit>
+    inline Quantity<Block<ExpressionType>, Unit>
     block(Index startRow, Index startCol, Index blockRows, Index blockCols) {
         return this->nested().block(startRow, startCol, blockRows, blockCols);
     }
@@ -157,7 +157,7 @@ public:
     }
 
     template <int BlockRows, int BlockCols>
-    inline const Quantity<Block<ExpressionType, BlockRows, BlockCols>, Unit>
+    inline Quantity<Block<ExpressionType, BlockRows, BlockCols>, Unit>
     block(Index startRow, Index startCol) {
         return this->nested().block<BlockRows, BlockCols>(startRow, startCol);
     }
@@ -169,7 +169,7 @@ public:
     }
 
     template <int BlockRows, int BlockCols>
-    inline const Quantity<Block<ExpressionType, BlockRows, BlockCols>, Unit>
+    inline Quantity<Block<ExpressionType, BlockRows, BlockCols>, Unit>
     block(Index startRow, Index startCol, Index blockRows, Index blockCols) {
         return this->nested().block<BlockRows, BlockCols>(startRow, startCol, blockRows, blockCols);
     }
@@ -852,43 +852,37 @@ public:
         return this->nested().select(thenQuantity.value(), elseMatrix);
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setConstant(const boost::units::quantity<Unit, Scalar> &quantity) {
-        this->nested().setConstant(quantity.value());
-        return *this;
+        return (this->nested().setConstant(quantity.value()));
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setLinSpaced(Index size, const boost::units::quantity<Unit, Scalar> &low, const boost::units::quantity<Unit, Scalar> &high) {
-        this->nested().setLinSpaced(size, low.value(), high.value());
-        return *this;
+        return (this->nested().setLinSpaced(size, low.value(), high.value()));
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setLinSpaced(const boost::units::quantity<Unit, Scalar> &low, const boost::units::quantity<Unit, Scalar> &high) {
-        this->nested().setLinSpaced(low.value(), high.value());
-        return *this;
+        return (this->nested().setLinSpaced(low.value(), high.value()));
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setOnes() {
         static_assert(internal::DependentBool<false,Unit>::value, "Following the design of the boost::units library, implicit initialization of quantities is prohibited. Instead, initialize a matris using a standard Eigen matrix/array class, and multiply it with the desired unit.");
-        this->nested().setOnes();
-        return *this;
+        return (this->nested().setOnes());
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setRandom() {
         static_assert(internal::DependentBool<false,Unit>::value, "Following the design of the boost::units library, implicit initialization of quantities is prohibited. Instead, initialize a matris using a standard Eigen matrix/array class, and multiply it with the desired unit.");
-        this->nested().setRandom();
-        return *this;
+        return (this->nested().setRandom());
     }
 
-    inline Quantity<ExpressionType, Unit> &
+    inline Quantity<ExpressionType, Unit>
     setZero() {
         static_assert(internal::DependentBool<false,Unit>::value, "Following the design of the boost::units library, implicit initialization of quantities is prohibited. Instead, initialize a matris using a standard Eigen matrix/array class, and multiply it with the desired unit.");
-        this->nested().setZero();
-        return *this;
+        return (this->nested().setZero());
     }
 
     inline auto

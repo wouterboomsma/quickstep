@@ -224,13 +224,17 @@ void test_quantity() {
     quantity<si::length, const double&> coeff_const_ref = length_array(0);
 
     // Non-const references work as well - and are assignable as expected
-    quantity<si::length, double&> coeff_ref = length_array(0);
+    auto coeff_ref = length_array(0);
     double &coeff_ref_raw = length_array.value()(0);
     VERIFY_IS_EQUAL(&(coeff_ref.value()), &coeff_ref_raw); // test memory address
 
     // Assign to non-const ref
     coeff_ref.value() = 5.;
     VERIFY_IS_APPROX(length_array(0).value(), 5.);
+
+    coeff_ref = 6.*si::meter;  // this doesn't work
+    length_array.block(0, 0, 1, 1).setConstant(6.*si::meter);
+    VERIFY_IS_APPROX(length_array(0).value(), 6.);
 
     // Undo changes
     length_array = array * si::meter;
@@ -299,23 +303,14 @@ void test_quantity() {
 
 
     // Block operations
-    Matrix<double,3,3> matrix_33 = Matrix<double, 3, 3>::Ones();
-    std::cout << matrix_33 << "\n\n";
-    matrix_33.row(0) = Matrix<double, 1, 3>(1., 2., 3.);
-    std::cout << matrix_33 << "\n\n";
-
     QMatrix<si::length, 3, 3> length_matrix_33 = QMatrix<si::length, 3, 3>::Constant(1. * si::meter);
     length_matrix_33.row(0) = length_vector;
+    VERIFY_IS_APPROX(length_matrix_33.row(0).value(), length_vector.value());
+
     auto row = length_matrix_33.row(1);
-    //row = length_vector;
     row << 1.*si::meter, 2.*si::meter, 3.*si::meter;
+    VERIFY_IS_APPROX(length_matrix_33.row(1).value(), length_vector.value());
 
-    std::cout << length_matrix_33 << "\n\n";
-
-    const QMatrix<si::length, 3, 3> &length_matrix_33_ref = length_matrix_33;
-    std::cout << length_matrix_33_ref(0,0) << "\n";
-
-    QuantityArray<si::length, 1, 3> length_array10 = QuantityArray<double, 1, 3>(1., 2., 3.) * si::meter;
 
     // Output
 //    cout << "length_array: " << length_array << endl;

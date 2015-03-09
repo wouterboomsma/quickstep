@@ -53,6 +53,29 @@ public:
 
 };
 
+// Wrapper around a boost::units::quantity value containing a reference.
+// This is in order to make sure that assignments to elements or blocks
+// in an array/matrix work as expected
+template <typename Unit, typename ValueType>
+class QuantityReferenceValue: public boost::units::quantity<Unit, ValueType&> {
+public:
+    inline QuantityReferenceValue &operator=(boost::units::quantity<Unit, ValueType> &&other) {
+        this->value() = other.value();
+        return *this;
+    }
+
+    inline QuantityReferenceValue &operator=(const boost::units::quantity<Unit, ValueType> &other) {
+        this->value() = other.value();
+        return *this;
+    }
+
+    static QuantityReferenceValue from_value(ValueType &val)  { return QuantityReferenceValue(val, 0); }
+
+private:
+    explicit QuantityReferenceValue(ValueType& val, int flag)
+            : boost::units::quantity<Unit, ValueType&>(val, flag) { }
+};
+
 template<typename ExpressionType, typename Unit>
 class QuantityDenseCoeffsBase<ExpressionType, Unit, WriteAccessors>: public QuantityDenseCoeffsBase<ExpressionType, Unit, ReadOnlyAccessors> {
 public:
@@ -68,66 +91,32 @@ public:
     using Base::z;
     using Base::w;
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
     operator()(Index row, Index col) {
-        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator()(row, col));
+        return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator()(row, col));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
     operator[](Index index) {
-        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator[](index));
+        return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator[](index));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar&>
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
     operator()(typename ExpressionType::Index index) {
-        return boost::units::quantity<Unit, typename ExpressionType::Scalar&>::from_value(this->nested().operator()(index));
+        return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator()(index));
     }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
-    x() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().x()); }
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
+    x() { return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().x()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
-    y() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().y()); }
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
+    y() { return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().y()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
-    z() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().z()); }
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
+    z() { return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().z()); }
 
-    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
-    w() { return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().w()); }
-
-
-
-
-
-
-
-
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    operator()(Index row, Index col) {
-//        return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().operator()(row, col));
-//    }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    operator[](Index index) {
-//        return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().operator[](index));
-//    }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    operator()(typename ExpressionType::Index index) {
-//        return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().operator()(index));
-//    }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    x() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().x()); }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    y() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().y()); }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    z() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().z()); }
-//
-//    EIGEN_STRONG_INLINE boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>
-//    w() { return boost::units::quantity<Unit, std::reference_wrapper<typename ExpressionType::Scalar>>::from_value(this->nested().w()); }
+    EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
+    w() { return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().w()); }
 
 };
 
