@@ -14,6 +14,7 @@ list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/eigen_qu
 # Boost
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 list(APPEND quickstep_EXTERNAL_LIBRARIES ${Boost_LIBRARIES})
+list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${Boost_INCLUDE_DIR})
 
 
 # Communicate variables to parent scope

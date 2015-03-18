@@ -1,6 +1,7 @@
 # Setup configuration file in build directory
 configure_file( ${PROJECT_SOURCE_DIR}/include/quickstep_config.h.in ${PROJECT_BINARY_DIR}/quickstep_config.h )
 include_directories( ${PROJECT_BINARY_DIR}/ )
+include_directories( ${quickstep_EXTERNAL_INCLUDE_DIRS}/ )
 
 # Add library
 add_library(quickstep
