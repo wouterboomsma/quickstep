@@ -5,9 +5,7 @@ include_directories( ${quickstep_EXTERNAL_INCLUDE_DIRS}/ )
 
 # Add library
 add_library(quickstep
-  Bond.cpp
   BondGraph.cpp
-  CoreGraph.cpp
   DisjointSet.cpp
   Element.cpp
   KinematicForest.cpp

@@ -1,5 +1,7 @@
 #include "quickstep/DisjointSet.h"
 
+namespace quickstep {
+
 // Create an empty union find data structure with N isolated sets.
 DisjointSet::DisjointSet(int N)   {
     cnt = N;
@@ -54,4 +56,7 @@ bool DisjointSet::connected(int x, int y)    {
 /// Return the number of disjoint sets.
 int DisjointSet::count() {
     return cnt;
+}
+
+
 }

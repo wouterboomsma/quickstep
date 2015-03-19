@@ -1,10 +1,10 @@
-#ifndef UTILITY_FATALERROR_H_
-#define UTILITY_FATALERROR_H_
+#ifndef QUICKSTEP_FATALERROR_H_
+#define QUICKSTEP_FATALERROR_H_
 
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
 
-namespace utility {
+namespace quickstep {
 
 //! Boost exception with additional simple message interface
 //! Usage:

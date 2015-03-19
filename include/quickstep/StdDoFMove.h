@@ -22,7 +22,7 @@ public:
 	bool step(KinematicForest&);
 
 private:
-	StdDoFController dof_controller;
+	std::unique_ptr<StdDoFController> dof_controller;
 	std::string dofs;
 };
 

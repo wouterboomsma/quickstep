@@ -10,7 +10,7 @@
 
 #include <quickstep/Move.h>
 #include <quickstep/KinematicForest.h>
-#include <utility/utils.h>
+#include <quickstep/utils.h>
 
 #include <vector>
 #include <random>
@@ -24,13 +24,12 @@ public:
 
 	bool step(KinematicForest&);
 
-	void add_move(utility::unique_ptr<Move> c, double weight);
+	void add_move(std::unique_ptr<Move> c, double weight);
 
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
 private:
-//	std::vector<std::unique_ptr<Move>> moves;
-	std::vector<utility::unique_ptr<Move>> moves;
+	std::vector<std::unique_ptr<Move>> moves;
 	std::vector<double> accumWeights;
 };
 

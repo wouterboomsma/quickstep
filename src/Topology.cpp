@@ -7,7 +7,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <quickstep_config.h>
 #include "quickstep/Topology.h"
-#include "utility/FatalError.h"
+#include "quickstep/FatalError.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "prettyprint.hpp"
@@ -20,7 +20,7 @@ void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
 
     if (!boost::filesystem::exists(filename)) {
 //    	throw "File not found";
-        BOOST_THROW_EXCEPTION(utility::FatalError() <<
+        BOOST_THROW_EXCEPTION(FatalError() <<
                               "File not found: " << filename.string());
     }
 

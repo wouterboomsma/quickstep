@@ -1,6 +1,8 @@
 #ifndef DISJOINTSET_H
 #define DISJOINTSET_H
 
+namespace quickstep {
+
 /**
  * @brief The DisjointSet class
  * From http://kartikkukreja.wordpress.com/2013/05/07/union-find-disjoint-set-data-structure-c-implementation/
@@ -28,5 +30,7 @@ public:
 private:
     int *id, cnt, *sz;
 };
+
+}
 
 #endif // DISJOINTSET_H
