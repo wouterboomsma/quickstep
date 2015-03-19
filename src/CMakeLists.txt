@@ -17,7 +17,6 @@ add_library(quickstep
   math/primitives.cpp
   dofControllers/StdDoFController.cpp
 
-  ${PROJECT_SOURCE_DIR}/include/quickstep/Bond.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/DisjointSet.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/KinematicForest.h
