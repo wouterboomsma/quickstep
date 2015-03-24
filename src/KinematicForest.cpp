@@ -70,10 +70,18 @@ KinematicForest::KinematicForest():
 		topology(NULL)
 {
 
+//	Eigen::Transform translation_A(Eigen::Translation<float,3>(Eigen::Vector3f(1,1,1)));
+	Eigen::Translation<float,3> translation_A(Eigen::Vector3f(1,1, 1));
+	Eigen::Translation<float,3> translation_B(Eigen::Vector3f(1,1,-1));
+	Eigen::AngleAxis<float> aa(0.1, Eigen::Vector3f(1,0,0));
+	Eigen::Transform<float,3,Eigen::Affine> trans(translation_A);
+
 }
 
-KinematicForest::KinematicForest(quickstep::Topology &topology):
-		topology(&topology)
+KinematicForest::KinematicForest(quickstep::Topology &topology, quickstep::units::Coordinates* coordinates):
+		topology(&topology),
+		positions(coordinates),
+		stored_positions(coordinates->cols())
 //    adjacencyList(topology.graph.numberOfAtoms()),
 //    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
 ////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
@@ -99,7 +107,7 @@ KinematicForest::KinematicForest(quickstep::Topology &topology):
 
 	//Allocate space for tree, positions and transformations
 	adjacencyList.resize(n_atoms);
-	positions.resize(n_atoms, Math3D::Vector3(0,0,0));
+//	positions.resize(n_atoms, Math3D::Vector3(0,0,0));
 	transformations.resize(n_atoms);
 	transformations_queue.resize(n_atoms);
 
@@ -150,12 +158,14 @@ KinematicForest::KinematicForest(quickstep::Topology &topology):
 
     //Reset transformations
     for(int i=0;i<n_atoms;i++){
+//    	transformations[i] = QSTransform::Identity()
         transformations[i].setIdentity();
     }
 
 }
 
-std::vector< Math3D::Vector3 >& KinematicForest::getPositions()
+//std::vector< Math3D::Vector3 >& KinematicForest::getPositions()
+units::Coordinates* KinematicForest::getPositions()
 {
     return positions;
 }
@@ -172,19 +182,16 @@ int KinematicForest::getAtoms()
 
 double KinematicForest::getDOFLength(int atom)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
-    Math3D::Vector3& v0 = pos(atom);
-    Math3D::Vector3& v1 = pos(a1);
-
-    return v0.distance(v1);
+    return (pos(atom)-pos(a1)).norm();
 }
 
 double KinematicForest::getDOFAngle(int atom)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
@@ -199,7 +206,7 @@ double KinematicForest::getDOFAngle(int atom)
 
 double KinematicForest::getDOFTorsion(int atom)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
@@ -218,42 +225,43 @@ double KinematicForest::getDOFTorsion(int atom)
 
 void KinematicForest::changeDOFLength(int atom, double value)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
     if(atom==0) return;
 
     int a1 = parent(atom);
 
-    Math3D::Vector3 d = pos(atom)-pos(a1);
-    d*=value/d.length();
-    Math3D::RigidTransform t;
-    t.setIdentity();
-    t.setTranslate(d);
-    transformations_queue[atom].push_back(t);
+    units::Vector3 d = pos(atom)-pos(a1);
+    d *= value/d.norm();
+    transformations_queue[atom].push_back(QSTransform(Eigen::Translation<units::Length,3>(d)));
 }
 
 void KinematicForest::changeDOFAngle(int atom, double value)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
     if(atom==0) return;
 
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    Math3D::Vector3 v1 = pos(a2)-pos(a1);
-    Math3D::Vector3 v2 = pos(atom)-pos(a1);
-    Math3D::Vector3 axis = Math3D::cross(v1,v2);
-    axis.inplaceNormalize();
-    Math3D::RigidTransform t1; t1.setIdentity(); t1.setTranslate( pos(a1));
-    Math3D::RigidTransform t2; t2.setIdentity(); t2.setRotate(axis, value);
-    Math3D::RigidTransform t3; t3.setIdentity(); t3.setTranslate(-pos(a1));
-    transformations_queue[atom].push_back( t1*t2*t3 );
+    units::Coordinate& pos_a = pos(atom);
+    units::Coordinate& pos_a1 = pos(a1);
+    units::Coordinate& pos_a2 = pos(a2);
+
+    units::Vector3 axis = (pos_a2- pos_a1).cross(pos_a - pos_a1);
+    axis.normalize();
+
+    transformations_queue[atom].push_back(
+    		Eigen::Translation<double, 3>(pos_a1)*
+			Eigen::AngleAxis<double>(value, axis)*
+			Eigen::Translation<double, 3>(-pos_a1)
+    );
 }
 
 void KinematicForest::changeDOFTorsion(int atom, double value)
 {
-    assert(atom>=0 && atom<positions.size());
+    assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
     if(atom==0) return;
 
@@ -288,6 +296,7 @@ void KinematicForest::updatePositions()
     forwardPropagateTransformations(-1);
 }
 
+
 void KinematicForest::forwardPropagateTransformations(int atom)
 {
 //	std::cout<<"forwardPropagateTransformations "<<atom<<std::endl;
@@ -320,10 +329,14 @@ void KinematicForest::forwardPropagateTransformations(int atom)
     }
 }
 
-
-Math3D::Vector3& KinematicForest::pos(int i)
+void KinematicForest::restorePositions()
 {
-    assert(i>-4 && i<(int)positions.size());
+
+}
+
+units::Coordinate& KinematicForest::pos(int i)
+{
+    assert(i>-4 && i<n_atoms);
 
 //    switch(i){
 //    case -3: return p2;
@@ -430,7 +443,7 @@ void KinematicForest::updatePseudoRoots()
 {
 	for(int r=0;r<roots.size();r++){
 		int idxr = roots[r];
-		int idx0 = positions.size();
+		int idx0 = n_atoms;
 		int idx1 = idx0+1;
 
 		Math3D::Vector3 p0 = positions[ idxr ] + Math3D::Vector3(0.1, 0.0, 0.0);

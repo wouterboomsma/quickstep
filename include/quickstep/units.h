@@ -117,6 +117,8 @@ typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
 //typedef std::vector<std::array<Length_AA,3>> CoordinatesAA;
 typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
 
+typedef Eigen::Matrix< Length , 3 , 1> Vector3;
+
 }}
 
 // Conversion linking Dalton units to corresponding SI mass unit

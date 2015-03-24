@@ -5,10 +5,9 @@
 #include <utility>
 #include <unordered_map>
 
-
-//#include "BondGraph.h"
 #include "math/primitives.h"
 #include "quickstep/Topology.h"
+#include <Eigen/Geometry>
 
 namespace quickstep{
 
@@ -29,13 +28,14 @@ class KinematicForest
 {
 public:
     /** Construct a kinematic forest spanning all atoms in the topology. */
-    KinematicForest(quickstep::Topology& topology);
-    //KinematicForest(quickstep::BondGraph& graph);
+    KinematicForest(quickstep::Topology& topology, quickstep::units::Coordinates* coordinates);
+
     KinematicForest();
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
-    std::vector< Math3D::Vector3 >& getPositions();
+    units::Coordinates* getPositions();
+//    std::vector< Math3D::Vector3 >& getPositions();
 
     int getRoots();
     int getAtoms();
@@ -48,9 +48,21 @@ public:
     void changeDOFAngle(int atom, double value);
     void changeDOFTorsion(int atom, double value);
 
-    void changeDOFglobal(int chain, Math3D::RigidTransform t);
+//    void changeDOFglobal(int chain, Math3D::RigidTransform t);
+    void changeDOFglobal(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
 
+    /**
+     * Goes through the forest and updates positions so they reflect the requested
+     * changes to DOFs. Stores the state of the tree so positions can be restored
+     * using the restorePositions function.
+     */
     void updatePositions();
+
+    /**
+     * Restores all positions to the coordinates before the last call to
+     * updatePositions.
+     */
+    void restorePositions();
 
 
     // Various helper functions below here
@@ -66,6 +78,9 @@ public:
     bool atomMatchesNames(int atom, std::vector<std::string>& atom_names);
 
 private:
+
+    typedef Eigen::Transform<double, 3, Eigen::AffineCompact> QSTransform;
+
     quickstep::Topology* topology;
 
     std::unordered_map<int, const quickstep::Topology::Atom*> id_atom_map;
@@ -93,19 +108,25 @@ private:
     std::vector< std::vector< std::pair<int,int> > > adjacencyList;
 
     /// Positions of atoms
-    std::vector< Math3D::Vector3 > positions;
+//    std::vector< Math3D::Vector3 > positions;
+    quickstep::units::Coordinates* positions;
+    quickstep::units::Coordinates stored_positions;
 
     /// Get the position of atom index i. If i==-1 return p0
     /// if i==-2 return p1, and if i==-3 return p2
-    Math3D::Vector3& pos(int i);
+    units::Coordinate& pos(int i);
+//    Math3D::Vector3& pos(int i);
 
 //    Math3D::Vector3 p0;
 //    Math3D::Vector3 p1;
 //    Math3D::Vector3 p2;
 
     /// Each atom has an associated transformation
-    std::vector< Math3D::RigidTransform > transformations;
-    std::vector< std::vector< Math3D::RigidTransform > > transformations_queue;
+//    std::vector< Math3D::RigidTransform > transformations;
+//    std::vector< std::vector< Math3D::RigidTransform > > transformations_queue;
+    std::vector< QSTransform > transformations;
+    std::vector< std::vector< QSTransform > > transformations_queue;
+
     //std::vector< Math3D::RigidTransform > transformations_l;
     //std::vector< Math3D::RigidTransform > transformations_a;
     //std::vector< Math3D::RigidTransform > transformations_t;
