@@ -112,6 +112,8 @@ private:
     quickstep::units::Coordinates* positions;
     quickstep::units::Coordinates stored_positions;
 
+    quickstep::units::Coordinates pseudo_root_positions;
+
     /// Get the position of atom index i. If i==-1 return p0
     /// if i==-2 return p1, and if i==-3 return p2
     units::Coordinate& pos(int i);
