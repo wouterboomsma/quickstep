@@ -49,24 +49,23 @@ typedef boost::units::quantity<AngstromUnit> Length_AA;
 // Mass //
 //////////
 
-// Dalton
-struct DaltonBaseUnit :
-        boost::units::base_unit<DaltonBaseUnit, boost::units::mass_dimension, 2> {
-    static std::string name() {
-        return "Dalton";
-    }
-
-    static std::string symbol() {
-        return "Da";
-    }
-};
-typedef DaltonBaseUnit::unit_type DaltonUnit;
-BOOST_UNITS_STATIC_CONSTANT(dalton, DaltonUnit);
-BOOST_UNITS_STATIC_CONSTANT(daltons, DaltonUnit);
-BOOST_UNITS_STATIC_CONSTANT(atomic_mass_unit, DaltonUnit);
-BOOST_UNITS_STATIC_CONSTANT(atomic_mass_units, DaltonUnit);
-typedef boost::units::quantity<DaltonUnit> Mass_Da;
-
+//// Dalton
+//struct DaltonBaseUnit :
+//        boost::units::base_unit<DaltonBaseUnit, boost::units::mass_dimension, 2> {
+//    static std::string name() {
+//        return "Dalton";
+//    }
+//
+//    static std::string symbol() {
+//        return "Da";
+//    }
+//};
+//typedef DaltonBaseUnit::unit_type DaltonUnit;
+//BOOST_UNITS_STATIC_CONSTANT(dalton, DaltonUnit);
+//BOOST_UNITS_STATIC_CONSTANT(daltons, DaltonUnit);
+//BOOST_UNITS_STATIC_CONSTANT(atomic_mass_unit, DaltonUnit);
+//BOOST_UNITS_STATIC_CONSTANT(atomic_mass_units, DaltonUnit);
+//typedef boost::units::quantity<DaltonUnit> Mass_Da;
 
 //////////
 // Time //
@@ -100,29 +99,46 @@ typedef boost::units::quantity<FemtosecondUnit> Time_fs;
 // typedef boost::units::quantity<boost::units::unit<boost::units::frequency_dimension, quickstep::units::atomic_system> > RatePs;
 typedef boost::units::make_system<
         NanometerBaseUnit,
-        DaltonBaseUnit,
+        //DaltonBaseUnit,
+        boost::units::cgs::gram_base_unit,
         PicosecondBaseUnit,
         boost::units::si::kelvin_base_unit,
         boost::units::si::mole_base_unit
 >::type atomic_system;
 
 
+typedef boost::units::unit<
+        boost::units::derived_dimension<boost::units::mass_base_dimension,1,
+                                        boost::units::amount_base_dimension,-1>::type, quickstep::units::atomic_system> MolarMassUnit;
+BOOST_UNITS_STATIC_CONSTANT(dalton, MolarMassUnit);
+BOOST_UNITS_STATIC_CONSTANT(daltons, MolarMassUnit);
+BOOST_UNITS_STATIC_CONSTANT(atomic_mass_unit, MolarMassUnit);
+BOOST_UNITS_STATIC_CONSTANT(atomic_mass_units, MolarMassUnit);
+typedef boost::units::quantity<MolarMassUnit> Mass_Da;
+
+
+typedef boost::units::unit<
+        boost::units::derived_dimension<boost::units::length_base_dimension,1>::type, quickstep::units::atomic_system> MyLengthUnit;
+typedef boost::units::quantity<MyLengthUnit> MyLength_nm;
+typedef Length_nm MyLength;
+
+
 // Containers of coordinates
-// typedef std::array<Length,3> Coordinate;
 typedef Eigen::QuantityArray<Length, 1, 3> Coordinate;
-//typedef std::vector<std::array<Length,3>> Coordinates;
 typedef Eigen::QuantityArray<Length, Eigen::Dynamic, 3> Coordinates;
-// typedef std::array<Length_AA,3> CoordinateAA;
+
+typedef Eigen::Map<Eigen::QuantityArray<Length, 1, 3>> CoordinateWrapper;
+typedef const Eigen::Map<const Eigen::QuantityArray<Length, 1, 3>> ConstCoordinateWrapper;
+
 typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
-//typedef std::vector<std::array<Length_AA,3>> CoordinatesAA;
 typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
 
 }}
 
-// Conversion linking Dalton units to corresponding SI mass unit
-BOOST_UNITS_DEFINE_CONVERSION_FACTOR(
-        quickstep::units::DaltonBaseUnit,
-        si::kilogram_base_unit,
-        double, boost::units::si::constants::codata::m_u.value().value());
+//// Conversion linking Dalton units to corresponding SI mass unit
+//BOOST_UNITS_DEFINE_CONVERSION_FACTOR(
+//        quickstep::units::DaltonBaseUnit,
+//        si::kilogram_base_unit,
+//        double, boost::units::si::constants::codata::m_u.value().value());
 
 #endif

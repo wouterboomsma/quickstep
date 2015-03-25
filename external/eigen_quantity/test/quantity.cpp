@@ -155,6 +155,11 @@ void test_quantity_init() {
     // cout << endl << endl;
 };
 
+template <typename T>
+void bla(T t) {
+    static_assert(Eigen::internal::DependentBool<false, T>(), "hello");
+}
+
 void test_quantity() {
 
     // Mostly compile-time tests
@@ -311,6 +316,29 @@ void test_quantity() {
     row << 1.*si::meter, 2.*si::meter, 3.*si::meter;
     VERIFY_IS_APPROX(length_matrix_33.row(1).value(), length_vector.value());
 
+
+
+    // Maps
+    std::vector<double> raw_vec(3, 0.0);
+    auto mapped = Array<double, 1, 3>::Map(raw_vec.data(), 3);
+
+    auto mapped_quantity = Array<double, 1, 3>::Map(raw_vec.data(), 3) * si::meter;
+    mapped_quantity(0,1) = 2. * si::meter;
+    std::cout << mapped_quantity << "\n";
+    std::cout << raw_vec[0] << " " << raw_vec[1] << " " << raw_vec[2] << "\n";
+
+    auto mapped_quantity2 = QArray<double, 1, 3>::Map(raw_vec.data(), 3) * si::meter;
+    mapped_quantity2(0,1) = 2. * si::meter;
+    std::cout << mapped_quantity2 << "\n";
+    std::cout << raw_vec[0] << " " << raw_vec[1] << " " << raw_vec[2] << "\n";
+
+    Map<QArray<si::length, 1, 3>> mapped_quantity3 = QArray<double, 1, 3>::Map(raw_vec.data(), 3) * si::meter;
+    mapped_quantity3(0,1) = 2. * si::meter;
+    std::cout << mapped_quantity3 << "\n";
+    std::cout << raw_vec[0] << " " << raw_vec[1] << " " << raw_vec[2] << "\n";
+
+    const std::vector<double> raw_vec_const(3, 0.0);
+    Map<const QArray<si::length, 1, 3>> mapped_quantity4 = QArray<double, 1, 3>::Map(raw_vec_const.data(), 3) * si::meter;
 
     // Output
 //    cout << "length_array: " << length_array << endl;

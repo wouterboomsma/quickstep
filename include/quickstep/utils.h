@@ -12,6 +12,13 @@ inline std::unique_ptr <T> make_unique(Args &&...args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+
+// Convenience aliases for matrices and vectors
+template <class Type, int Rows, int Cols> using Matrix = Eigen::QuantityMatrix<Type, Rows, Cols>;
+template <class Type, int Rows, int Cols> using Array = Eigen::QuantityArray<Type, Rows, Cols>;
+template <class Type, int Cols> using Vector = Eigen::QuantityMatrix<Type, 1, Cols>;
+template <class Type> using Vector3 = Eigen::QuantityMatrix<Type, 1, 3>;
+
 }
 
 #endif

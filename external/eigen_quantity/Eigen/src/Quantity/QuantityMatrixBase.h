@@ -146,6 +146,19 @@ public:
 
 
     inline auto
+    norm() const
+    -> boost::units::quantity<Unit> {
+        return boost::units::quantity<Unit>::from_value(this->nested().norm());
+    }
+
+    inline auto
+    squaredNorm() const
+    -> boost::units::quantity<decltype(Unit()*Unit())> {
+        return boost::units::quantity<decltype(Unit()*Unit())>::from_value(this->nested().squaredNorm());
+    }
+
+
+    inline auto
     operator*(const Scalar &other) const -> const Quantity<decltype(this->nested().operator*(other)),
                                                            Unit> {
         return this->nested().operator*(other);

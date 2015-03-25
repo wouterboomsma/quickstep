@@ -4,6 +4,7 @@
 #include "Eigen/src/Quantity/Quantity.h"
 #include "Eigen/src/Quantity/QuantityMatrix.h"
 #include "Eigen/src/Quantity/QuantityArray.h"
+#include "Eigen/src/Quantity/QuantityMap.h"
 #include "Eigen/src/Quantity/IO.h"
 
 #endif
