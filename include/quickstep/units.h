@@ -115,12 +115,7 @@ BOOST_UNITS_STATIC_CONSTANT(daltons, MolarMassUnit);
 BOOST_UNITS_STATIC_CONSTANT(atomic_mass_unit, MolarMassUnit);
 BOOST_UNITS_STATIC_CONSTANT(atomic_mass_units, MolarMassUnit);
 typedef boost::units::quantity<MolarMassUnit> Mass_Da;
-
-
-typedef boost::units::unit<
-        boost::units::derived_dimension<boost::units::length_base_dimension,1>::type, quickstep::units::atomic_system> MyLengthUnit;
-typedef boost::units::quantity<MyLengthUnit> MyLength_nm;
-typedef Length_nm MyLength;
+typedef Mass_Da MolarMass;
 
 
 // Containers of coordinates

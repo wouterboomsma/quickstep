@@ -122,9 +122,30 @@ public:
 
     template<typename OtherDerived>
     inline Quantity(Quantity<OtherDerived, Unit> &&other)
-            // : Base(other.nested()),
+    // : Base(other.nested()),
             : expression(std::move(other.nested())) {
     }
+
+    template<typename OtherDerived, typename OtherUnit>
+    inline Quantity(const Quantity<OtherDerived, OtherUnit> &other,
+                    typename boost::enable_if<
+                            boost::mpl::and_<
+                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                            >>::type* = 0)
+            : expression(other.nested()) {
+    }
+
+    template<typename OtherDerived, typename OtherUnit>
+    inline Quantity(Quantity<OtherDerived, Unit> &&other,
+                    typename boost::enable_if<
+                            boost::mpl::and_<
+                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                            >>::type* = 0)
+            : expression(std::move(other.nested())) {
+    }
+
 
     template<typename OtherDerived>
     inline Quantity &operator=(const Quantity<OtherDerived, Unit> &other) {
@@ -132,6 +153,10 @@ public:
         return *this;
     }
 
+    inline Quantity &operator=(const boost::units::quantity<Unit> &other) {
+        expression = other;
+        return *this;
+    }
 
 
     inline typename std::remove_reference<ExpressionType>::type::Index rows() const { return expression.rows(); }

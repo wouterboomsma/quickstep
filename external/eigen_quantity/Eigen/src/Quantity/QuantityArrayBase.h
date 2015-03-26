@@ -104,6 +104,13 @@ public:
         return this->nested().operator*(other.nested());
     }
 
+    template<typename OtherExpressionType>
+    inline auto
+    operator*(const ArrayBase<OtherExpressionType> &other) const -> const Quantity<decltype(this->nested().operator*(other)),
+                                                                                   Unit> {
+        return this->nested().operator*(other);
+    }
+
     inline auto
     operator*(const Scalar &other) const -> const Quantity<decltype(this->nested().operator*(other)),
                                                            Unit> {

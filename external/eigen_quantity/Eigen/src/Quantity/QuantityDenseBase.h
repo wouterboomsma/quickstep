@@ -676,6 +676,12 @@ public:
         return this->nested().operator*=(quantity.value());
     }
 
+    template<class OtherUnit>
+    friend inline auto
+    operator*(const boost::units::quantity<OtherUnit> &lhs, const DenseBase<Quantity<ExpressionType, Unit>> &rhs) -> const Quantity<const CwiseUnaryOp<internal::scalar_multiple_op<Scalar>, const ExpressionType>, decltype(Unit()*OtherUnit())>{
+        return lhs.value()*rhs.nested();
+    }
+
     inline Index outerSize() const {
         return this->nested().outerSize();
     }

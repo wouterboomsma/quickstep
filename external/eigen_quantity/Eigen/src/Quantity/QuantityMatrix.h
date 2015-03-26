@@ -94,6 +94,24 @@ public:
     inline QuantityMatrix(const Quantity<OtherDerived, Unit> &&quantity)
             : Base(std::move(quantity)) {}
 
+    template<typename OtherDerived, typename OtherUnit>
+    inline QuantityMatrix(const Quantity<OtherDerived, OtherUnit> &quantity,
+                         typename boost::enable_if<
+                                 boost::mpl::and_<
+                                         typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                                         boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, ValueType>
+                                         >>::type* = 0)
+            : Base(quantity) {}
+
+    template<typename OtherDerived, typename OtherUnit>
+    inline QuantityMatrix(const Quantity<OtherDerived, OtherUnit> &&quantity,
+                         typename boost::enable_if<
+                                 boost::mpl::and_<
+                                         typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                                         boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, ValueType>
+                                         >>::type* = 0)
+            : Base(std::move(quantity)) {}
+
 };
 
 template<typename Dim, typename System, int Rows, int Cols>
