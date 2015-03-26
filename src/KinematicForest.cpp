@@ -180,13 +180,15 @@ int KinematicForest::getAtoms()
 	return n_atoms;
 }
 
-double KinematicForest::getDOFLength(int atom)
+units::Length KinematicForest::getDOFLength(int atom)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
-    return (pos(atom)-pos(a1)).norm();
+    units::Vector3 v = pos(atom)-pos(a1);
+
+    return v.norm();
 }
 
 double KinematicForest::getDOFAngle(int atom)
@@ -197,14 +199,18 @@ double KinematicForest::getDOFAngle(int atom)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    Math3D::Vector3& v0 = pos(atom);
-    Math3D::Vector3& v1 = pos(a1);
-    Math3D::Vector3& v2 = pos(a2);
-
-    return (v2-v1).angle( v0-v1 );
+    units::Coordinate& a0_pos = pos(atom);
+    units::Coordinate& a1_pos = pos(a1);
+    units::Coordinate& a2_pos = pos(a2);
+    units::Vector3 v1 = a2_pos-a1_pos;
+    units::Vector3 v2 = a0_pos-a1_pos;
+    units::Length v1_len = v1.norm();
+    units::Length v2_len = v2.norm();
+    return acos(v1.dot(v2).value()/(v1_len*v2_len).value());
+    //return (v2-v1).angle( v0-v1 );
 }
 
-double KinematicForest::getDOFTorsion(int atom)
+units::Length KinematicForest::getDOFTorsion(int atom)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -213,17 +219,17 @@ double KinematicForest::getDOFTorsion(int atom)
     int a2 = parent(a1);
     int a3 = parent(a2);
 
-    Math3D::Vector3& v0 = pos(atom);
-    Math3D::Vector3& v1 = pos(a1);
-    Math3D::Vector3& v2 = pos(a2);
-    Math3D::Vector3& v3 = pos(a3);
+//    Math3D::Vector3& v0 = pos(atom);
+//    Math3D::Vector3& v1 = pos(a1);
+//    Math3D::Vector3& v2 = pos(a2);
+//    Math3D::Vector3& v3 = pos(a3);
 
     //TODO: Finish
     return 0;
 }
 
 
-void KinematicForest::changeDOFLength(int atom, double value)
+void KinematicForest::changeDOFLength(int atom, units::Length value)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -232,11 +238,12 @@ void KinematicForest::changeDOFLength(int atom, double value)
     int a1 = parent(atom);
 
     units::Vector3 d = pos(atom)-pos(a1);
-    d *= value/d.norm();
+    d.normalize();
+    d *= value;
     transformations_queue[atom].push_back(QSTransform(Eigen::Translation<units::Length,3>(d)));
 }
 
-void KinematicForest::changeDOFAngle(int atom, double value)
+void KinematicForest::changeDOFAngle(int atom, units::Length value)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -248,18 +255,19 @@ void KinematicForest::changeDOFAngle(int atom, double value)
     units::Coordinate& pos_a = pos(atom);
     units::Coordinate& pos_a1 = pos(a1);
     units::Coordinate& pos_a2 = pos(a2);
-
-    units::Vector3 axis = (pos_a2- pos_a1).cross(pos_a - pos_a1);
+    units::Vector3 v1 = pos_a2- pos_a1;
+    units::Vector3 v2 = pos_a - pos_a1;
+    units::Vector3 axis = v1.cross(v2);
     axis.normalize();
 
     transformations_queue[atom].push_back(
-    		Eigen::Translation<double, 3>(pos_a1)*
-			Eigen::AngleAxis<double>(value, axis)*
-			Eigen::Translation<double, 3>(-pos_a1)
+    		Eigen::Translation<units::Length, 3>(pos_a1)*
+			Eigen::AngleAxis<units::Length>(value, axis)*
+			Eigen::Translation<units::Length, 3>(-pos_a1)
     );
 }
 
-void KinematicForest::changeDOFTorsion(int atom, double value)
+void KinematicForest::changeDOFTorsion(int atom, units::Length value)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -275,18 +283,18 @@ void KinematicForest::changeDOFTorsion(int atom, double value)
     axis.normalize();
 
     transformations_queue[atom].push_back(
-    		Eigen::Translation<double, 3>(pos_a1)*
-			Eigen::AngleAxis<double>(value, axis)*
-			Eigen::Translation<double, 3>(-pos_a1)
+    		Eigen::Translation<units::Length, 3>( pos_a1) *
+			Eigen::AngleAxis<units::Length>(value, axis) *
+			Eigen::Translation<units::Length, 3>(-pos_a1)
 			);
 
 }
 
-void KinematicForest::changeDOFglobal(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t)
+void KinematicForest::changeDOFglobal(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t)
 {
 	if(!pseudoRootsSet)	updatePseudoRoots();
 	int idx1 = parent(parent(roots[chain]));
-	transformations_queue[idx1].push_back( Eigen::Transform<double, 3, Eigen::Affine>(t) );
+	transformations_queue[idx1].push_back( Eigen::Transform<units::Length, 3, Eigen::Affine>(t) );
 }
 
 void KinematicForest::updatePositions()
@@ -312,12 +320,14 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         	transformations[atom].setIdentity();
 
         for(int i=0;i<transformations_queue[atom].size();i++){
-        	transformations[atom] *= transformations_queue[atom][i];
+        	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
         }
 
-//        std::cout<<"pos["<<atom<<"] = "<<positions[atom]<<std::endl;
-        stored_positions[atom] = positions->col(atom);
-        positions->col(atom) = transformations[atom]*positions->col(atom);
+        units::Coordinate orig_coord = units::Coordinate(positions->row(atom));
+        stored_positions.row(atom) = orig_coord;
+        QSTransform transform = transformations[atom];
+        units::Coordinate new_coord = transform * orig_coord;
+        positions->row(atom) = new_coord;
 
 
         for(int c=0;c<adjacencyList[atom].size();c++){

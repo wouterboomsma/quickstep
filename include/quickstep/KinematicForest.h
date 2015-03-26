@@ -40,16 +40,16 @@ public:
     int getRoots();
     int getAtoms();
 
-    double getDOFLength(int atom);
+    units::Length getDOFLength(int atom);
     double getDOFAngle(int atom);
-    double getDOFTorsion(int atom);
+    units::Length getDOFTorsion(int atom);
 
-    void changeDOFLength(int atom, double value);
-    void changeDOFAngle(int atom, double value);
-    void changeDOFTorsion(int atom, double value);
+    void changeDOFLength(int atom, units::Length value);
+    void changeDOFAngle(int atom, units::Length value);
+    void changeDOFTorsion(int atom, units::Length value);
 
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
-    void changeDOFglobal(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
+    void changeDOFglobal(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t);
 
     /**
      * Goes through the forest and updates positions so they reflect the requested
@@ -79,7 +79,7 @@ public:
 
 private:
 
-    typedef Eigen::Transform<double, 3, Eigen::AffineCompact> QSTransform;
+    typedef Eigen::Transform<units::Length, 3, Eigen::AffineCompact> QSTransform;
 
     quickstep::Topology* topology;
 
