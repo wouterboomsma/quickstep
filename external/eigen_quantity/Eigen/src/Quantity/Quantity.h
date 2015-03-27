@@ -146,6 +146,27 @@ public:
             : expression(std::move(other.nested())) {
     }
 
+    template<typename OtherDerived, typename OtherUnit,
+             typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                             >>::type* = nullptr>
+    inline Quantity &operator=(const Quantity<OtherDerived, OtherUnit> &other) {
+        expression = other.nested();
+        return *this;
+    }
+
+    template<typename OtherDerived, typename OtherUnit,
+             typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                             >>::type* = nullptr>
+    inline Quantity &operator=(Quantity<OtherDerived, Unit> &&other)  {
+        expression = other.nested();
+        return *this;
+    }
 
     template<typename OtherDerived>
     inline Quantity &operator=(const Quantity<OtherDerived, Unit> &other) {
@@ -196,6 +217,30 @@ private:
     ExpressionType expression;
 
 };
+
+
+
+//// Operators ////
+
+// CwiseNullaryOp
+template<typename ExpressionType, typename Unit, typename NullaryOp, typename PlainObjectType>
+inline auto
+operator*(const CwiseNullaryOp<NullaryOp, PlainObjectType> &lhs, const Quantity<ExpressionType, Unit> &rhs)
+-> Quantity<decltype(lhs*rhs.nested()),
+            Unit>{
+    return lhs*rhs.nested();
+}
+
+
+// VectorwiseOp
+template<typename ExpressionType, typename Unit, typename OtherExpressionType, int Direction>
+inline auto
+operator*(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantity<ExpressionType, Unit> &rhs)
+-> Quantity<decltype(lhs*rhs.nested()),
+            Unit>{
+    return lhs*rhs.nested();
+}
+
 
 }
 

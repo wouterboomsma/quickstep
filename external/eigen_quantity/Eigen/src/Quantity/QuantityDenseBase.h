@@ -1305,6 +1305,14 @@ public:
 
 };
 
+template<typename ExpressionType, typename Unit, class OtherUnit>
+inline auto
+operator*(const boost::units::quantity<OtherUnit> &lhs, const DenseBase<Quantity<ExpressionType, Unit>> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs.nested()),
+                  decltype(Unit()*OtherUnit())>{
+    return lhs.value()*rhs.nested();
+}
+
 }
 
 #endif

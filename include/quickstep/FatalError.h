@@ -40,7 +40,8 @@ public:
             suffix(other.suffix) {
      }
 
-     FatalError& operator<<( const std::string& s)
+     template <typename T>
+     FatalError& operator<<( const T& s)
           {
                // *this << message_info(s);
                message_stream << s;
