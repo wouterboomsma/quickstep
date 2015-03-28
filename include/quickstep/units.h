@@ -128,6 +128,8 @@ typedef const Eigen::Map<const Eigen::QuantityArray<Length, 1, 3>> ConstCoordina
 typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
 typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
 
+typedef Eigen::Matrix< Length , 3 , 1> Vector3;
+
 }}
 
 //// Conversion linking Dalton units to corresponding SI mass unit
