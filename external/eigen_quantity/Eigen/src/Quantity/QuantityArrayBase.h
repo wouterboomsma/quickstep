@@ -7,7 +7,6 @@
 
 namespace Eigen {
 
-
 template<typename ExpressionType, typename Unit>
 //class QuantityArrayBaseBase: public QuantityDenseBase<ExpressionType, Unit> {
 class ArrayBase<Quantity<ExpressionType, Unit>>: public DenseBase<Quantity<ExpressionType, Unit>> {
@@ -278,8 +277,8 @@ public:
     }
 
     inline auto
-    square() -> const Quantity<decltype(this->nested().square()),
-                               decltype(Unit()*Unit())> {
+    square() -> Quantity<decltype(this->nested().square()),
+                         decltype(Unit()*Unit())> {
         return this->nested().square();
     }
 };

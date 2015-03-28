@@ -33,21 +33,42 @@ struct traits<Quantity<ExpressionType, Unit> > : traits<ExpressionType> {
 };
 
 template<typename ExpressionType, class Unit, class Enable=void>
-struct QuantityBase;
+struct QuantityBaseBase;
 
 template<typename ExpressionType, class Unit>
-struct QuantityBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, MatrixXpr>::value>::type> {
+struct QuantityBaseBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, MatrixXpr>::value>::type> {
     typedef MatrixBaseSpecialization<ExpressionType, Unit> type;
 };
 
 template<typename ExpressionType, class Unit>
-struct QuantityBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, ArrayXpr>::value>::type> {
+struct QuantityBaseBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, ArrayXpr>::value>::type> {
     typedef ArrayBaseSpecialization<ExpressionType, Unit> type;
 };
+
+
+template<typename ExpressionType, class Unit, class Enable=void>
+struct QuantityBase {
+    typedef typename QuantityBaseBase<ExpressionType, Unit>::type type;
+};
+
+//template<typename ExpressionType, class Unit>
+//struct QuantityBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, MatrixXpr>::value>::type> {
+//    typedef MatrixBaseSpecialization<ExpressionType, Unit> type;
+//};
+//
+//template<typename ExpressionType, class Unit>
+//struct QuantityBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, ArrayXpr>::value>::type> {
+//    typedef ArrayBaseSpecialization<ExpressionType, Unit> type;
+//};
 
 template<typename ExpressionType, int Direction, class Unit>
 struct QuantityBase<VectorwiseOp<ExpressionType, Direction>, Unit> {
     typedef VectorwiseOp<Quantity<ExpressionType, Unit>, Direction> type;
+};
+
+template<typename ExpressionType, int Direction, class Unit>
+struct QuantityBase<const VectorwiseOp<const ExpressionType, Direction>, Unit> {
+    typedef VectorwiseOp<const Quantity<const ExpressionType, Unit>, Direction> type;
 };
 
 template<typename ExpressionType, class Unit>
@@ -70,21 +91,6 @@ struct QuantityBase<const CommaInitializer<const ExpressionType>, Unit> {
     typedef CommaInitializer<Quantity<const ExpressionType, Unit>> type;
 };
 
-
-//template<typename ExpressionType, class Unit>
-//struct QuantityBase<ExpressionType, Unit> {
-//    typedef MatrixBaseSpecialization<ExpressionType, Unit> type;
-//};
-//
-//template<typename ExpressionType, class Unit>
-//struct QuantityBase<ExpressionType, Unit, ArrayXpr> {
-//    typedef ArrayBaseSpecialization<ExpressionType, Unit> type;
-//};
-
-//template<typename ExpressionType, class Unit>
-//struct QuantityBase<ExpressionType, Unit, typename std::enable_if<std::is_same<typename internal::traits<ExpressionType>::XprKind, MatrixXpr> {
-//    typedef ArrayBaseSpecialization<ExpressionType, Unit> type;
-//};
 
 }
 
@@ -220,6 +226,8 @@ private:
 
 
 
+
+
 //// Operators ////
 
 // CwiseNullaryOp
@@ -230,8 +238,8 @@ operator*(const CwiseNullaryOp<NullaryOp, PlainObjectType> &lhs, const Quantity<
             Unit>{
     return lhs*rhs.nested();
 }
-
-
+//
+//
 // VectorwiseOp
 template<typename ExpressionType, typename Unit, typename OtherExpressionType, int Direction>
 inline auto
@@ -240,6 +248,22 @@ operator*(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantit
             Unit>{
     return lhs*rhs.nested();
 }
+
+template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+inline auto
+operator*(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
+-> Quantity<decltype(lhs.nested()*rhs.nested()),
+            decltype(Unit()*OtherUnit())>{
+    return lhs.nested()*rhs.nested();
+}
+
+//template<typename ExpressionType, typename Unit, typename TYPE>
+//inline auto
+//operator*(const TYPE &lhs, const Quantity<ExpressionType, Unit> &rhs)
+//-> Quantity<decltype(lhs*rhs.nested()),
+//            Unit>{
+//    return lhs*rhs.nested();
+//}
 
 
 }
