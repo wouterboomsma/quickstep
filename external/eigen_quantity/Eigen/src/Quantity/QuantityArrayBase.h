@@ -149,10 +149,15 @@ public:
         return this->nested().operator/(other.value());
     }
 
-    template<typename OtherDerived>
+    template<typename OtherDerived, typename OtherUnit,
+                 typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                     >>::type* = nullptr>
     inline auto
-    operator+(const Quantity<OtherDerived, Unit> &other) const -> const Quantity<decltype(this->nested().operator+(other.nested())),
-                                                                                 decltype(Unit())> {
+    operator+(const Quantity<OtherDerived, OtherUnit> &other) const -> const Quantity<decltype(this->nested().operator+(other.nested())),
+                                                                                      Unit> {
         return this->nested().operator+(other.nested());
     }
 

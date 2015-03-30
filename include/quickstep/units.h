@@ -6,9 +6,11 @@
 #include <boost/units/io.hpp>
 #include <boost/units/systems/si/io.hpp>
 #include <boost/units/base_units/metric/angstrom.hpp>
+#include <boost/units/base_units/angle/radian.hpp>
 //#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
 #include <Eigen/Quantity>
+#include <Eigen/QuantityGeometry>
 //#include <boost/units/systems/cgs.hpp>
 //#include <boost/units/systems/cgs/mass.hpp>
 //#include <boost/units/quantity.hpp>
@@ -103,7 +105,8 @@ typedef boost::units::make_system<
         boost::units::cgs::gram_base_unit,
         PicosecondBaseUnit,
         boost::units::si::kelvin_base_unit,
-        boost::units::si::mole_base_unit
+        boost::units::si::mole_base_unit,
+        boost::units::angle::radian_base_unit
 >::type atomic_system;
 
 
@@ -117,6 +120,12 @@ BOOST_UNITS_STATIC_CONSTANT(atomic_mass_units, MolarMassUnit);
 typedef boost::units::quantity<MolarMassUnit> Mass_Da;
 typedef Mass_Da MolarMass;
 
+// Angle
+typedef boost::units::unit<boost::units::plane_angle_dimension, atomic_system> AngleUnit;
+BOOST_UNITS_STATIC_CONSTANT(radians, AngleUnit);
+BOOST_UNITS_STATIC_CONSTANT(rad, AngleUnit);
+typedef boost::units::quantity<AngleUnit> Angle_rad;
+typedef Angle_rad Angle;
 
 // Containers of coordinates
 typedef Eigen::QuantityArray<Length, 1, 3> Coordinate;
@@ -128,7 +137,7 @@ typedef const Eigen::Map<const Eigen::QuantityArray<Length, 1, 3>> ConstCoordina
 typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
 typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
 
-typedef Eigen::Matrix< Length , 3 , 1> Vector3;
+typedef Eigen::QuantityMatrix<Length, 1, 3> Vector3L;
 
 }}
 

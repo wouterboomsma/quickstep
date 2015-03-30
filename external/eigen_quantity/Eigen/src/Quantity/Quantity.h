@@ -92,6 +92,8 @@ struct QuantityBase<const CommaInitializer<const ExpressionType>, Unit> {
 };
 
 
+
+
 }
 
 
@@ -106,7 +108,7 @@ public:
     typedef typename std::remove_reference<ExpressionType>::type::Scalar Scalar;
     typedef boost::units::quantity<Unit, Scalar> QuantityType;
     typedef const Quantity& Nested;
-    typedef typename std::remove_reference<ExpressionType>::type::Index Index;
+//    typedef typename std::remove_reference<ExpressionType>::type::Index Index;
 
     inline Quantity(){}
 
@@ -132,23 +134,23 @@ public:
             : expression(std::move(other.nested())) {
     }
 
-    template<typename OtherDerived, typename OtherUnit>
-    inline Quantity(const Quantity<OtherDerived, OtherUnit> &other,
-                    typename boost::enable_if<
-                            boost::mpl::and_<
-                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
-                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
-                            >>::type* = 0)
+    template<typename OtherDerived, typename OtherUnit,
+             typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                             >>::type* = nullptr>
+    inline Quantity(const Quantity<OtherDerived, OtherUnit> &other)
             : expression(other.nested()) {
     }
 
-    template<typename OtherDerived, typename OtherUnit>
-    inline Quantity(Quantity<OtherDerived, Unit> &&other,
-                    typename boost::enable_if<
-                            boost::mpl::and_<
-                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
-                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
-                            >>::type* = 0)
+    template<typename OtherDerived, typename OtherUnit,
+             typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                             >>::type* = nullptr>
+    inline Quantity(Quantity<OtherDerived, Unit> &&other)
             : expression(std::move(other.nested())) {
     }
 
@@ -186,10 +188,10 @@ public:
     }
 
 
-    inline typename std::remove_reference<ExpressionType>::type::Index rows() const { return expression.rows(); }
-    inline typename std::remove_reference<ExpressionType>::type::Index cols() const { return expression.cols(); }
-    inline Index outerStride() const { expression.outerStride(); }
-    inline Index innerStride() const { expression.innerStride(); }
+//    inline typename std::remove_reference<ExpressionType>::type::Index rows() const { return expression.rows(); }
+//    inline typename std::remove_reference<ExpressionType>::type::Index cols() const { return expression.cols(); }
+//    inline Index outerStride() const { expression.outerStride(); }
+//    inline Index innerStride() const { expression.innerStride(); }
 
     // Only allow evalTo another quantity with the same unit
     template<typename Dest>
@@ -202,6 +204,14 @@ public:
     /** \returns the this->nested this->nested() */
     inline ExpressionType &
     nestedExpression() { return expression.const_cast_derived(); }
+
+    inline ExpressionType &value() {
+        return this->nested();
+    }
+
+    inline const ExpressionType &value() const {
+        return this->nested();
+    }
 
 
     // Overload * to add unit to Quantity type
@@ -224,7 +234,94 @@ private:
 
 };
 
-
+//// Specialization for Transform, which doesn't follow the same layout as in Core
+//template<typename Scalar, int Dim, int Mode, typename Unit>
+//class Quantity<Transform<Scalar, Dim, Mode>, Unit>: public QuantityTransform<Transform<Scalar, Dim, Mode>, Unit> {
+//public:
+//
+//    typedef Transform<Scalar, Dim, Mode> ExpressionType;
+//
+//    inline Quantity(const ExpressionType &a_matrix)
+//    //: Base(a_matrix),
+//            : expression(a_matrix) {
+//    }
+//
+//    inline Quantity(typename std::remove_reference<ExpressionType>::type &&a_matrix)
+//    //: Base(std::move(a_matrix)),
+//            : expression(std::move(a_matrix)) {
+//    }
+//
+//    template<typename OtherDerived>
+//    inline Quantity(const Quantity<OtherDerived, Unit> &other)
+//    // : Base(other.nested()),
+//            : expression(other.nested()) {
+//    }
+//
+//    template<typename OtherDerived>
+//    inline Quantity(Quantity<OtherDerived, Unit> &&other)
+//    // : Base(other.nested()),
+//            : expression(std::move(other.nested())) {
+//    }
+//
+//    template<typename OtherDerived, typename OtherUnit>
+//    inline Quantity(const Quantity<OtherDerived, OtherUnit> &other,
+//                    typename boost::enable_if<
+//                            boost::mpl::and_<
+//                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+//                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+//                                    >>::type* = 0)
+//            : expression(other.nested()) {
+//    }
+//
+//    template<typename OtherDerived, typename OtherUnit>
+//    inline Quantity(Quantity<OtherDerived, Unit> &&other,
+//                    typename boost::enable_if<
+//                            boost::mpl::and_<
+//                                    typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+//                                    boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+//                                    >>::type* = 0)
+//            : expression(std::move(other.nested())) {
+//    }
+//
+//    template<typename OtherDerived, typename OtherUnit,
+//             typename boost::enable_if<
+//                     boost::mpl::and_<
+//                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+//                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+//                             >>::type* = nullptr>
+//    inline Quantity &operator=(const Quantity<OtherDerived, OtherUnit> &other) {
+//        expression = other.nested();
+//        return *this;
+//    }
+//
+//    template<typename OtherDerived, typename OtherUnit,
+//             typename boost::enable_if<
+//                     boost::mpl::and_<
+//                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+//                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+//                             >>::type* = nullptr>
+//    inline Quantity &operator=(Quantity<OtherDerived, Unit> &&other)  {
+//        expression = other.nested();
+//        return *this;
+//    }
+//
+//    template<typename OtherDerived>
+//    inline Quantity &operator=(const Quantity<OtherDerived, Unit> &other) {
+//        expression = other.nested();
+//        return *this;
+//    }
+//
+//    inline Quantity &operator=(const boost::units::quantity<Unit> &other) {
+//        expression = other;
+//        return *this;
+//    }
+//
+//private:
+//
+//    ExpressionType expression;
+//
+//};
+//
 
 
 
@@ -249,21 +346,22 @@ operator*(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantit
     return lhs*rhs.nested();
 }
 
-template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+//template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+//inline auto
+//operator*(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
+//-> Quantity<decltype(lhs.nested()*rhs.nested()),
+//            decltype(Unit()*OtherUnit())>{
+//    return lhs.nested()*rhs.nested();
+//}
+
+template<typename ExpressionType, typename Unit, typename TYPE>
 inline auto
-operator*(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
--> Quantity<decltype(lhs.nested()*rhs.nested()),
-            decltype(Unit()*OtherUnit())>{
-    return lhs.nested()*rhs.nested();
+operator*(const TYPE &lhs, const Quantity<ExpressionType, Unit> &rhs)
+-> Quantity<decltype(lhs*rhs.nested()),
+            Unit>{
+    return lhs*rhs.nested();
 }
 
-//template<typename ExpressionType, typename Unit, typename TYPE>
-//inline auto
-//operator*(const TYPE &lhs, const Quantity<ExpressionType, Unit> &rhs)
-//-> Quantity<decltype(lhs*rhs.nested()),
-//            Unit>{
-//    return lhs*rhs.nested();
-//}
 
 
 }

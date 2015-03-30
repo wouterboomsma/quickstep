@@ -59,7 +59,7 @@ public:
     }
 
     inline Quantity<ArrayWrapper<ExpressionType>, Unit>
-    array() {
+    array() const {
         return this->nested().array();
     }
 
@@ -79,7 +79,7 @@ public:
     inline auto
     cross(const MatrixBase<Quantity<OtherDerived, Unit>> &other) const
     -> Quantity<decltype(this->nested().cross(other)), Unit> {
-        return this->nested().cross(other);
+        return this->nested().cross(other.nested());
     }
 
     inline boost::units::quantity<decltype(boost::units::pow<ExpressionType::SizeAtCompileTime>(Unit()))>
@@ -149,6 +149,11 @@ public:
     norm() const
     -> boost::units::quantity<Unit> {
         return boost::units::quantity<Unit>::from_value(this->nested().norm());
+    }
+
+    void
+    normalize() {
+        this->nested().normalize();
     }
 
     inline auto

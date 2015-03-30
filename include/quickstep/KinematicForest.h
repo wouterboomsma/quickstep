@@ -7,6 +7,7 @@
 
 #include "math/primitives.h"
 #include "quickstep/Topology.h"
+#include "Eigen/QuantityGeometry"
 #include <Eigen/Geometry>
 
 namespace quickstep{
@@ -116,7 +117,9 @@ private:
 
     /// Get the position of atom index i. If i==-1 return p0
     /// if i==-2 return p1, and if i==-3 return p2
-    units::Coordinate& pos(int i);
+    // NOTE: reference to a row/col in an Eigen matrix/array
+    // has type ::RowXpr/::ColXpr (reference is implicit)
+    units::Coordinates::ColXpr pos(int i);
 //    Math3D::Vector3& pos(int i);
 
 //    Math3D::Vector3 p0;

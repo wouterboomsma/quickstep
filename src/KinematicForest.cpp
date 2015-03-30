@@ -6,8 +6,7 @@
 #include <functional>   // reference_wrapper
 #include <cassert>
 
-
-
+#include "quickstep/utils.h"
 #include "quickstep/DisjointSet.h"
 
 
@@ -81,7 +80,8 @@ KinematicForest::KinematicForest():
 KinematicForest::KinematicForest(quickstep::Topology &topology, quickstep::units::Coordinates* coordinates):
 		topology(&topology),
 		positions(coordinates),
-		stored_positions(coordinates->cols())
+        // NOTE: stored posisions is a matrix and must be initialized with two sizes
+		stored_positions(coordinates->rows(), coordinates->cols())
 //    adjacencyList(topology.graph.numberOfAtoms()),
 //    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
 ////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
@@ -186,7 +186,7 @@ units::Length KinematicForest::getDOFLength(int atom)
     if(!pseudoRootsSet)	updatePseudoRoots();
 
     int a1 = parent(atom);
-    units::Vector3 v = pos(atom)-pos(a1);
+    units::Vector3L v = pos(atom)-pos(a1);
 
     return v.norm();
 }
@@ -199,11 +199,12 @@ double KinematicForest::getDOFAngle(int atom)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    units::Coordinate& a0_pos = pos(atom);
-    units::Coordinate& a1_pos = pos(a1);
-    units::Coordinate& a2_pos = pos(a2);
-    units::Vector3 v1 = a2_pos-a1_pos;
-    units::Vector3 v2 = a0_pos-a1_pos;
+    // Note the use of ColXpr instead of standard references
+    units::Coordinates::ColXpr a0_pos = pos(atom);
+    units::Coordinates::ColXpr a1_pos = pos(a1);
+    units::Coordinates::ColXpr a2_pos = pos(a2);
+    units::Vector3L v1 = a2_pos-a1_pos;
+    units::Vector3L v2 = a0_pos-a1_pos;
     units::Length v1_len = v1.norm();
     units::Length v2_len = v2.norm();
     return acos(v1.dot(v2).value()/(v1_len*v2_len).value());
@@ -237,10 +238,10 @@ void KinematicForest::changeDOFLength(int atom, units::Length value)
 
     int a1 = parent(atom);
 
-    units::Vector3 d = pos(atom)-pos(a1);
+    units::Vector3L d = pos(atom)-pos(a1);
     d.normalize();
     d *= value;
-    transformations_queue[atom].push_back(QSTransform(Eigen::Translation<units::Length,3>(d)));
+    transformations_queue[atom].push_back(Eigen::Translation<units::Length,3>(d));
 }
 
 void KinematicForest::changeDOFAngle(int atom, units::Length value)
@@ -252,17 +253,22 @@ void KinematicForest::changeDOFAngle(int atom, units::Length value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    units::Coordinate& pos_a = pos(atom);
-    units::Coordinate& pos_a1 = pos(a1);
-    units::Coordinate& pos_a2 = pos(a2);
-    units::Vector3 v1 = pos_a2- pos_a1;
-    units::Vector3 v2 = pos_a - pos_a1;
-    units::Vector3 axis = v1.cross(v2);
+    // Note the use of ColXpr instead of standard references
+    units::Coordinates::ColXpr pos_a = pos(atom);
+    units::Coordinates::ColXpr pos_a1 = pos(a1);
+    units::Coordinates::ColXpr pos_a2 = pos(a2);
+    units::Vector3L v1 = pos_a2- pos_a1;
+    units::Vector3L v2 = pos_a - pos_a1;
+    units::Vector3L axis = v1.cross(v2);
     axis.normalize();
 
+    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
+    units::Angle angle_value = 0. * units::radians;
+
+    // NOTE: value has been replaced by angle_value for construction of AngleAxis
     transformations_queue[atom].push_back(
     		Eigen::Translation<units::Length, 3>(pos_a1)*
-			Eigen::AngleAxis<units::Length>(value, axis)*
+			Eigen::AngleAxis<units::Length>(angle_value, axis)*
 			Eigen::Translation<units::Length, 3>(-pos_a1)
     );
 }
@@ -276,15 +282,19 @@ void KinematicForest::changeDOFTorsion(int atom, units::Length value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    units::Coordinate& pos_a1 = pos(a1);
-    units::Coordinate& pos_a2 = pos(a2);
+    // Note the use of ColXpr instead of standard references
+    units::Coordinates::ColXpr pos_a1 = pos(a1);
+    units::Coordinates::ColXpr pos_a2 = pos(a2);
 
-    units::Vector3 axis = (pos_a2- pos_a1);
+    units::Vector3L axis = (pos_a2- pos_a1);
     axis.normalize();
+
+    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
+    units::Angle angle_value = 0. * units::radians;
 
     transformations_queue[atom].push_back(
     		Eigen::Translation<units::Length, 3>( pos_a1) *
-			Eigen::AngleAxis<units::Length>(value, axis) *
+			Eigen::AngleAxis<units::Length>(angle_value, axis) *
 			Eigen::Translation<units::Length, 3>(-pos_a1)
 			);
 
@@ -326,7 +336,9 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         units::Coordinate orig_coord = units::Coordinate(positions->row(atom));
         stored_positions.row(atom) = orig_coord;
         QSTransform transform = transformations[atom];
-        units::Coordinate new_coord = transform * orig_coord;
+        // NOTE: the .tranpose is necessary to obtain a column matrix. The .matrix
+        // proved to be necessary to avoid a strange mistake about noalias.
+        units::Coordinate new_coord = transform * orig_coord.matrix().transpose();
         positions->row(atom) = new_coord;
 
 
@@ -344,7 +356,7 @@ void KinematicForest::restorePositions()
 
 }
 
-units::Coordinate& KinematicForest::pos(int i)
+units::Coordinates::ColXpr KinematicForest::pos(int i)
 {
     assert(i>-4 && i<n_atoms);
 
@@ -451,15 +463,23 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 
 void KinematicForest::updatePseudoRoots()
 {
-	pseudo_root_positions.resize(roots.size()*2);
+    // NOTE: resize of matrix requires two size arguments
+	pseudo_root_positions.resize(roots.size()*2, Eigen::NoChange);
 
 	for(int r=0;r<roots.size();r++){
 		int idxr = roots[r];
 		int idx0 = n_atoms;
 		int idx1 = idx0+1;
 
-		units::Coordinate p0 = positions->col( idxr ) + units::Vector3(0.1, 0.0, 0.0);
-		units::Coordinate p1 = positions->col( idxr ) + units::Vector3(0.1, 0.1, 0.0);
+        // EXAMPLE: All four versions below work (complication is that Coordinate is an array, while Vector3 is a matrix)
+        units::Coordinate p0 = positions->col( idxr ) + Eigen::Array3d(0.1, 0.0, 0.0)*units::nm;
+        units::Coordinate p1 = positions->col( idxr ) + Eigen::Array3d(0.1, 0.1, 0.0)*units::nm;
+        // units::Coordinate p0 = positions->col( idxr ) + (Vector3<double>(0.1, 0.0, 0.0)*units::nm).array() ;
+        // units::Coordinate p1 = positions->col( idxr ) + (Vector3<double>(0.1, 0.1, 0.0)*units::nm).array();
+        // units::Coordinate p0 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
+        // units::Coordinate p1 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
+		// units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
+		// units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
 		pseudo_root_positions.col(r*2  ) = p0;
 		pseudo_root_positions.col(r*2+1) = p1;
 

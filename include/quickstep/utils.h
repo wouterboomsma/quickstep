@@ -19,6 +19,13 @@ template <class Type, int Rows, int Cols> using Array = Eigen::QuantityArray<Typ
 template <class Type, int Cols> using Vector = Eigen::QuantityMatrix<Type, 1, Cols>;
 template <class Type> using Vector3 = Eigen::QuantityMatrix<Type, 1, 3>;
 
+
+// TODO: Remove
+template <typename T>
+void print_template(const T &t) {
+    static_assert(Eigen::internal::DependentBool<false, T>(), "printing template");
+}
+
 }
 
 #endif

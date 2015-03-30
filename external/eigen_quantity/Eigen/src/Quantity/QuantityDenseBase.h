@@ -69,8 +69,21 @@ public:
     typedef typename ExpressionType::Scalar Scalar;
     typedef typename ExpressionType::PacketScalar PacketScalar;
     typedef boost::units::quantity<Unit, Scalar> QuantityType;
-
     typedef boost::units::quantity<Unit, typename ExpressionType::CoeffReturnType> CoeffReturnType;
+
+    // Blockmethods typedefs
+    /** \internal expression type of a column */
+    typedef Quantity<typename ExpressionType::ColXpr, Unit> ColXpr;
+    typedef Quantity<typename ExpressionType::ConstColXpr, Unit> ConstColXpr;
+    /** \internal expression type of a row */
+    typedef Quantity<typename ExpressionType::RowXpr, Unit> RowXpr;
+    typedef Quantity<typename ExpressionType::ConstRowXpr, Unit> ConstRowXpr;
+    /** \internal expression type of a block of whole columns */
+    typedef Quantity<typename ExpressionType::ColsBlockXpr, Unit> ColsBlockXpr;
+    typedef Quantity<typename ExpressionType::ConstColsBlockXpr, Unit> ConstColsBlockXpr;
+    /** \internal expression type of a block of whole rows */
+    typedef Quantity<typename ExpressionType::RowsBlockXpr, Unit> RowsBlockXpr;
+    typedef Quantity<typename ExpressionType::ConstRowsBlockXpr, Unit> ConstRowsBlockXpr;
 
     inline CoeffReturnType coeff(Index rowId, Index colId) const
     {
@@ -282,7 +295,7 @@ public:
 
 
     inline auto
-    col(Index i) -> const Quantity<decltype(this->nested().col(i)), Unit> {
+    col(Index i) -> Quantity<decltype(this->nested().col(i)), Unit> {
         return this->nested().col(i);
     }
 
@@ -1042,7 +1055,7 @@ public:
     inline auto
     transpose() -> const Quantity<decltype(this->nested().transpose()),
                                   Unit> {
-        return this->nested().tranpose();
+        return this->nested().transpose();
     }
 
     inline auto
