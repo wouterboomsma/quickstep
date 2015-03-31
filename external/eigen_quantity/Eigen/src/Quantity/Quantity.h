@@ -229,6 +229,27 @@ public:
         return lhs.nested();
     }
 
+    template<typename OtherDerived, typename OtherUnit,
+             typename boost::enable_if<
+                     boost::mpl::and_<
+                             typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                             boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, Scalar>
+                     >>::type* = nullptr>
+    inline Quantity &operator+=(const Quantity<OtherDerived, OtherUnit> &other) {
+        expression += other.nested();
+        return *this;
+    }
+
+    template <typename OtherUnit>
+    auto operator*=(const boost::units::quantity<OtherUnit> &quantity) -> Quantity<ExpressionType, decltype(Unit()*OtherUnit())> {
+        return this->nested().operator*=(quantity.value());
+    }
+
+    inline Quantity &operator*=(const double &value) {
+        expression *= value;
+        return *this;
+    }
+
 private:
 
     ExpressionType expression;
@@ -346,6 +367,13 @@ operator*(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantit
             Unit>{
     return lhs*rhs.nested();
 }
+//template<typename ExpressionType, typename Unit, typename OtherExpressionType, int Direction>
+//inline auto
+//operator/(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantity<ExpressionType, Unit> &rhs)
+//-> Quantity<decltype(lhs/rhs.nested()),
+//            Unit>{
+//    return lhs/rhs.nested();
+//}
 
 //template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
 //inline auto
@@ -398,8 +426,26 @@ operator*(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpress
     return lhs.value()*rhs.value();
 }
 
+template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+inline auto
+operator/(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
+-> Quantity<decltype(lhs.nested()/rhs.nested()),
+            decltype(Unit()/OtherUnit())>{
+    return lhs.nested()/rhs.nested();
+}
 
-//template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+template<typename ExpressionType, typename Unit>
+inline auto
+operator*(const double &lhs, const Quantity<ExpressionType, Unit> &rhs)
+-> const Quantity<decltype(lhs*rhs.nested()),
+                  Unit>{
+    return lhs*rhs.nested();
+}
+
+
+
+
+//template<typename ExpressionType, typename Unit, typename TYPE>
 //inline auto
 //operator*(const Quantity<Transform<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
 //-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit()*OtherUnit())> {

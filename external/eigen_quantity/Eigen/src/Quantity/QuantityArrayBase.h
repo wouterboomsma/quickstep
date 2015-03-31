@@ -53,6 +53,10 @@ public:
         return this->nested().matrix();
     }
 
+    inline const Quantity<MatrixWrapper<ExpressionType>, Unit> matrix() const {
+        return this->nested().matrix();
+    }
+
     template <typename OtherDerived>
     inline auto
     max(const ArrayBase<Quantity<OtherDerived, Unit>> &other) const -> const Quantity<decltype(this->nested().max(other.nested())),
