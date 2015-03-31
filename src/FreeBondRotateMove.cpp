@@ -7,14 +7,13 @@
 
 #include <quickstep/FreeBondRotateMove.h>
 
-#include <quickstep/math/primitives.h>
 
 #include <algorithm>
 #include <stack>
 
 namespace quickstep {
 
-FreeBondRotateMove::FreeBondRotateMove(float rotationMagnitude_):
+FreeBondRotateMove::FreeBondRotateMove(units::Angle rotationMagnitude_):
 		rotationMagnitude(rotationMagnitude_),
 		cachedKinematicForest(0)
 {
@@ -31,10 +30,10 @@ bool FreeBondRotateMove::step(KinematicForest& kf)
 	prepareRotatableBonds(kf);
 
 	//Find a random bond
-	int bondAtom = rotatableBonds[ Math3D::Random01()*rotatableBonds.size() ];
+	int bondAtom = rotatableBonds[ rand()%rotatableBonds.size() ];
 
 	//Find a random angle
-	float angle = Math3D::RandomAngleUniform(rotationMagnitude);
+	units::Angle angle = rotationMagnitude * ((rand()*1.0)/RAND_MAX - 0.5);
 
 	//Perform torsion-change on all children leaving bondAtom
 	for(int a=0;a<kf.adjacencyList[bondAtom].size();a++){

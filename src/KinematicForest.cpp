@@ -191,7 +191,7 @@ units::Length KinematicForest::getDOFLength(int atom)
     return v.norm();
 }
 
-double KinematicForest::getDOFAngle(int atom)
+units::Angle KinematicForest::getDOFAngle(int atom)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -199,15 +199,15 @@ double KinematicForest::getDOFAngle(int atom)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of ColXpr instead of standard references
-    units::Coordinates::ColXpr a0_pos = pos(atom);
-    units::Coordinates::ColXpr a1_pos = pos(a1);
-    units::Coordinates::ColXpr a2_pos = pos(a2);
+    // Note the use of RowXpr instead of standard references
+    units::Coordinates::RowXpr a0_pos = pos(atom);
+    units::Coordinates::RowXpr a1_pos = pos(a1);
+    units::Coordinates::RowXpr a2_pos = pos(a2);
     units::Vector3L v1 = a2_pos-a1_pos;
     units::Vector3L v2 = a0_pos-a1_pos;
     units::Length v1_len = v1.norm();
     units::Length v2_len = v2.norm();
-    return acos(v1.dot(v2).value()/(v1_len*v2_len).value());
+    return acos(v1.dot(v2).value()/(v1_len*v2_len).value()) * units::radians;
     //return (v2-v1).angle( v0-v1 );
 }
 
@@ -244,7 +244,7 @@ void KinematicForest::changeDOFLength(int atom, units::Length value)
     transformations_queue[atom].push_back(Eigen::Translation<units::Length,3>(d));
 }
 
-void KinematicForest::changeDOFAngle(int atom, units::Length value)
+void KinematicForest::changeDOFAngle(int atom, units::Angle value)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -253,27 +253,27 @@ void KinematicForest::changeDOFAngle(int atom, units::Length value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of ColXpr instead of standard references
-    units::Coordinates::ColXpr pos_a = pos(atom);
-    units::Coordinates::ColXpr pos_a1 = pos(a1);
-    units::Coordinates::ColXpr pos_a2 = pos(a2);
+    // Note the use of RowXpr instead of standard references
+    units::Coordinates::RowXpr pos_a = pos(atom);
+    units::Coordinates::RowXpr pos_a1 = pos(a1);
+    units::Coordinates::RowXpr pos_a2 = pos(a2);
     units::Vector3L v1 = pos_a2- pos_a1;
     units::Vector3L v2 = pos_a - pos_a1;
     units::Vector3L axis = v1.cross(v2);
     axis.normalize();
 
-    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
-    units::Angle angle_value = 0. * units::radians;
+//    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
+//    units::Angle angle_value = 0. * units::radians;
 
     // NOTE: value has been replaced by angle_value for construction of AngleAxis
     transformations_queue[atom].push_back(
     		Eigen::Translation<units::Length, 3>(pos_a1)*
-			Eigen::AngleAxis<units::Length>(angle_value, axis)*
+			Eigen::AngleAxis<units::Length>(value, axis)*
 			Eigen::Translation<units::Length, 3>(-pos_a1)
     );
 }
 
-void KinematicForest::changeDOFTorsion(int atom, units::Length value)
+void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -282,19 +282,19 @@ void KinematicForest::changeDOFTorsion(int atom, units::Length value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of ColXpr instead of standard references
-    units::Coordinates::ColXpr pos_a1 = pos(a1);
-    units::Coordinates::ColXpr pos_a2 = pos(a2);
+    // Note the use of RowXpr instead of standard references
+    units::Coordinates::RowXpr pos_a1 = pos(a1);
+    units::Coordinates::RowXpr pos_a2 = pos(a2);
 
     units::Vector3L axis = (pos_a2- pos_a1);
     axis.normalize();
 
-    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
-    units::Angle angle_value = 0. * units::radians;
+//     INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
+//    units::Angle angle_value = 0. * units::radians;
 
     transformations_queue[atom].push_back(
     		Eigen::Translation<units::Length, 3>( pos_a1) *
-			Eigen::AngleAxis<units::Length>(angle_value, axis) *
+			Eigen::AngleAxis<units::Length>(value, axis) *
 			Eigen::Translation<units::Length, 3>(-pos_a1)
 			);
 
@@ -356,7 +356,7 @@ void KinematicForest::restorePositions()
 
 }
 
-units::Coordinates::ColXpr KinematicForest::pos(int i)
+units::Coordinates::RowXpr KinematicForest::pos(int i)
 {
     assert(i>-4 && i<n_atoms);
 
@@ -367,7 +367,7 @@ units::Coordinates::ColXpr KinematicForest::pos(int i)
 //    default: return positions[i];
 //    }
 
-    return positions->col(i);
+    return positions->row(i);
 }
 
 void KinematicForest::rootTree(int v, int p)

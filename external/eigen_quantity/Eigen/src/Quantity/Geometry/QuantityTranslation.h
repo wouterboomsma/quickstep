@@ -24,11 +24,17 @@ public:
     Translation(const MatrixBase<Quantity<ExpressionType, Unit>> &vector) {
         this->nested()(vector.value());
     }
+
+    Translation(const boost::units::quantity<Unit> &vx, const boost::units::quantity<Unit> &vy, const boost::units::quantity<Unit> &vz) {
+    	this->nested().x() = vx.value();
+    	this->nested().y() = vy.value();
+    	this->nested().z() = vz.value();
+    }
 };
 
 template<typename QDim, typename QSystem, typename QScalar, int Dim>
 class Translation<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>, Dim>: public Quantity<Translation<QScalar, Dim>, boost::units::unit<QDim, QSystem>> {
-
+public:
     typedef boost::units::unit<QDim, QSystem> Unit;
     typedef Quantity<Translation<QScalar, Dim>, Unit> Base;
 
@@ -37,6 +43,12 @@ class Translation<boost::units::quantity<boost::units::unit<QDim, QSystem>, QSca
     template <typename ExpressionType>
     Translation(const MatrixBase<Quantity<ExpressionType, Unit>> &vector) {
         this->nested()(vector.value());
+    }
+
+    Translation(const boost::units::quantity<Unit> &vx, const boost::units::quantity<Unit> &vy, const boost::units::quantity<Unit> &vz){
+    	this->nested().x() = vx.value();
+    	this->nested().y() = vy.value();
+    	this->nested().z() = vz.value();
     }
 };
 

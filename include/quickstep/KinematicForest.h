@@ -42,12 +42,12 @@ public:
     int getAtoms();
 
     units::Length getDOFLength(int atom);
-    double getDOFAngle(int atom);
+    units::Angle getDOFAngle(int atom);
     units::Length getDOFTorsion(int atom);
 
     void changeDOFLength(int atom, units::Length value);
-    void changeDOFAngle(int atom, units::Length value);
-    void changeDOFTorsion(int atom, units::Length value);
+    void changeDOFAngle(int atom, units::Angle value);
+    void changeDOFTorsion(int atom, units::Angle value);
 
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
     void changeDOFglobal(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t);
@@ -119,7 +119,7 @@ private:
     /// if i==-2 return p1, and if i==-3 return p2
     // NOTE: reference to a row/col in an Eigen matrix/array
     // has type ::RowXpr/::ColXpr (reference is implicit)
-    units::Coordinates::ColXpr pos(int i);
+    units::Coordinates::RowXpr pos(int i);
 //    Math3D::Vector3& pos(int i);
 
 //    Math3D::Vector3 p0;

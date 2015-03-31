@@ -27,7 +27,7 @@ public:
 	 * translation performed and the \a rotationMagnitude indicates the largest possible
 	 * rotation-angle (in radians) around the center-of-mass.
 	 */
-	CofMMove(double translationMagnitude, double rotationMagnitude);
+	CofMMove(units::Length translationMagnitude, units::Angle rotationMagnitude);
 //	virtual ~CofMMove();
 
 	/**
@@ -37,8 +37,8 @@ public:
 	bool step(KinematicForest&);
 
 private:
-	double translationMagnitude;
-	double rotationMagnitude;
+	units::Length translationMagnitude;
+	units::Angle rotationMagnitude;
 
 	/** Each entry is a vector containing indices of all atoms in the corresponding chain. */
 	std::vector< std::vector<int> > chainIndices;
@@ -52,10 +52,12 @@ private:
 	/** Changes \a M so it contains a rotation matrix that uniformly rotates points
 	 *  in such a way that the largest possible rotation of any point around the origin
 	 *  is \a amplitude. */
-	void randRotation(float amplitude, Math3D::Matrix3 &M);
+	void randRotation( units::Angle amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+//	void randRotation(float amplitude, Math3D::Matrix3 &M);
 
 	/** Changes \a v to a random direction with length at most \a amplitude. */
-	void randTranslation( float amplitude, Math3D::Vector3 &v );
+	void randTranslation( units::Length amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+//	void randTranslation( float amplitude, Math3D::Vector3 &v );
 
 };
 

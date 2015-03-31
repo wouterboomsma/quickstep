@@ -66,9 +66,9 @@ int StdDoFController::numberOfDoFs()
 void StdDoFController::changeDoF(int DoFIdx, double changeValueBy)
 {
 	switch(dof_types[DoFIdx]){
-	case DOF_BOND_LENGTH: 	kinematic_forest->changeDOFLength(	dof_atoms[DoFIdx], changeValueBy); 	break;
-	case DOF_BOND_ANGLE: 	kinematic_forest->changeDOFAngle(	dof_atoms[DoFIdx], changeValueBy); 	break;
-	case DOF_BOND_TORSION: 	kinematic_forest->changeDOFTorsion(	dof_atoms[DoFIdx], changeValueBy); 	break;
+	case DOF_BOND_LENGTH: 	kinematic_forest->changeDOFLength(	dof_atoms[DoFIdx], changeValueBy*units::nm); 	break;
+	case DOF_BOND_ANGLE: 	kinematic_forest->changeDOFAngle(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
+	case DOF_BOND_TORSION: 	kinematic_forest->changeDOFTorsion(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
 	}
 }
 

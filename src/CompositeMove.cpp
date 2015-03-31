@@ -49,8 +49,8 @@ std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_
 {
 	std::unique_ptr<CompositeMove> ret(new CompositeMove());
 
-	ret->add_move( make_unique<CofMMove>(0.01, 0.05), 0.05);      // max-translation: 0.1Å, max-rotation ~1 degree
-	ret->add_move( make_unique<FreeBondRotateMove>(0.17), 0.05);  // max-rotation: ~1 degree
+	ret->add_move( make_unique<CofMMove>(0.01*units::nm, 0.05*units::radians), 0.05);      // max-translation: 0.1Å, max-rotation ~1 degree
+	ret->add_move( make_unique<FreeBondRotateMove>(0.17*units::radians), 0.05);  // max-rotation: ~1 degree
 
 	return ret;
 }

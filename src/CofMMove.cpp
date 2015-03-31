@@ -8,12 +8,14 @@
 #include <quickstep/CofMMove.h>
 
 #include <quickstep/math/primitives.h>
+#include "quickstep/units.h"
 
 #include <stack>
 
+
 namespace quickstep {
 
-CofMMove::CofMMove(double translationMagnitude_, double rotationMagnitude_):
+CofMMove::CofMMove(units::Length translationMagnitude_, units::Angle rotationMagnitude_):
 		translationMagnitude(translationMagnitude_),
 		rotationMagnitude(rotationMagnitude_),
 		cachedKinematicForest(0)
@@ -31,30 +33,33 @@ bool CofMMove::step(KinematicForest& kf)
 	prepareChainIndices(kf);
 
 	// Select random chain
-	int root = (int)(Math3D::Random01()*kf.getRoots());
+	int root = (int)(rand()%kf.getRoots());
 
 	// Suggest random translation
-	Math3D::RigidTransform t0;
-	randTranslation(translationMagnitude, t0.t);
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t0;
+	randTranslation(translationMagnitude, t0);
+
+	//Suggest random rotation
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t1;
+	randRotation(rotationMagnitude, t1);
+
 
 	// Compute center-of-mass
-	Math3D::Vector3 cofm;
+	units::Vector3L cofm;
 	for(int a=0;a<chainIndices[root].size();a++){
-		cofm+=kf.pos(chainIndices[root][a]);
+		cofm = cofm + kf.pos(chainIndices[root][a]).matrix();
 	}
-	cofm/=chainIndices[root].size();
+	cofm = cofm/chainIndices[root].size();
 
-	// Suggest random rotation round center-of-mass
-	Math3D::RigidTransform t1, t2, t3;
-	t1.setTranslation( cofm);
-	randRotation(rotationMagnitude, t2.R);
-	t3.setTranslation(-cofm);
-
-	// Compose transformations and apply to the kinematic forest
-	Math3D::RigidTransform transform = t0*t1*t2*t3;
+	// Suggest random rotation around center-of-mass
+	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
+			t0*
+			Eigen::Translation<units::Length, 3>( cofm)*
+			t1*
+			Eigen::Translation<units::Length, 3>(-cofm);
 	kf.changeDOFglobal(root, transform);
 
-	// This chassé is always succesful
+	// This move is always succesful
 	return true;
 }
 
@@ -86,27 +91,40 @@ void CofMMove::prepareChainIndices(KinematicForest& kf)
 }
 
 
-void CofMMove::randRotation( float amplitude, Math3D::Matrix3 &M )
+void CofMMove::randRotation( units::Angle amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M )
 {
-	float theta = acos( Math3D::Random01()*2.0f-1.0f );
-	float phi = Math3D::Random01()*2.0f*M_PI;
-	Math3D::Vector3 rax(
-			sin(theta)*cos(phi),
-			sin(theta)*sin(phi),
-			cos(theta)
+	double rand1 = (1.0 * rand()) / RAND_MAX;
+	double rand2 = (1.0 * rand()) / RAND_MAX;
+	double rand3 = (1.0 * rand()) / RAND_MAX;
+
+	double theta = acos( rand1*2.0-1.0 );
+	double phi = rand2*2.0*M_PI;
+	units::Vector3L rax(
+			sin(theta)*cos(phi) * units::nm,
+			sin(theta)*sin(phi) * units::nm,
+			cos(theta) 			* units::nm
 	);
-	double angle = Math3D::Random01()*amplitude;
-	M.setRotate(rax, angle);
+	units::Angle angle = (rand3-0.5)*amplitude;
+	M.setIdentity();
+	M = M * Eigen::AngleAxis<units::Length>(angle, rax);
 }
 
-void CofMMove::randTranslation( float amplitude, Math3D::Vector3 &v )
+//void CofMMove::randTranslation( float amplitude, Math3D::Vector3 &v )
+void CofMMove::randTranslation( units::Length amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M )
 {
-	float theta = acos( Math3D::Random01()*2.0f-1.0f );
-	float phi = Math3D::Random01()*2.0f*M_PI;
-	float rad = pow(Math3D::Random01(),1.0/3.0)*amplitude;
-	v[0] = rad*sin(theta)*cos(phi);
-	v[1] = rad*sin(theta)*sin(phi);
-	v[2] = rad*cos(theta);
+	double rand1 = (1.0 * rand()) / RAND_MAX;
+	double rand2 = (1.0 * rand()) / RAND_MAX;
+	double rand3 = (1.0 * rand()) / RAND_MAX;
+	double theta = acos( rand1*2.0f-1.0f );
+	double phi = rand2*2.0*M_PI;
+	units::Length rad = pow(rand3,1.0/3.0)*amplitude;
+	M.setIdentity();
+
+	M = M * Eigen::Translation<units::Length, 3>(
+			rad*sin(theta)*cos(phi),
+			rad*sin(theta)*sin(phi),
+			rad*cos(theta)
+			);
 }
 
 } /* namespace quickstep */
