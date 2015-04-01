@@ -13,57 +13,6 @@
 using namespace std;
 using namespace quickstep;
 
-//Old version using BondGraph
-//KinematicForest::KinematicForest(BondGraph &graph):
-//    adjacencyList(graph.numberOfAtoms()),
-//    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
-////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
-//    atoms(graph.numberOfAtoms()),
-//    transformations(graph.numberOfAtoms()),
-//    transformations_queue(graph.numberOfAtoms())
-//{
-//
-//    //Kruskals algorithm for finding minimum spanning forest
-//    DisjointSet ds(graph.numberOfAtoms());
-//    for(int v1=0;v1<graph.numberOfAtoms();v1++){
-//        for(int i=0;i<graph.adjacencyList[v1].size();i++){
-//            int v2 = graph.adjacencyList[v1][i];
-//            if(!ds.connected(v1,v2)){
-//                adjacencyList[v1].push_back( std::make_pair(v1,v2) );
-//                adjacencyList[v2].push_back( std::make_pair(v1,v2) );
-//                ds.merge(v1,v2);
-//            }
-//        }
-//    }
-//
-//    print();
-//
-//    //Root all trees
-//    roots.push_back(0);
-//    rootTree(0, -1);
-//    for(int v=1;v<graph.numberOfAtoms();v++){
-//        bool vShouldBeRoot = true;
-//        for(int r=0;r<roots.size();r++){
-//            if(ds.connected(roots[r], v)){
-//                vShouldBeRoot = false;
-//                break;
-//            }
-//        }
-//
-//        if(vShouldBeRoot){
-//            roots.push_back(v);
-//
-//            rootTree(v,-1);
-//        }
-//    }
-//
-//    //Reset transformations
-//    for(int i=0;i<graph.numberOfAtoms();i++){
-//        transformations[i].setIdentity();
-//    }
-//
-//}
-
 KinematicForest::KinematicForest():
 		n_atoms(0),
 		topology(NULL)
@@ -472,16 +421,17 @@ void KinematicForest::updatePseudoRoots()
 		int idx1 = idx0+1;
 
         // EXAMPLE: All four versions below work (complication is that Coordinate is an array, while Vector3 is a matrix)
-        units::Coordinate p0 = positions->col( idxr ) + Eigen::Array3d(0.1, 0.0, 0.0)*units::nm;
-        units::Coordinate p1 = positions->col( idxr ) + Eigen::Array3d(0.1, 0.1, 0.0)*units::nm;
+//        units::Coordinate p0 = positions->row( idxr );p0 = p0 + units::Vector3L(0.1, 0.0, 0.0);
+//        units::Coordinate p1 = positions->row( idxr );p1 = p1 + units::Vector3L(0.1, 0.1, 0.0);
         // units::Coordinate p0 = positions->col( idxr ) + (Vector3<double>(0.1, 0.0, 0.0)*units::nm).array() ;
         // units::Coordinate p1 = positions->col( idxr ) + (Vector3<double>(0.1, 0.1, 0.0)*units::nm).array();
-        // units::Coordinate p0 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
-        // units::Coordinate p1 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
-		// units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
-		// units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
-		pseudo_root_positions.col(r*2  ) = p0;
-		pseudo_root_positions.col(r*2+1) = p1;
+//         units::Coordinate p0 = positions->row( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
+//         units::Coordinate p1 = positions->row( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
+		auto tmp = positions->row(idxr);
+		 units::Coordinate p0 = positions->row( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
+		 units::Coordinate p1 = positions->row( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
+		pseudo_root_positions.row(r*2  ) = p0;
+		pseudo_root_positions.row(r*2+1) = p1;
 
 		adjacencyList.push_back( std::vector< pair<int,int> >() );
 		adjacencyList[idx0].push_back( std::make_pair( idx0, idxr ) );
