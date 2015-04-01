@@ -188,8 +188,8 @@ public:
     }
 
 
-//    inline typename std::remove_reference<ExpressionType>::type::Index rows() const { return expression.rows(); }
-//    inline typename std::remove_reference<ExpressionType>::type::Index cols() const { return expression.cols(); }
+    inline int rows() const { return expression.rows(); }
+    inline int cols() const { return expression.cols(); }
 //    inline Index outerStride() const { expression.outerStride(); }
 //    inline Index innerStride() const { expression.innerStride(); }
 
