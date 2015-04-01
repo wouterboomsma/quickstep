@@ -1,6 +1,7 @@
 #ifndef EIGEN_QUANTITY_TRANSFORM_H
 #define EIGEN_QUANTITY_TRANSFORM_H
 
+#include "QuantityGeometry.h"
 #include "QuantityGeometryTransformBase.h"
 
 namespace Eigen {
@@ -18,21 +19,19 @@ public:
     setIdentity() {
         this->nested().setIdentity();
     }
-
-
 };
 
 template<typename QDim, typename QSystem, int Dim, int Mode>
-class Transform<boost::units::unit<QDim, QSystem>, Dim, Mode>: public Quantity<Transform<double, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> {
+class Transform<boost::units::unit<QDim, QSystem>, Dim, Mode>: public QuantityGeometry<Transform<double, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> {
 public:
-    typedef Quantity<Transform<double, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> Base;
+    typedef QuantityGeometry<Transform<double, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> Base;
 
     using Base::Base;
 };
 
 template<typename QDim, typename QSystem, typename QScalar, int Dim, int Mode>
-class Transform<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>, Dim, Mode>: public Quantity<Transform<QScalar, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> {
-    typedef Quantity<Transform<QScalar, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> Base;
+class Transform<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>, Dim, Mode>: public QuantityGeometry<Transform<QScalar, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> {
+    typedef QuantityGeometry<Transform<QScalar, Dim, Mode, AutoAlign>, boost::units::unit<QDim, QSystem>> Base;
 
     using Base::Base;
 };

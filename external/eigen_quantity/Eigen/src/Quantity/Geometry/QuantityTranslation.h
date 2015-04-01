@@ -1,6 +1,7 @@
 #ifndef EIGEN_QUANTITY_TRANSLATION_H
 #define EIGEN_QUANTITY_TRANSLATION_H
 
+#include "QuantityGeometry.h"
 #include "QuantityGeometryTransformBase.h"
 
 namespace Eigen {
@@ -12,11 +13,11 @@ public:
 };
 
 template<typename QDim, typename QSystem, int Dim>
-class Translation<boost::units::unit<QDim, QSystem>, Dim>: public Quantity<Translation<double, Dim>, boost::units::unit<QDim, QSystem>> {
+class Translation<boost::units::unit<QDim, QSystem>, Dim>: public QuantityGeometry<Translation<double, Dim>, boost::units::unit<QDim, QSystem>> {
 public:
 
     typedef boost::units::unit<QDim, QSystem> Unit;
-    typedef Quantity<Translation<double, Dim>, Unit> Base;
+    typedef QuantityGeometry<Translation<double, Dim>, Unit> Base;
 
     using Base::Base;
 
@@ -33,10 +34,10 @@ public:
 };
 
 template<typename QDim, typename QSystem, typename QScalar, int Dim>
-class Translation<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>, Dim>: public Quantity<Translation<QScalar, Dim>, boost::units::unit<QDim, QSystem>> {
+class Translation<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>, Dim>: public QuantityGeometry<Translation<QScalar, Dim>, boost::units::unit<QDim, QSystem>> {
 public:
     typedef boost::units::unit<QDim, QSystem> Unit;
-    typedef Quantity<Translation<QScalar, Dim>, Unit> Base;
+    typedef QuantityGeometry<Translation<QScalar, Dim>, Unit> Base;
 
     using Base::Base;
 

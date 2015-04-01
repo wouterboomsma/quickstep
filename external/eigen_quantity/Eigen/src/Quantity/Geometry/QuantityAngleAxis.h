@@ -12,10 +12,10 @@ public:
 };
 
 template<typename QDim, typename QSystem>
-class AngleAxis<boost::units::unit<QDim, QSystem>>: public Quantity<AngleAxis<double>, boost::units::unit<QDim, QSystem>> {
+class AngleAxis<boost::units::unit<QDim, QSystem>>: public QuantityGeometry<AngleAxis<double>, boost::units::unit<QDim, QSystem>> {
 public:
     typedef boost::units::unit<QDim, QSystem> Unit;
-    typedef Quantity<AngleAxis<double>, Unit> Base;
+    typedef QuantityGeometry<AngleAxis<double>, Unit> Base;
 
     using Base::Base;
 
@@ -27,10 +27,10 @@ public:
 };
 
 template<typename QDim, typename QSystem, typename QScalar>
-class AngleAxis<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>>: public Quantity<AngleAxis<QScalar>, boost::units::unit<QDim, QSystem>> {
+class AngleAxis<boost::units::quantity<boost::units::unit<QDim, QSystem>, QScalar>>: public QuantityGeometry<AngleAxis<QScalar>, boost::units::unit<QDim, QSystem>> {
 public:
     typedef boost::units::unit<QDim, QSystem> Unit;
-    typedef Quantity<AngleAxis<QScalar>, Unit> Base;
+    typedef QuantityGeometry<AngleAxis<QScalar>, Unit> Base;
 
     using Base::Base;
 

@@ -1,5 +1,5 @@
-#ifndef EIGEN_QUANTITY_GEOMETRY_BASE_H
-#define EIGEN_QUANTITY_GEOMETRY_BASE_H
+#ifndef EIGEN_QUANTITY_GEOMETRY_TRANSFORM_BASE_H
+#define EIGEN_QUANTITY_GEOMETRY_TRANSFORM_BASE_H
 
 #include "Eigen/Geometry"
 
@@ -57,4 +57,4 @@ operator*(const QuantityGeometryTransformBase<ExpressionType, Unit> &lhs, const 
 
 }
 
-#endif // EIGEN_QUANTITY_GEOMETRY_BASE
+#endif // EIGEN_QUANTITY_GEOMETRY_TRANSFORMATION_BASE

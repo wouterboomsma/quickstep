@@ -354,13 +354,57 @@ operator*(const VectorwiseOp<OtherExpressionType, Direction> &lhs, const Quantit
 //    return lhs.nested()*rhs.nested();
 //}
 
-template<typename ExpressionType, typename Unit, typename TYPE>
+template<typename ExpressionType, typename Unit>
 inline auto
-operator*(const TYPE &lhs, const Quantity<ExpressionType, Unit> &rhs)
+operator*(const double &lhs, const Quantity<ExpressionType, Unit> &rhs)
 -> Quantity<decltype(lhs*rhs.nested()),
             Unit>{
     return lhs*rhs.nested();
 }
+
+template<typename ExpressionType, typename Unit, typename OtherUnit>
+inline auto
+operator*(const boost::units::quantity<OtherUnit> &lhs, const Quantity<ExpressionType, Unit> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit()*OtherUnit())>{
+    return lhs.value()*rhs.value();
+}
+
+template<typename ExpressionType, typename Unit, typename OtherDerived, typename OtherUnit>
+inline auto
+operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const Quantity<OtherDerived, OtherUnit> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit() * OtherUnit())> {
+    return lhs.value()*rhs.value();
+}
+
+template<typename ExpressionType, typename Unit, typename OtherExpressionType>
+inline auto
+operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const DenseBase<OtherExpressionType> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs), Unit> {
+    return lhs.value()*rhs;
+}
+
+template<typename ExpressionType, typename Unit, typename OtherExpressionType>
+inline auto
+operator*(const DenseBase<ExpressionType> &lhs, const DenseBase<Quantity<OtherExpressionType, Unit>> &rhs)
+-> const Quantity<decltype(lhs*rhs.value()), Unit> {
+    return lhs*rhs.value();
+}
+
+template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+inline auto
+operator*(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit()*OtherUnit())> {
+    return lhs.value()*rhs.value();
+}
+
+
+//template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
+//inline auto
+//operator*(const Quantity<Transform<ExpressionType, Unit> &lhs, const Quantity<OtherExpressionType, OtherUnit> &rhs)
+//-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit()*OtherUnit())> {
+//    return lhs.value()*rhs.value();
+//}
+
 
 
 
