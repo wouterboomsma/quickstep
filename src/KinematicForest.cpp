@@ -313,7 +313,10 @@ units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
 //    assert(i>-4 && i<n_atoms);
 
     if(i>=n_atoms){
-    	return pseudo_root_positions.col(i-n_atoms);
+    	units::CoordinatesWrapper wrapper =
+    			units::CoordinatesWrapper::UnitLess(pseudo_root_positions.data(), 3, pseudo_root_positions.cols()) * units::nm ;
+    	return wrapper.col(i-n_atoms);
+//    	return units::CoordinatesWrapper(pseudo_root_positions.data()).col(i-n_atoms);
     }
 
     return positions->col(i);
