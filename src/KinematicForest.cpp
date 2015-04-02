@@ -416,7 +416,7 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 	bool matchesForward = true;
 
 	for(int p=0;p<dofNames.size();p++){
-		if(a<0 || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+		if(a>=n_atoms || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
 		a = parent(a);
 	}
 
