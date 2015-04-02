@@ -108,6 +108,7 @@ public:
     typedef typename std::remove_reference<ExpressionType>::type::Scalar Scalar;
     typedef boost::units::quantity<Unit, Scalar> QuantityType;
     typedef const Quantity& Nested;
+    typedef ExpressionType UnitLess;
 //    typedef typename std::remove_reference<ExpressionType>::type::Index Index;
 
     inline Quantity(){}

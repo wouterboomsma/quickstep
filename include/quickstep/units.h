@@ -128,16 +128,18 @@ typedef boost::units::quantity<AngleUnit> Angle_rad;
 typedef Angle_rad Angle;
 
 // Containers of coordinates
-typedef Eigen::QuantityArray<Length, 1, 3> Coordinate;
-typedef Eigen::QuantityArray<Length, Eigen::Dynamic, 3> Coordinates;
+typedef Eigen::QuantityArray<Length, 3, 1> Coordinate;
+typedef Eigen::QuantityArray<Length, 3, Eigen::Dynamic> Coordinates;
 
-typedef Eigen::Map<Eigen::QuantityArray<Length, 1, 3>> CoordinateWrapper;
-typedef const Eigen::Map<const Eigen::QuantityArray<Length, 1, 3>> ConstCoordinateWrapper;
+typedef Eigen::Map<Eigen::QuantityArray<Length, 3, Eigen::Dynamic>> CoordinatesWrapper;
 
-typedef Eigen::QuantityArray<Length_AA, 1, 3> CoordinateAA;
-typedef Eigen::QuantityArray<Length_AA, Eigen::Dynamic, 3> CoordinatesAA;
+typedef Eigen::Map<Eigen::QuantityArray<Length, 3, 1>> CoordinateWrapper;
+typedef const Eigen::Map<const Eigen::QuantityArray<Length, 3, 1>> ConstCoordinateWrapper;
 
-typedef Eigen::QuantityMatrix<Length, 1, 3> Vector3L;
+typedef Eigen::QuantityArray<Length_AA, 3, 1> CoordinateAA;
+typedef Eigen::QuantityArray<Length_AA, 3, Eigen::Dynamic> CoordinatesAA;
+
+typedef Eigen::QuantityMatrix<Length, 3, 1> Vector3L;
 
 }}
 

@@ -26,11 +26,11 @@ KinematicForest::KinematicForest():
 
 }
 
-KinematicForest::KinematicForest(quickstep::Topology &topology, quickstep::units::Coordinates* coordinates):
+KinematicForest::KinematicForest(quickstep::Topology &topology, const units::CoordinatesWrapper &coordinates):
 		topology(&topology),
-		positions(coordinates),
+		positions(make_unique<units::CoordinatesWrapper>(coordinates)),
         // NOTE: stored posisions is a matrix and must be initialized with two sizes
-		stored_positions(coordinates->rows(), coordinates->cols())
+		stored_positions(coordinates.rows(), coordinates.cols())
 //    adjacencyList(topology.graph.numberOfAtoms()),
 //    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
 ////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
@@ -114,9 +114,9 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, quickstep::units
 }
 
 //std::vector< Math3D::Vector3 >& KinematicForest::getPositions()
-units::Coordinates* KinematicForest::getPositions()
+units::CoordinatesWrapper &KinematicForest::getPositions()
 {
-    return positions;
+    return *positions.get();
 }
 
 int KinematicForest::getRoots()
@@ -148,10 +148,10 @@ units::Angle KinematicForest::getDOFAngle(int atom)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of RowXpr instead of standard references
-    units::Coordinates::RowXpr a0_pos = pos(atom);
-    units::Coordinates::RowXpr a1_pos = pos(a1);
-    units::Coordinates::RowXpr a2_pos = pos(a2);
+    // Note the use of ColXpr instead of standard references
+    units::CoordinatesWrapper::ColXpr a0_pos = pos(atom);
+    units::CoordinatesWrapper::ColXpr a1_pos = pos(a1);
+    units::CoordinatesWrapper::ColXpr a2_pos = pos(a2);
     units::Vector3L v1 = a2_pos-a1_pos;
     units::Vector3L v2 = a0_pos-a1_pos;
     units::Length v1_len = v1.norm();
@@ -202,10 +202,10 @@ void KinematicForest::changeDOFAngle(int atom, units::Angle value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of RowXpr instead of standard references
-    units::Coordinates::RowXpr pos_a = pos(atom);
-    units::Coordinates::RowXpr pos_a1 = pos(a1);
-    units::Coordinates::RowXpr pos_a2 = pos(a2);
+    // Note the use of ColXpr instead of standard references
+    units::CoordinatesWrapper::ColXpr pos_a = pos(atom);
+    units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
+    units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
     units::Vector3L v1 = pos_a2- pos_a1;
     units::Vector3L v2 = pos_a - pos_a1;
     units::Vector3L axis = v1.cross(v2);
@@ -231,9 +231,9 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
     int a1 = parent(atom);
     int a2 = parent(a1);
 
-    // Note the use of RowXpr instead of standard references
-    units::Coordinates::RowXpr pos_a1 = pos(a1);
-    units::Coordinates::RowXpr pos_a2 = pos(a2);
+    // Note the use of ColXpr instead of standard references
+    units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
+    units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
 
     units::Vector3L axis = (pos_a2- pos_a1);
     axis.normalize();
@@ -282,13 +282,11 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
         }
 
-        units::Coordinate orig_coord = units::Coordinate(positions->row(atom));
-        stored_positions.row(atom) = orig_coord;
+        units::Coordinate orig_coord = units::Coordinate(positions->col(atom));
+        stored_positions.col(atom) = orig_coord;
         QSTransform transform = transformations[atom];
-        // NOTE: the .tranpose is necessary to obtain a column matrix. The .matrix
-        // proved to be necessary to avoid a strange mistake about noalias.
-        units::Coordinate new_coord = transform * orig_coord.matrix().transpose();
-        positions->row(atom) = new_coord;
+        units::Coordinate new_coord = transform * orig_coord.matrix();
+        positions->col(atom) = new_coord;
 
 
         for(int c=0;c<adjacencyList[atom].size();c++){
@@ -305,7 +303,7 @@ void KinematicForest::restorePositions()
 
 }
 
-units::Coordinates::RowXpr KinematicForest::pos(int i)
+units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
 {
     assert(i>-4 && i<n_atoms);
 
@@ -316,7 +314,7 @@ units::Coordinates::RowXpr KinematicForest::pos(int i)
 //    default: return positions[i];
 //    }
 
-    return positions->row(i);
+    return positions->col(i);
 }
 
 void KinematicForest::rootTree(int v, int p)
@@ -421,17 +419,17 @@ void KinematicForest::updatePseudoRoots()
 		int idx1 = idx0+1;
 
         // EXAMPLE: All four versions below work (complication is that Coordinate is an array, while Vector3 is a matrix)
-//        units::Coordinate p0 = positions->row( idxr );p0 = p0 + units::Vector3L(0.1, 0.0, 0.0);
-//        units::Coordinate p1 = positions->row( idxr );p1 = p1 + units::Vector3L(0.1, 0.1, 0.0);
+//        units::Coordinate p0 = positions->col( idxr );p0 = p0 + units::Vector3L(0.1, 0.0, 0.0);
+//        units::Coordinate p1 = positions->col( idxr );p1 = p1 + units::Vector3L(0.1, 0.1, 0.0);
         // units::Coordinate p0 = positions->col( idxr ) + (Vector3<double>(0.1, 0.0, 0.0)*units::nm).array() ;
         // units::Coordinate p1 = positions->col( idxr ) + (Vector3<double>(0.1, 0.1, 0.0)*units::nm).array();
-//         units::Coordinate p0 = positions->row( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
-//         units::Coordinate p1 = positions->row( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
-		auto tmp = positions->row(idxr);
-		 units::Coordinate p0 = positions->row( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
-		 units::Coordinate p1 = positions->row( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
-		pseudo_root_positions.row(r*2  ) = p0;
-		pseudo_root_positions.row(r*2+1) = p1;
+//         units::Coordinate p0 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
+//         units::Coordinate p1 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
+		auto tmp = positions->col(idxr);
+		 units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
+		 units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
+		pseudo_root_positions.col(r*2  ) = p0;
+		pseudo_root_positions.col(r*2+1) = p1;
 
 		adjacencyList.push_back( std::vector< pair<int,int> >() );
 		adjacencyList[idx0].push_back( std::make_pair( idx0, idxr ) );

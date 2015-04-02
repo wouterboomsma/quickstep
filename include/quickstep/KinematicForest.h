@@ -29,13 +29,13 @@ class KinematicForest
 {
 public:
     /** Construct a kinematic forest spanning all atoms in the topology. */
-    KinematicForest(quickstep::Topology& topology, quickstep::units::Coordinates* coordinates);
+    KinematicForest(quickstep::Topology& topology, const units::CoordinatesWrapper &coordinates);
 
     KinematicForest();
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
-    units::Coordinates* getPositions();
+    units::CoordinatesWrapper &getPositions();
 //    std::vector< Math3D::Vector3 >& getPositions();
 
     int getRoots();
@@ -110,7 +110,7 @@ private:
 
     /// Positions of atoms
 //    std::vector< Math3D::Vector3 > positions;
-    units::Coordinates* positions;
+    std::unique_ptr<units::CoordinatesWrapper> positions;
     units::Coordinates stored_positions;
 
     units::Coordinates pseudo_root_positions;
@@ -119,7 +119,7 @@ private:
     /// if i==-2 return p1, and if i==-3 return p2
     // NOTE: reference to a row/col in an Eigen matrix/array
     // has type ::RowXpr/::ColXpr (reference is implicit)
-    units::Coordinates::RowXpr pos(int i);
+    units::CoordinatesWrapper::ColXpr pos(int i);
 //    Math3D::Vector3& pos(int i);
 
 //    Math3D::Vector3 p0;
