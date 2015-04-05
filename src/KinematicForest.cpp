@@ -282,11 +282,16 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
         }
 
-        units::Coordinate orig_coord = units::Coordinate(positions->col(atom));
-        stored_positions.col(atom) = orig_coord;
-        QSTransform transform = transformations[atom];
-        units::Coordinate new_coord = transform * orig_coord.matrix();
-        positions->col(atom) = new_coord;
+//        cout<<"Atom: "<<atom<<" .. "<<positions->cols()<<endl;
+//        units::Coordinate orig_coord = pos(atom);//positions->col(atom);
+//        stored_positions.col(atom) = orig_coord;
+//        QSTransform transform = transformations[atom];
+//        units::Coordinate new_coord = transform * pos(atom).matrix();
+//        positions->col(atom) = new_coord;
+//        positions->col(atom) = transform * pos(atom).matrix();
+
+        backupPos(atom);
+        applyTransformationAtPos(atom);
 
 
         for(int c=0;c<adjacencyList[atom].size();c++){
@@ -305,16 +310,36 @@ void KinematicForest::restorePositions()
 
 units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
 {
-    assert(i>-4 && i<n_atoms);
+//    assert(i>-4 && i<n_atoms);
 
-//    switch(i){
-//    case -3: return p2;
-//    case -2: return p1;
-//    case -1: return p0;
-//    default: return positions[i];
-//    }
+    if(i>=n_atoms){
+    	units::CoordinatesWrapper wrapper =
+    			units::CoordinatesWrapper::UnitLess(pseudo_root_positions.data(), 3, pseudo_root_positions.cols()) * units::nm ;
+    	return wrapper.col(i-n_atoms);
+//    	return units::CoordinatesWrapper(pseudo_root_positions.data()).col(i-n_atoms);
+    }
 
     return positions->col(i);
+}
+
+void KinematicForest::backupPos(int i)
+{
+    if(i>=n_atoms){
+    	stored_pseudo_root_positions.col(i-n_atoms) = pseudo_root_positions.col(i-n_atoms);
+    }else{
+    	stored_positions.col(i) = positions->col(i);
+    }
+}
+
+void KinematicForest::applyTransformationAtPos(int i)
+{
+    if(i>=n_atoms){
+//    	units::Coordinate orig_coord = pos(i);
+//    	QSTransform& transform = transformations[i];
+    	pseudo_root_positions.col(i-n_atoms) = transformations[i]*pseudo_root_positions.col(i-n_atoms).matrix();
+    }else{
+    	positions->col(i) = transformations[i]*positions->col(i).matrix();
+    }
 }
 
 void KinematicForest::rootTree(int v, int p)
@@ -391,7 +416,7 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 	bool matchesForward = true;
 
 	for(int p=0;p<dofNames.size();p++){
-		if(a<0 || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+		if(a>=n_atoms || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
 		a = parent(a);
 	}
 
@@ -411,7 +436,10 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 void KinematicForest::updatePseudoRoots()
 {
     // NOTE: resize of matrix requires two size arguments
-	pseudo_root_positions.resize(roots.size()*2, Eigen::NoChange);
+//	pseudo_root_positions.resize(roots.size()*2, Eigen::NoChange);
+//	pseudo_root_positions.resize(roots.size()*2, 3);
+	pseudo_root_positions.resize(3, roots.size()*2);
+	stored_pseudo_root_positions.resize(3, roots.size()*2);
 
 	for(int r=0;r<roots.size();r++){
 		int idxr = roots[r];
@@ -425,9 +453,8 @@ void KinematicForest::updatePseudoRoots()
         // units::Coordinate p1 = positions->col( idxr ) + (Vector3<double>(0.1, 0.1, 0.0)*units::nm).array();
 //         units::Coordinate p0 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
 //         units::Coordinate p1 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
-		auto tmp = positions->col(idxr);
-		 units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
-		 units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
+		units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
+		units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
 		pseudo_root_positions.col(r*2  ) = p0;
 		pseudo_root_positions.col(r*2+1) = p1;
 

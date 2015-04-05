@@ -114,21 +114,21 @@ private:
     units::Coordinates stored_positions;
 
     units::Coordinates pseudo_root_positions;
+    units::Coordinates stored_pseudo_root_positions;
 
-    /// Get the position of atom index i. If i==-1 return p0
-    /// if i==-2 return p1, and if i==-3 return p2
-    // NOTE: reference to a row/col in an Eigen matrix/array
-    // has type ::RowXpr/::ColXpr (reference is implicit)
+    /**
+     * Get the position of atom index i.
+     * If n_atoms <= i < n_atoms+roots.size()*2 the corresponding member of pseudo_roots
+     * is returned.
+     */
     units::CoordinatesWrapper::ColXpr pos(int i);
-//    Math3D::Vector3& pos(int i);
 
-//    Math3D::Vector3 p0;
-//    Math3D::Vector3 p1;
-//    Math3D::Vector3 p2;
+    void backupPos(int i);
+
+    void applyTransformationAtPos(int i);
+
 
     /// Each atom has an associated transformation
-//    std::vector< Math3D::RigidTransform > transformations;
-//    std::vector< std::vector< Math3D::RigidTransform > > transformations_queue;
     std::vector< QSTransform > transformations;
     std::vector< std::vector< QSTransform > > transformations_queue;
 
