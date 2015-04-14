@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include <quickstep/dofControllers/stdDoFController.h>
+#include <quickstep/dofControllers/StdDoFController.h>
 
 #include <sstream>
 
