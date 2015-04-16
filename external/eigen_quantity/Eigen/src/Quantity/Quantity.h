@@ -398,6 +398,13 @@ operator*(const boost::units::quantity<OtherUnit> &lhs, const Quantity<Expressio
     return lhs.value()*rhs.value();
 }
 
+template<typename ExpressionType, typename Unit, typename OtherUnit>
+inline auto
+operator*(const Quantity<ExpressionType, Unit> &lhs, const boost::units::quantity<OtherUnit> &rhs)
+-> const Quantity<decltype(lhs.value()*rhs.value()), decltype(Unit()*OtherUnit())>{
+    return lhs.value()*rhs.value();
+}
+
 template<typename ExpressionType, typename Unit, typename OtherDerived, typename OtherUnit>
 inline auto
 operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const Quantity<OtherDerived, OtherUnit> &rhs)
