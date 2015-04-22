@@ -29,14 +29,7 @@ KinematicForest::KinematicForest():
 KinematicForest::KinematicForest(quickstep::Topology &topology, const units::CoordinatesWrapper &coordinates):
 		topology(&topology),
 		positions(make_unique<units::CoordinatesWrapper>(coordinates)),
-        // NOTE: stored posisions is a matrix and must be initialized with two sizes
-		stored_positions(coordinates.rows(), coordinates.cols())
-//    adjacencyList(topology.graph.numberOfAtoms()),
-//    positions(graph.numberOfAtoms(), Math3D::Vector3(0,0,0)),
-////    p0(0,0,0), p1(1,0,0), p2(0,1,0),
-//    atoms(graph.numberOfAtoms()),
-//    transformations(graph.numberOfAtoms()),
-//    transformations_queue(graph.numberOfAtoms())
+		stored_positions(coordinates.rows(), coordinates.cols()) // Stored positions is a matrix and must be initialized with two sizes
 {
 	//Associate each atom with a unique index between 0 and the total number of atoms
 	n_atoms = 0;
@@ -56,9 +49,8 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
 
 	//Allocate space for tree, positions and transformations
 	adjacencyList.resize(n_atoms);
-//	positions.resize(n_atoms, Math3D::Vector3(0,0,0));
 	transformations.resize(n_atoms);
-	transformations_queue.resize(n_atoms);
+//	transformations_queue.resize(n_atoms);
 
     //Kruskals algorithm for finding minimum spanning forest
     DisjointSet ds(n_atoms);
@@ -73,18 +65,6 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
     		ds.merge(a1Idx, a2Idx);
     	}
     }
-//    for(int v1=0;v1<n_atoms;v1++){
-//        for(int i=0;i<graph.adjacencyList[v1].size();i++){
-//            int v2 = graph.adjacencyList[v1][i];
-//            if(!ds.connected(v1,v2)){
-//                adjacencyList[v1].push_back( std::make_pair(v1,v2) );
-//                adjacencyList[v2].push_back( std::make_pair(v1,v2) );
-//                ds.merge(v1,v2);
-//            }
-//        }
-//    }
-
-//    print();
 
     //Root all trees
     roots.push_back(0);
@@ -107,13 +87,11 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
 
     //Reset transformations
     for(int i=0;i<n_atoms;i++){
-//    	transformations[i] = QSTransform::Identity()
         transformations[i].setIdentity();
     }
 
 }
 
-//std::vector< Math3D::Vector3 >& KinematicForest::getPositions()
 units::CoordinatesWrapper &KinematicForest::getPositions()
 {
     return *positions.get();
@@ -190,7 +168,8 @@ void KinematicForest::changeDOFLength(int atom, units::Length value)
     units::Vector3L d = pos(atom)-pos(a1);
     d.normalize();
     d *= value;
-    transformations_queue[atom].push_back(Eigen::Translation<units::Length,3>(d));
+    transformations[atom] = transformations[atom]*Eigen::Translation<units::Length,3>(d);
+//    transformations_queue[atom].push_back(Eigen::Translation<units::Length,3>(d));
 }
 
 void KinematicForest::changeDOFAngle(int atom, units::Angle value)
@@ -211,15 +190,15 @@ void KinematicForest::changeDOFAngle(int atom, units::Angle value)
     units::Vector3L axis = v1.cross(v2);
     axis.normalize();
 
-//    // INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
-//    units::Angle angle_value = 0. * units::radians;
-
-    // NOTE: value has been replaced by angle_value for construction of AngleAxis
-    transformations_queue[atom].push_back(
+    transformations[atom] = transformations[atom] *
     		Eigen::Translation<units::Length, 3>(pos_a1)*
 			Eigen::AngleAxis<units::Length>(value, axis)*
-			Eigen::Translation<units::Length, 3>(-pos_a1)
-    );
+			Eigen::Translation<units::Length, 3>(-pos_a1);
+//    transformations_queue[atom].push_back(
+//    		Eigen::Translation<units::Length, 3>(pos_a1)*
+//			Eigen::AngleAxis<units::Length>(value, axis)*
+//			Eigen::Translation<units::Length, 3>(-pos_a1)
+//    );
 }
 
 void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
@@ -241,11 +220,15 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
 //     INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
 //    units::Angle angle_value = 0. * units::radians;
 
-    transformations_queue[atom].push_back(
-    		Eigen::Translation<units::Length, 3>( pos_a1) *
-			Eigen::AngleAxis<units::Length>(value, axis) *
-			Eigen::Translation<units::Length, 3>(-pos_a1)
-			);
+    transformations[atom] = transformations[atom]*
+        		Eigen::Translation<units::Length, 3>( pos_a1) *
+    			Eigen::AngleAxis<units::Length>(value, axis) *
+    			Eigen::Translation<units::Length, 3>(-pos_a1);
+//    transformations_queue[atom].push_back(
+//        		Eigen::Translation<units::Length, 3>( pos_a1) *
+//    			Eigen::AngleAxis<units::Length>(value, axis) *
+//    			Eigen::Translation<units::Length, 3>(-pos_a1)
+//    			);
 
 }
 
@@ -253,7 +236,8 @@ void KinematicForest::changeDOFglobal(int chain, Eigen::Transform<units::Length,
 {
 	if(!pseudoRootsSet)	updatePseudoRoots();
 	int idx1 = parent(parent(roots[chain]));
-	transformations_queue[idx1].push_back( Eigen::Transform<units::Length, 3, Eigen::Affine>(t) );
+	transformations[idx1] = transformations[idx1] * Eigen::Transform<units::Length, 3, Eigen::Affine>(t);
+//	transformations_queue[idx1].push_back( Eigen::Transform<units::Length, 3, Eigen::Affine>(t) );
 }
 
 void KinematicForest::updatePositions()
@@ -278,17 +262,9 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         else
         	transformations[atom].setIdentity();
 
-        for(int i=0;i<transformations_queue[atom].size();i++){
-        	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
-        }
-
-//        cout<<"Atom: "<<atom<<" .. "<<positions->cols()<<endl;
-//        units::Coordinate orig_coord = pos(atom);//positions->col(atom);
-//        stored_positions.col(atom) = orig_coord;
-//        QSTransform transform = transformations[atom];
-//        units::Coordinate new_coord = transform * pos(atom).matrix();
-//        positions->col(atom) = new_coord;
-//        positions->col(atom) = transform * pos(atom).matrix();
+//        for(int i=0;i<transformations_queue[atom].size();i++){
+//        	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
+//        }
 
         backupPos(atom);
         applyTransformationAtPos(atom);
@@ -299,7 +275,7 @@ void KinematicForest::forwardPropagateTransformations(int atom)
                 forwardPropagateTransformations(adjacencyList[atom][c].second);
         }
         transformations[atom].setIdentity();
-        transformations_queue[atom].clear();
+//        transformations_queue[atom].clear();
     }
 }
 
@@ -469,8 +445,8 @@ void KinematicForest::updatePseudoRoots()
 		transformations.push_back(QSTransform::Identity());
 		transformations.push_back(QSTransform::Identity());
 
-		transformations_queue.push_back(std::vector<QSTransform>());
-		transformations_queue.push_back(std::vector<QSTransform>());
+//		transformations_queue.push_back(std::vector<QSTransform>());
+//		transformations_queue.push_back(std::vector<QSTransform>());
 	}
 
 	pseudoRootsSet = true;

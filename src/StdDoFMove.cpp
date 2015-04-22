@@ -13,6 +13,8 @@
 
 namespace quickstep {
 
+// "N-CA-C-N,C-N-CA-C,CA-C,N-CA-C"
+
 StdDoFMove::StdDoFMove(std::string dofs):
 		dofs(dofs)
 {

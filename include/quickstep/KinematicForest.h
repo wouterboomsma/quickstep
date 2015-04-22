@@ -130,11 +130,7 @@ private:
 
     /// Each atom has an associated transformation
     std::vector< QSTransform > transformations;
-    std::vector< std::vector< QSTransform > > transformations_queue;
-
-    //std::vector< Math3D::RigidTransform > transformations_l;
-    //std::vector< Math3D::RigidTransform > transformations_a;
-    //std::vector< Math3D::RigidTransform > transformations_t;
+//    std::vector< std::vector< QSTransform > > transformations_queue;
 
     /**
      * \brief Recurse through the tree, update transformations, apply them to atoms, and
