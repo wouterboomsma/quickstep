@@ -221,7 +221,6 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
         		Eigen::Translation<units::Length, 3>( pos_a1) *
     			Eigen::AngleAxis<units::Length>(value, axis) *
     			Eigen::Translation<units::Length, 3>(-pos_a1);
-    cout<<"changeDOFTorsion"<<endl;
 //    transformations_queue[atom].push_back(
 //        		Eigen::Translation<units::Length, 3>( pos_a1) *
 //    			Eigen::AngleAxis<units::Length>(value, axis) *
@@ -282,7 +281,12 @@ void KinematicForest::forwardPropagateTransformations(int atom)
 
 void KinematicForest::restorePositions()
 {
-
+	for(int i=0;i<n_atoms;i++){
+		positions->col(i) = stored_positions.col(i);
+	}
+	for(int i=0;i<stored_pseudo_root_positions.cols();i++){
+		pseudo_root_positions.col(i) = stored_pseudo_root_positions.col(i);
+	}
 }
 
 units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
