@@ -217,13 +217,11 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
     units::Vector3L axis = (pos_a2- pos_a1);
     axis.normalize();
 
-//     INSERTED TO ALLOW COMPILATION - should be replaced by actual angular value
-//    units::Angle angle_value = 0. * units::radians;
-
     transformations[atom] = transformations[atom]*
         		Eigen::Translation<units::Length, 3>( pos_a1) *
     			Eigen::AngleAxis<units::Length>(value, axis) *
     			Eigen::Translation<units::Length, 3>(-pos_a1);
+    cout<<"changeDOFTorsion"<<endl;
 //    transformations_queue[atom].push_back(
 //        		Eigen::Translation<units::Length, 3>( pos_a1) *
 //    			Eigen::AngleAxis<units::Length>(value, axis) *
@@ -258,9 +256,12 @@ void KinematicForest::forwardPropagateTransformations(int atom)
         int p = parent(atom);
 
         if(p>=0)
-        	transformations[atom] = transformations[p];
-        else
-        	transformations[atom].setIdentity();
+        	transformations[atom] = transformations[p]*transformations[atom];
+
+//        if(p>=0)
+//        	transformations[atom] = transformations[p];
+//        else
+//        	transformations[atom].setIdentity();
 
 //        for(int i=0;i<transformations_queue[atom].size();i++){
 //        	transformations[atom] = transformations[atom] * transformations_queue[atom][i];
@@ -392,7 +393,7 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 	bool matchesForward = true;
 
 	for(int p=0;p<dofNames.size();p++){
-		if(a>=n_atoms || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+		if(a<0 || a>=n_atoms || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
 		a = parent(a);
 	}
 
