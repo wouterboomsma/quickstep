@@ -5,10 +5,11 @@
  *      Author: rfonseca
  */
 
-#ifndef COMPOSITECHASSE_H_
-#define COMPOSITECHASSE_H_
+#ifndef COMPOSITEMOVE_H_
+#define COMPOSITEMOVE_H_
 
 #include <quickstep/Move.h>
+#include <quickstep/MoveInfo.h>
 #include <quickstep/KinematicForest.h>
 #include <quickstep/utils.h>
 
@@ -20,9 +21,11 @@ namespace quickstep {
 class CompositeMove: public Move {
 public:
 	CompositeMove();
-//	virtual ~VarietyMove();
+	~CompositeMove(){}
 
-	bool step(KinematicForest&);
+	MoveInfo step(KinematicForest&, bool suggest_only=false);
+
+	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double);
 
 	void add_move(std::unique_ptr<Move> c, double weight);
 
@@ -33,6 +36,14 @@ private:
 	std::vector<double> accumWeights;
 };
 
+class CompositeMoveInfo: public SpecificMoveInfo
+{
+public:
+	~CompositeMoveInfo();
+	int chosen_move;
+	MoveInfo chosen_info;
+};
+
 } /* namespace quickstep */
 
-#endif /* COMPOSITECHASSE_H_ */
+#endif /* COMPOSITEMOVE_H_ */

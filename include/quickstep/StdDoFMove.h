@@ -1,14 +1,15 @@
 /*
- * FreeBondRotateMove.h
+ * StdDoFMove.h
  *
- *  Created on: Nov 5, 2014
+ *  Created on: Jan, 2015
  *      Author: rfonseca
  */
 
-#ifndef STDDOFCHASSE_H_
-#define STDDOFCHASSE_H_
+#ifndef STDDOFMOVE_H_
+#define STDDOFMOVE_H_
 
 #include <quickstep/Move.h>
+#include <quickstep/MoveInfo.h>
 #include <quickstep/dofControllers/StdDoFController.h>
 
 #include <string>
@@ -18,14 +19,23 @@ namespace quickstep {
 class StdDoFMove: public Move {
 public:
 	StdDoFMove(std::string dofs);
+	~StdDoFMove(){}
 
-	bool step(KinematicForest&);
-
+	MoveInfo step(KinematicForest&, bool suggest_only=false);
+	MoveInfo step_fractional(KinematicForest&, MoveInfo&);
 private:
 	std::unique_ptr<StdDoFController> dof_controller;
 	std::string dofs;
 };
 
+
+class StdDoFMoveInfo: public SpecificMoveInfo
+{
+public:
+	DOFIndex index;
+	double delta_value;
+};
+
 } /* namespace quickstep */
 
-#endif /* STDDOFCHASSE_H_ */
+#endif /* STDDOFMOVE_H_ */

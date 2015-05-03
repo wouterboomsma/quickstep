@@ -14,7 +14,7 @@ add_library(quickstep
   CofMMove.cpp
   StdDoFMove.cpp
   FreeBondRotateMove.cpp
-  math/primitives.cpp
+  MoveInfo.cpp
   dofControllers/StdDoFController.cpp
 
   ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
@@ -24,9 +24,7 @@ add_library(quickstep
   ${PROJECT_SOURCE_DIR}/include/quickstep/CofMMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/StdDoFMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/math/infnan.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/math/math.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/math/primitives.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/MoveInfo.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )
 

@@ -18,9 +18,10 @@ namespace quickstep {
 class FreeBondRotateMove: public Move {
 public:
 	FreeBondRotateMove(units::Angle rotationMagnitude);
-//	virtual ~FreeBondRotateMove();
+	~FreeBondRotateMove(){}
 
-	bool step(KinematicForest&);
+	MoveInfo step(KinematicForest&, bool suggest_only=false);
+	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 private:
 	units::Angle rotationMagnitude;
@@ -31,6 +32,15 @@ private:
 	KinematicForest* cachedKinematicForest;
 
 	void prepareRotatableBonds(KinematicForest&);
+};
+
+
+class FreeBondRotateMoveInfo: public SpecificMoveInfo
+{
+public:
+	~FreeBondRotateMoveInfo();
+	int bond_atom;
+	double delta_value;
 };
 
 } /* namespace quickstep */

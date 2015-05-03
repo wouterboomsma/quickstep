@@ -9,6 +9,7 @@
 #define COFMCHASSE_H_
 
 #include <quickstep/Move.h>
+#include <quickstep/MoveInfo.h>
 #include <quickstep/KinematicForest.h>
 #include <quickstep/math/primitives.h>
 
@@ -28,13 +29,14 @@ public:
 	 * rotation-angle (in radians) around the center-of-mass.
 	 */
 	CofMMove(units::Length translationMagnitude, units::Angle rotationMagnitude);
-//	virtual ~CofMMove();
+	~CofMMove(){}
 
 	/**
 	 * Perform a conformational move of the kinematic forest that translates and rotates
 	 * the kinematic forest.
 	 */
-	bool step(KinematicForest&);
+	MoveInfo step(KinematicForest&, bool suggest_only=false);
+	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double);
 
 private:
 	units::Length translationMagnitude;
@@ -59,6 +61,16 @@ private:
 	void randTranslation( units::Length amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 //	void randTranslation( float amplitude, Math3D::Vector3 &v );
 
+};
+
+
+class CofMMoveInfo: public SpecificMoveInfo{
+public:
+	~CofMMoveInfo();
+	int root;
+	units::Vector3L center_of_mass;
+	Eigen::Transform<units::Length, 3, Eigen::Affine> translation;
+	Eigen::Transform<units::Length, 3, Eigen::Affine> rotation;
 };
 
 } /* namespace quickstep */

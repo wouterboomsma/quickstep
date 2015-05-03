@@ -23,11 +23,7 @@ CofMMove::CofMMove(units::Length translationMagnitude_, units::Angle rotationMag
 
 }
 
-//CofMMove::~CofMMove() {
-//	// TODO Auto-generated destructor stub
-//}
-
-bool CofMMove::step(KinematicForest& kf)
+MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 {
 	//Ensure that chainIndices is in sync with kf
 	prepareChainIndices(kf);
@@ -59,8 +55,51 @@ bool CofMMove::step(KinematicForest& kf)
 			Eigen::Translation<units::Length, 3>(-cofm);
 	kf.changeDOFglobal(root, transform);
 
-	// This move is always succesful
-	return true;
+
+	CofMMoveInfo spec_info;
+	spec_info.root 				= root;
+	spec_info.center_of_mass 	= cofm;
+	spec_info.translation 		= t0;
+	spec_info.rotation 			= t1;
+
+	MoveInfo ret(spec_info);
+
+	SubTree affected_tree;
+	affected_tree.root_atom = kf.getRootAtomIndex(root);
+	ret.affected_atoms.push_back(affected_tree);
+
+	return ret;
+}
+
+MoveInfo CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fractional)
+{
+	CofMMoveInfo& orig_info = dynamic_cast<CofMMoveInfo&>(mi.specific_info);
+
+	//Ensure that chainIndices is in sync with kf
+	prepareChainIndices(kf);
+
+	// Select random chain
+	int root = orig_info.root;
+
+	// Retrieve translation
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 = orig_info.translation*(fractional*units::nm);
+
+	// Retrieve rotation
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 = orig_info.rotation*(fractional*units::nm);
+	randRotation(rotationMagnitude, t1);
+
+	// Compute center-of-mass
+	units::Vector3L& cofm = orig_info.center_of_mass;
+
+	// Suggest random rotation around center-of-mass
+	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
+			t0*
+			Eigen::Translation<units::Length, 3>( cofm)*
+			t1*
+			Eigen::Translation<units::Length, 3>(-cofm);
+	kf.changeDOFglobal(root, transform);
+
+	return mi;
 }
 
 
@@ -89,7 +128,6 @@ void CofMMove::prepareChainIndices(KinematicForest& kf)
 
 	cachedKinematicForest = &kf;
 }
-
 
 void CofMMove::randRotation( units::Angle amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M )
 {

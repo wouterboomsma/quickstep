@@ -13,6 +13,17 @@
 namespace quickstep{
 
 /**
+ * Indicates the index of a DOF in the KinematicForest. Each DOF is defined by an atom-index
+ * indicating the first atom whose position is affected by the DOF and a DOF type indicating
+ * whether the bond-length, bond-angle or bond-torsion preceeding the atom should be indexed.
+ */
+struct DOFIndex{
+	unsigned int atom_index;
+	unsigned int dof_type; ///< 0 is bond-length, 1 is bond angle, and 2 is bond torsion
+};
+
+
+/**
  * @brief A collection of kinematic trees.
  * A kinematic tree is a rooted tree with atoms as vertices and bonds as directed
  * edges. Each vertex is associated with 3 degrees of freedom, a length-DOF indicating
@@ -39,6 +50,7 @@ public:
 //    std::vector< Math3D::Vector3 >& getPositions();
 
     int getRoots();
+    int getRootAtomIndex(int rootIdx);
     int getAtoms();
 
     units::Length getDOFLength(int atom);

@@ -80,10 +80,10 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
 
         if(vShouldBeRoot){
             roots.push_back(v);
-
             rootTree(v,-1);
         }
     }
+    updatePseudoRoots();
 
     //Reset transformations
     for(int i=0;i<n_atoms;i++){
@@ -100,6 +100,11 @@ units::CoordinatesWrapper &KinematicForest::getPositions()
 int KinematicForest::getRoots()
 {
 	return roots.size();
+}
+
+int KinematicForest::getRootAtomIndex(int rootIdx)
+{
+	return roots[rootIdx];
 }
 
 int KinematicForest::getAtoms()
@@ -234,7 +239,6 @@ void KinematicForest::changeDOFglobal(int chain, Eigen::Transform<units::Length,
 	if(!pseudoRootsSet)	updatePseudoRoots();
 	int idx1 = parent(parent(roots[chain]));
 	transformations[idx1] = transformations[idx1] * Eigen::Transform<units::Length, 3, Eigen::Affine>(t);
-//	transformations_queue[idx1].push_back( Eigen::Transform<units::Length, 3, Eigen::Affine>(t) );
 }
 
 void KinematicForest::updatePositions()
@@ -417,8 +421,6 @@ bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNa
 void KinematicForest::updatePseudoRoots()
 {
     // NOTE: resize of matrix requires two size arguments
-//	pseudo_root_positions.resize(roots.size()*2, Eigen::NoChange);
-//	pseudo_root_positions.resize(roots.size()*2, 3);
 	pseudo_root_positions.resize(3, roots.size()*2);
 	stored_pseudo_root_positions.resize(3, roots.size()*2);
 
@@ -427,13 +429,6 @@ void KinematicForest::updatePseudoRoots()
 		int idx0 = n_atoms;
 		int idx1 = idx0+1;
 
-        // EXAMPLE: All four versions below work (complication is that Coordinate is an array, while Vector3 is a matrix)
-//        units::Coordinate p0 = positions->col( idxr );p0 = p0 + units::Vector3L(0.1, 0.0, 0.0);
-//        units::Coordinate p1 = positions->col( idxr );p1 = p1 + units::Vector3L(0.1, 0.1, 0.0);
-        // units::Coordinate p0 = positions->col( idxr ) + (Vector3<double>(0.1, 0.0, 0.0)*units::nm).array() ;
-        // units::Coordinate p1 = positions->col( idxr ) + (Vector3<double>(0.1, 0.1, 0.0)*units::nm).array();
-//         units::Coordinate p0 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.0* units::nm, 0.0* units::nm).array() ;
-//         units::Coordinate p1 = positions->col( idxr ) + units::Vector3L(0.1* units::nm, 0.1* units::nm, 0.0* units::nm).array();
 		units::Coordinate p0 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.0* units::nm, 0.0* units::nm) ;
 		units::Coordinate p1 = positions->col( idxr ) + units::Coordinate(0.1* units::nm, 0.1* units::nm, 0.0* units::nm);
 		pseudo_root_positions.col(r*2  ) = p0;
@@ -449,9 +444,6 @@ void KinematicForest::updatePseudoRoots()
 
 		transformations.push_back(QSTransform::Identity());
 		transformations.push_back(QSTransform::Identity());
-
-//		transformations_queue.push_back(std::vector<QSTransform>());
-//		transformations_queue.push_back(std::vector<QSTransform>());
 	}
 
 	pseudoRootsSet = true;

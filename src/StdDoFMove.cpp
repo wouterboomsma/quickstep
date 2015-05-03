@@ -20,7 +20,7 @@ StdDoFMove::StdDoFMove(std::string dofs):
 {
 }
 
-bool StdDoFMove::step(KinematicForest& kf)
+MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 {
 	if(!dof_controller || dof_controller->kinematic_forest != &kf){
 		std::vector<std::string> dof_tokens;
@@ -28,28 +28,26 @@ bool StdDoFMove::step(KinematicForest& kf)
 		dof_controller = make_unique<StdDoFController>(kf, dof_tokens);
 	}
 
-//	dofController.get
-//	//Ensure that rotatableBonds is in sync with kf
-//	prepareRotatableBonds(kf);
-//
-//	//Find a random bond
-//	int bondAtom = rotatableBonds[ Math3D::Random01()*rotatableBonds.size() ];
-//
-//	//Find a random angle
-//	float angle = Math3D::RandomAngleUniform(rotationMagnitude);
-//
-//	//Perform torsion-change on all children leaving bondAtom
-//	for(int a=0;a<kf.adjacencyList[bondAtom].size();a++){
-//		int childAtom = kf.adjacencyList[bondAtom][a].second;
-//		if(childAtom!=bondAtom) //Not the parent edge
-//			kf.changeDOFTorsion( childAtom, angle );
-//	}
 	int dof_num = dof_controller->numberOfDoFs();
-	int dof_idx = (int)(Math3D::Random01()*dof_num);
-	float angle = Math3D::RandomAngleUniform(1*3.1415/180.0);//1 degree
-	dof_controller->changeDoF(dof_idx, angle);
+	int dof_idx = rand()%dof_num;
+	double value = ((rand()/RAND_MAX)-0.5)*2*3.1415/180.0;
+//	units::Angle angle = ((rand()/RAND_MAX)-0.5)*2*3.1415/180.0 * units::rad;
+	dof_controller->changeDoF(dof_idx, value);
 
-	return true;
+	StdDoFMoveInfo info;
+	DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx] };
+	info.index = dof;
+	info.delta_value = value;
+
+	MoveInfo ret(info);
+
+	SubTree affected_tree;
+	affected_tree.root_atom = dof_controller->dof_atoms[dof_idx];
+	ret.affected_atoms.push_back(affected_tree);
+
+	return ret;
 }
+
+MoveInfo step_fractional(KinematicForest&, MoveInfo&);
 
 } /* namespace quickstep */

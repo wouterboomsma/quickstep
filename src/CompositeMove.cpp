@@ -19,21 +19,28 @@ CompositeMove::CompositeMove() {
 
 }
 
-bool CompositeMove::step(KinematicForest& kf)
+MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 {
 	assert(accumWeights.size()>0);
 
-	float randVal = accumWeights.back() * Math3D::Random01();
+	float randVal = accumWeights.back() * (rand()*1.0/RAND_MAX);
 
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
-			bool status = moves[i]->step(kf);
+			MoveInfo status = moves[i]->step(kf);
 			kf.updatePositions();
 			return status;
 		}
 	}
 
 	throw "Error: Sampled a random value higher than total accumulated weight";
+}
+
+MoveInfo CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
+{
+	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(&mi.specific_info);
+	moves[cmi->chosen_move]->step_fractional(kf, cmi->chosen_info, fraction);
+	return mi;
 }
 
 //void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)

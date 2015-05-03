@@ -52,8 +52,8 @@ private:
 	friend class StdDoFMove;
 	KinematicForest* kinematic_forest;
 
-	std::vector<int> dof_atoms;
-	std::vector<int> dof_types;
+	std::vector<unsigned int> dof_atoms;
+	std::vector<unsigned int> dof_types;
 
 	std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems);
 	std::vector<std::string>  split(const std::string &s, char delim);

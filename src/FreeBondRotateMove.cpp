@@ -20,29 +20,73 @@ FreeBondRotateMove::FreeBondRotateMove(units::Angle rotationMagnitude_):
 
 }
 
-//FreeBondRotateMove::~FreeBondRotateMove() {
-//	// TODO Auto-generated destructor stub
-//}
-
-bool FreeBondRotateMove::step(KinematicForest& kf)
+MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
 {
 	//Ensure that rotatableBonds is in sync with kf
 	prepareRotatableBonds(kf);
 
 	//Find a random bond
-	int bondAtom = rotatableBonds[ rand()%rotatableBonds.size() ];
+	int bond_atom = rotatableBonds[ rand()%rotatableBonds.size() ];
 
 	//Find a random angle
 	units::Angle angle = rotationMagnitude * ((rand()*1.0)/RAND_MAX - 0.5);
 
 	//Perform torsion-change on all children leaving bondAtom
-	for(int a=0;a<kf.adjacencyList[bondAtom].size();a++){
-		int childAtom = kf.adjacencyList[bondAtom][a].second;
-		if(childAtom!=bondAtom) //Not the parent edge
+	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
+		int childAtom = kf.adjacencyList[bond_atom][a].second;
+		if(childAtom!=bond_atom) //Not the parent edge
 			kf.changeDOFTorsion( childAtom, angle );
 	}
 
-	return true;
+
+	//Set up move info
+	FreeBondRotateMoveInfo info;
+	info.bond_atom = bond_atom;
+	info.delta_value = angle.value();
+
+	MoveInfo ret(info);
+
+	SubTree affected_tree;
+	//Note: bond_atom itself is not actually affected, but all children are
+	affected_tree.root_atom = bond_atom;
+	ret.affected_atoms.push_back(affected_tree);
+
+	return ret;
+}
+
+MoveInfo FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
+{
+	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo>(&full_move_info);
+
+	//Ensure that rotatableBonds is in sync with kf
+	prepareRotatableBonds(kf);
+
+	//Find a random bond
+	int bond_atom = orig_move->bond_atom;
+
+	//Find a random angle
+	units::Angle angle = orig_move->delta_value * fraction * units::radians;
+
+	//Perform torsion-change on all children leaving bondAtom
+	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
+		int childAtom = kf.adjacencyList[bond_atom][a].second;
+		if(childAtom!=bond_atom) //Not the parent edge
+			kf.changeDOFTorsion( childAtom, angle );
+	}
+
+	//Set up move info
+	FreeBondRotateMoveInfo info;
+	info.bond_atom = bond_atom;
+	info.delta_value = angle.value();
+
+	MoveInfo ret(info);
+
+	SubTree affected_tree;
+	//Note: bond_atom itself is not actually affected, but all children are
+	affected_tree.root_atom = bond_atom;
+	ret.affected_atoms.push_back(affected_tree);
+
+	return ret;
 }
 
 void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
