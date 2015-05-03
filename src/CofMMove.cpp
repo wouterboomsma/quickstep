@@ -82,10 +82,10 @@ MoveInfo CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fra
 	int root = orig_info.root;
 
 	// Retrieve translation
-	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 = orig_info.translation*(fractional*units::nm);
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 = orig_info.translation*Eigen::UniformScaling<double>(fractional);
 
 	// Retrieve rotation
-	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 = orig_info.rotation*(fractional*units::nm);
+	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 = orig_info.rotation*Eigen::UniformScaling<double>(fractional);
 	randRotation(rotationMagnitude, t1);
 
 	// Compute center-of-mass
@@ -100,7 +100,7 @@ MoveInfo CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fra
 	kf.changeDOFglobal(root, transform);
 
 	return mi;
-}
+};
 
 
 void CofMMove::prepareChainIndices(KinematicForest& kf)
