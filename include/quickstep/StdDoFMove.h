@@ -19,7 +19,6 @@ namespace quickstep {
 class StdDoFMove: public Move {
 public:
 	StdDoFMove(std::string dofs);
-	~StdDoFMove(){}
 
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
 	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction);

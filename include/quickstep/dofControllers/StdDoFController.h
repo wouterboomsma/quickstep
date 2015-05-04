@@ -35,14 +35,12 @@ public:
 
 	StdDoFController();
 
-	virtual ~StdDoFController();
+	~StdDoFController();
 
 	int numberOfDoFs();
 	void changeDoF(int DoFIdx, double changeValueBy);
 	int DoFType(int DoFIdx);
     void updatePositions();
-
-
 
 	static const int DOF_BOND_LENGTH  = 0;
 	static const int DOF_BOND_ANGLE   = 1;
