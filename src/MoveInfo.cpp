@@ -21,4 +21,7 @@ MoveInfo::~MoveInfo()
 //		delete specific_info;
 }
 
+SpecificMoveInfo::~SpecificMoveInfo(){}
+
+
 }

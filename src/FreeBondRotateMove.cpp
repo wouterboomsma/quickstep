@@ -56,16 +56,16 @@ MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
 
 MoveInfo FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
 {
-	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo>(&full_move_info);
+	FreeBondRotateMoveInfo& orig_move = dynamic_cast<FreeBondRotateMoveInfo&>(full_move_info.specific_info);
 
 	//Ensure that rotatableBonds is in sync with kf
 	prepareRotatableBonds(kf);
 
 	//Find a random bond
-	int bond_atom = orig_move->bond_atom;
+	int bond_atom = orig_move.bond_atom;
 
 	//Find a random angle
-	units::Angle angle = orig_move->delta_value * fraction * units::radians;
+	units::Angle angle = orig_move.delta_value * fraction * units::radians;
 
 	//Perform torsion-change on all children leaving bondAtom
 	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){

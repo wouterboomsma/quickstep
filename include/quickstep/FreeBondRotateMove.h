@@ -38,7 +38,7 @@ private:
 class FreeBondRotateMoveInfo: public SpecificMoveInfo
 {
 public:
-	~FreeBondRotateMoveInfo();
+	~FreeBondRotateMoveInfo(){}
 	int bond_atom;
 	double delta_value;
 };

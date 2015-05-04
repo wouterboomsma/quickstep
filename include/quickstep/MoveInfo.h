@@ -23,7 +23,6 @@ struct SubTree{
 class SpecificMoveInfo{
 public:
 	virtual ~SpecificMoveInfo();
-protected:
 };
 
 class MoveInfo{

@@ -48,6 +48,9 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 	return ret;
 }
 
-MoveInfo step_fractional(KinematicForest&, MoveInfo&);
+MoveInfo StdDoFMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
+{
+
+}
 
 } /* namespace quickstep */

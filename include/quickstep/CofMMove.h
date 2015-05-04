@@ -17,6 +17,9 @@
 
 namespace quickstep {
 
+class CofMMoveInfo; //Forward declaration
+
+
 /**
  * A chassé that picks a random chain and performs a translation and rotation around the
  * chains center-of-mass.
@@ -51,26 +54,34 @@ private:
 
 	void prepareChainIndices(KinematicForest&);
 
-	/** Changes \a M so it contains a rotation matrix that uniformly rotates points
-	 *  in such a way that the largest possible rotation of any point around the origin
-	 *  is \a amplitude. */
-	void randRotation( units::Angle amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
-//	void randRotation(float amplitude, Math3D::Matrix3 &M);
+	/**
+	 * Changes \a move_info so it contains info for a rotation matrix that uniformly rotates
+	 * points in such a way that the largest possible rotation of any point around the origin
+	 * is \a amplitude.
+	 */
+	void randRotation( units::Angle amplitude, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
-	/** Changes \a v to a random direction with length at most \a amplitude. */
-	void randTranslation( units::Length amplitude, Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
-//	void randTranslation( float amplitude, Math3D::Vector3 &v );
+	/**
+	 * Changes \a move_info so it contains info for a translation matrix that uniformly moves
+	 * points in such a way that the largest possible displacement of any point is \a amplitude.
+	 */
+	void randTranslation( units::Length amplitude, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
 };
 
 
 class CofMMoveInfo: public SpecificMoveInfo{
 public:
-	~CofMMoveInfo();
 	int root;
 	units::Vector3L center_of_mass;
-	Eigen::Transform<units::Length, 3, Eigen::Affine> translation;
-	Eigen::Transform<units::Length, 3, Eigen::Affine> rotation;
+	units::Angle rotation_angle;
+	units::Vector3L rotation_axis;
+	units::Length translation_length;
+	units::Vector3L translation_axis;
+
+
+//	Eigen::Transform<units::Length, 3, Eigen::Affine> translation;
+//	Eigen::Transform<units::Length, 3, Eigen::Affine> rotation;
 };
 
 } /* namespace quickstep */
