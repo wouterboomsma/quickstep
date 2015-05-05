@@ -16,11 +16,11 @@ MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
 //
 //}
 
-MoveInfo::~MoveInfo()
-{
-//	if(specific_info!=0)
-//		delete specific_info;
-}
+//MoveInfo::~MoveInfo()
+//{
+////	if(specific_info!=0)
+////		delete specific_info;
+//}
 
 SpecificMoveInfo::~SpecificMoveInfo(){}
 
