@@ -14,6 +14,7 @@ add_library(quickstep
   CofMMove.cpp
   StdDoFMove.cpp
   FreeBondRotateMove.cpp
+  InterpolatorMove.cpp
   MoveInfo.cpp
   dofControllers/StdDoFController.cpp
 
@@ -24,6 +25,7 @@ add_library(quickstep
   ${PROJECT_SOURCE_DIR}/include/quickstep/CofMMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/StdDoFMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/InterpolatorMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MoveInfo.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )

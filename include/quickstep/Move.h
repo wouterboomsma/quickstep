@@ -28,6 +28,11 @@ public:
 	virtual MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction) = 0;
 };
 
+struct StepFractionalNotImplementedError{
+	StepFractionalNotImplementedError(){}
+};
+
+
 } /* namespace quickstep */
 
 #endif /* MOVE_H_ */

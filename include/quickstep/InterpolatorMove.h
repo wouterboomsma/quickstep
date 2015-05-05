@@ -18,11 +18,16 @@ namespace quickstep {
 
 class InterpolatorMove: public Move {
 public:
-	InterpolatorMove(std::unique_ptr<Move> move);
+	InterpolatorMove(std::unique_ptr<Move> move, int interpolation_steps=2048);
 
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
+	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 private:
+	std::unique_ptr<MoveInfo> current_move_info;
+
+	int interpolation_steps;
+	int current_step;
 	std::unique_ptr<Move> child_move;
 };
 

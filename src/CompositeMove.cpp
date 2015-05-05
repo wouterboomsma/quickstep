@@ -27,7 +27,7 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
-			MoveInfo status = moves[i]->step(kf);
+			MoveInfo status = std::move(moves[i]->step(kf));
 			kf.updatePositions();
 			return status;
 		}
@@ -38,7 +38,7 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 
 MoveInfo CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
 {
-	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(&mi.specific_info);
+	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(mi.specific_info.get());
 	moves[cmi->chosen_move]->step_fractional(kf, cmi->chosen_info, fraction);
 	return mi;
 }

@@ -3,17 +3,18 @@
 
 namespace quickstep{
 
-MoveInfo::MoveInfo(SpecificMoveInfo& smi): specific_info(smi)
+MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
+		specific_info(std::move(smi))
 {
 
 }
 
-MoveInfo::MoveInfo(const MoveInfo& other):
-		specific_info(other.specific_info),
-		affected_atoms(other.affected_atoms)
-{
-
-}
+//MoveInfo::MoveInfo(const MoveInfo& other):
+//		specific_info(other.specific_info),
+//		affected_atoms(other.affected_atoms)
+//{
+//
+//}
 
 MoveInfo::~MoveInfo()
 {

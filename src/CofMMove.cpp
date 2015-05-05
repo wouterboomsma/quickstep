@@ -9,6 +9,7 @@
 
 #include <quickstep/math/primitives.h>
 #include "quickstep/units.h"
+#include "quickstep/utils.h"
 
 #include <stack>
 
@@ -25,7 +26,8 @@ CofMMove::CofMMove(units::Length translationMagnitude_, units::Angle rotationMag
 
 MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 {
-	CofMMoveInfo spec_info;
+	MoveInfo ret{ make_unique<CofMMoveInfo>() };
+	CofMMoveInfo& spec_info = *dynamic_cast<CofMMoveInfo*>(ret.specific_info.get());
 
 	//Ensure that chainIndices is in sync with kf
 	prepareChainIndices(kf);
@@ -35,32 +37,27 @@ MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 
 	// Suggest random translation
 	randTranslation(translationMagnitude, spec_info);
-	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 =
-			Eigen::AngleAxis<units::Length>(spec_info.rotation_angle, spec_info.rotation_axis);
 
 	//Suggest random rotation
 	randRotation(rotationMagnitude, spec_info);
-	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 =
-			Eigen::Translation<units::Length, 3>(spec_info.translation_axis * spec_info.translation_length.value());
 
 	// Compute center-of-mass
 	for(int a=0;a<chainIndices[spec_info.root].size();a++){
 		spec_info.center_of_mass = spec_info.center_of_mass + kf.pos(chainIndices[spec_info.root][a]).matrix();
 	}
-
 	spec_info.center_of_mass = spec_info.center_of_mass / chainIndices[spec_info.root].size();
 
 	// Suggest random rotation around center-of-mass
 	if(!suggest_only){
 		Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
-				Eigen::AngleAxis<units::Length>(spec_info.rotation_angle, spec_info.rotation_axis) *
-				Eigen::Translation<units::Length, 3>( spec_info.center_of_mass) *
 				Eigen::Translation<units::Length, 3>(spec_info.translation_axis * spec_info.translation_length.value()) *
+				Eigen::Translation<units::Length, 3>( spec_info.center_of_mass) *
+				Eigen::AngleAxis<units::Length>(spec_info.rotation_angle, spec_info.rotation_axis) *
 				Eigen::Translation<units::Length, 3>(-spec_info.center_of_mass);
 		kf.changeDOFglobal(spec_info.root, transform);
 	}
 
-	MoveInfo ret(spec_info);
+
 
 	SubTree affected_tree;
 	affected_tree.root_atom = kf.getRootAtomIndex(spec_info.root);
@@ -71,53 +68,17 @@ MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 
 MoveInfo CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
 {
-	CofMMoveInfo& orig_info = dynamic_cast<CofMMoveInfo&>(mi.specific_info);
+	CofMMoveInfo* orig_info = dynamic_cast<CofMMoveInfo*>(mi.specific_info.get());
 
 	//Ensure that chainIndices is in sync with kf
 	prepareChainIndices(kf);
 
-//<<<<<<< HEAD
-//	// Select random chain
-//	int root = orig_info.root;
-//
-//	// Retrieve translation
-//	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 = orig_info.*(fraction*units::nm);
-//
-//	// Retrieve rotation
-//	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 = orig_info.rotation*(fraction*units::nm);
-//	randRotation(rotationMagnitude, t1);
-//
-//	// Compute center-of-mass
-//	units::Vector3L& cofm = orig_info.center_of_mass;
-//
-//	// Suggest random rotation around center-of-mass
-//	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
-//			t0*
-//			Eigen::Translation<units::Length, 3>( cofm)*
-//			t1*
-//			Eigen::Translation<units::Length, 3>(-cofm);
-//	kf.changeDOFglobal(root, transform);
-//=======
-//	// Select random chain
-//	int root = orig_info.root;
-//
-//	// Retrieve translation
-//	Eigen::Transform<units::Length, 3, Eigen::Affine> t0 = orig_info.translation*Eigen::UniformScaling<double>(fractional);
-//
-//	// Retrieve rotation
-//	Eigen::Transform<units::Length, 3, Eigen::Affine> t1 = orig_info.rotation*Eigen::UniformScaling<double>(fractional);
-//	randRotation(rotationMagnitude, t1);
-//
-//	// Compute center-of-mass
-//	units::Vector3L& cofm = orig_info.center_of_mass;
-//>>>>>>> 892ddce72d787b15b630dbf67b2f3d02d97b914b
-
 	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
-					Eigen::AngleAxis<units::Length>(orig_info.rotation_angle*fraction, orig_info.rotation_axis) *
-					Eigen::Translation<units::Length, 3>( orig_info.center_of_mass) *
-					Eigen::Translation<units::Length, 3>( orig_info.translation_axis * orig_info.translation_length.value()*fraction) *
-					Eigen::Translation<units::Length, 3>(-orig_info.center_of_mass);
-	kf.changeDOFglobal(orig_info.root, transform);
+					Eigen::Translation<units::Length, 3>( orig_info->translation_axis * orig_info->translation_length.value()*fraction) *
+					Eigen::Translation<units::Length, 3>( orig_info->center_of_mass) *
+					Eigen::AngleAxis<units::Length>(orig_info->rotation_angle*fraction, orig_info->rotation_axis) *
+					Eigen::Translation<units::Length, 3>(-orig_info->center_of_mass);
+	kf.changeDOFglobal(orig_info->root, transform);
 
 	return mi;
 };

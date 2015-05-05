@@ -34,12 +34,12 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 //	units::Angle angle = ((rand()/RAND_MAX)-0.5)*2*3.1415/180.0 * units::rad;
 	dof_controller->changeDoF(dof_idx, value);
 
-	StdDoFMoveInfo info;
+	MoveInfo ret{ make_unique<StdDoFMoveInfo>() };
+	StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
 	DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx] };
 	info.index = dof;
 	info.delta_value = value;
 
-	MoveInfo ret(info);
 
 	SubTree affected_tree;
 	affected_tree.root_atom = dof_controller->dof_atoms[dof_idx];
