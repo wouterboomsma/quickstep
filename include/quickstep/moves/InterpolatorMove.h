@@ -30,6 +30,12 @@ private:
 	std::unique_ptr<Move> child_move;
 };
 
+class InterpolationMoveInfo: public SpecificMoveInfo{
+public:
+	//TODO: Fill out in case we want to interpolate interpolations
+};
+
+
 } /* namespace quickstep */
 
 #endif /* INTERPOLATORMOVE_H_ */
