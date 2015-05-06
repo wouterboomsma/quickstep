@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include "quickstep/InterpolatorMove.h"
+#include "quickstep/moves/InterpolatorMove.h"
 
 #include <memory>
 #include <assert.h>
@@ -28,7 +28,7 @@ MoveInfo InterpolatorMove::step(KinematicForest& kf, bool suggest_only)
 	}
 }
 
-MoveInfo InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
+void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
 {
 	std::cerr<<"InterpolatorMove::step_fractional not implemented."<<std::endl;
 	//TODO: Throw proper exception

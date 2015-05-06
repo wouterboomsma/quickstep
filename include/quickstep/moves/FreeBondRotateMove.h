@@ -5,8 +5,8 @@
  *      Author: rfonseca
  */
 
-#ifndef FREEBONDROTATECHASSE_H_
-#define FREEBONDROTATECHASSE_H_
+#ifndef FREEBONDROTATEMOVE_H_
+#define FREEBONDROTATEMOVE_H_
 
 #include <quickstep/Move.h>
 #include <quickstep/units.h>
@@ -21,7 +21,7 @@ public:
 	~FreeBondRotateMove(){}
 
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
-	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction);
+	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 private:
 	units::Angle rotationMagnitude;

@@ -25,7 +25,7 @@ public:
 
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
 
-	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double);
+	void step_fractional(KinematicForest&, MoveInfo&, double);
 
 	void add_move(std::unique_ptr<Move> c, double weight);
 
@@ -39,9 +39,8 @@ private:
 class CompositeMoveInfo: public SpecificMoveInfo
 {
 public:
-	~CompositeMoveInfo();
 	int chosen_move;
-	MoveInfo chosen_info;
+	std::unique_ptr<MoveInfo> chosen_info;
 };
 
 } /* namespace quickstep */

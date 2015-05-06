@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include "quickstep/FreeBondRotateMove.h"
+#include "quickstep/moves/FreeBondRotateMove.h"
 
 #include "quickstep/utils.h"
 
@@ -56,7 +56,7 @@ MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
 	return ret;
 }
 
-MoveInfo FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
+void FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
 {
 	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo*>(full_move_info.specific_info.get());
 
@@ -76,20 +76,20 @@ MoveInfo FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full
 			kf.changeDOFTorsion( childAtom, angle );
 	}
 
-	//Set up move info
-	FreeBondRotateMoveInfo info;
-	info.bond_atom = bond_atom;
-	info.delta_value = angle.value();
-
-//	MoveInfo ret(info);
+//	//Set up move info
+//	FreeBondRotateMoveInfo info;
+//	info.bond_atom = bond_atom;
+//	info.delta_value = angle.value();
 //
-//	SubTree affected_tree;
-//	//Note: bond_atom itself is not actually affected, but all children are
-//	affected_tree.root_atom = bond_atom;
-//	ret.affected_atoms.push_back(affected_tree);
-//
-//	return ret;
-	return full_move_info;
+////	MoveInfo ret(info);
+////
+////	SubTree affected_tree;
+////	//Note: bond_atom itself is not actually affected, but all children are
+////	affected_tree.root_atom = bond_atom;
+////	ret.affected_atoms.push_back(affected_tree);
+////
+////	return ret;
+//	return full_move_info;
 }
 
 void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)

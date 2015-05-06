@@ -10,23 +10,23 @@ add_library(quickstep
   Element.cpp
   KinematicForest.cpp
   Topology.cpp
-  CompositeMove.cpp
-  CofMMove.cpp
-  StdDoFMove.cpp
-  FreeBondRotateMove.cpp
-  InterpolatorMove.cpp
   MoveInfo.cpp
+  moves/CompositeMove.cpp
+  moves/CofMMove.cpp
+  moves/StdDoFMove.cpp
+  moves/FreeBondRotateMove.cpp
+  moves/InterpolatorMove.cpp
   dofControllers/StdDoFController.cpp
 
   ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/DisjointSet.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/KinematicForest.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/CompositeMove.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/CofMMove.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/StdDoFMove.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/FreeBondRotateMove.h
-  ${PROJECT_SOURCE_DIR}/include/quickstep/InterpolatorMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MoveInfo.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/CompositeMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/CofMMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/StdDoFMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/FreeBondRotateMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/InterpolatorMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )
 

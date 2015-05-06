@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include <quickstep/StdDoFMove.h>
+#include <quickstep/moves/StdDoFMove.h>
 
 #include <vector>
 #include <boost/algorithm/string.hpp>
@@ -48,7 +48,7 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 	return ret;
 }
 
-MoveInfo StdDoFMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
+void StdDoFMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
 {
 
 }

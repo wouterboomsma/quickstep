@@ -5,7 +5,7 @@
  *      Author: rfonseca
  */
 
-#include <quickstep/CofMMove.h>
+#include <quickstep/moves/CofMMove.h>
 
 #include <quickstep/math/primitives.h>
 #include "quickstep/units.h"
@@ -66,21 +66,31 @@ MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 	return ret;
 }
 
-MoveInfo CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
+void CofMMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
 {
-	CofMMoveInfo* orig_info = dynamic_cast<CofMMoveInfo*>(mi.specific_info.get());
+	CofMMoveInfo& orig_info = *dynamic_cast<CofMMoveInfo*>(mi.specific_info.get());
+
+//	MoveInfo ret{ make_unique<CofMMoveInfo>() };
+//	CofMMoveInfo& spec_info = *dynamic_cast<CofMMoveInfo*>(ret.specific_info.get());
 
 	//Ensure that chainIndices is in sync with kf
 	prepareChainIndices(kf);
 
 	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
-					Eigen::Translation<units::Length, 3>( orig_info->translation_axis * orig_info->translation_length.value()*fraction) *
-					Eigen::Translation<units::Length, 3>( orig_info->center_of_mass) *
-					Eigen::AngleAxis<units::Length>(orig_info->rotation_angle*fraction, orig_info->rotation_axis) *
-					Eigen::Translation<units::Length, 3>(-orig_info->center_of_mass);
-	kf.changeDOFglobal(orig_info->root, transform);
+					Eigen::Translation<units::Length, 3>( orig_info.translation_axis * orig_info.translation_length.value()*fraction) *
+					Eigen::Translation<units::Length, 3>( orig_info.center_of_mass) *
+					Eigen::AngleAxis<units::Length>(orig_info.rotation_angle*fraction, orig_info.rotation_axis) *
+					Eigen::Translation<units::Length, 3>(-orig_info.center_of_mass);
+	kf.changeDOFglobal(orig_info.root, transform);
 
-	return mi;
+//	spec_info.root 					= orig_info.root;
+//	spec_info.rotation_axis 		= orig_info.rotation_axis;
+//	spec_info.rotation_angle 		= orig_info.rotation_angle;
+//	spec_info.translation_axis 		= orig_info.translation_axis;
+//	spec_info.translation_length	= orig_info.translation_length;
+//	spec_info.center_of_mass 		= orig_info.center_of_mass;
+//
+//	return ret;
 };
 
 

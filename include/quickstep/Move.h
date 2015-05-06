@@ -25,7 +25,7 @@ public:
 	virtual MoveInfo step(KinematicForest&, bool suggest_only=false) = 0;
 
 	/** Perform a conformational move toward   */
-	virtual MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction) = 0;
+	virtual void step_fractional(KinematicForest&, MoveInfo&, double fraction) = 0;
 };
 
 struct StepFractionalNotImplementedError{

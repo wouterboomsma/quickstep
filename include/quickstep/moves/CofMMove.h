@@ -5,8 +5,8 @@
  *      Author: rfonseca
  */
 
-#ifndef COFMCHASSE_H_
-#define COFMCHASSE_H_
+#ifndef COFMMOVE_H_
+#define COFMMOVE_H_
 
 #include <quickstep/Move.h>
 #include <quickstep/MoveInfo.h>
@@ -39,7 +39,7 @@ public:
 	 * the kinematic forest.
 	 */
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
-	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double);
+	void step_fractional(KinematicForest&, MoveInfo&, double);
 
 private:
 	units::Length translationMagnitude;

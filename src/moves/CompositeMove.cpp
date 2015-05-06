@@ -5,12 +5,12 @@
  *      Author: rfonseca
  */
 
-#include "quickstep/CompositeMove.h"
+#include "quickstep/moves/CompositeMove.h"
 
 #include <memory>
 #include <assert.h>
-#include <quickstep/CofMMove.h>
-#include <quickstep/FreeBondRotateMove.h>
+#include <quickstep/moves/CofMMove.h>
+#include <quickstep/moves/FreeBondRotateMove.h>
 
 namespace quickstep {
 
@@ -27,20 +27,36 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
-			MoveInfo status = std::move(moves[i]->step(kf));
+
+			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
+			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
+
+			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf)) );
 			kf.updatePositions();
-			return status;
+
+			return ret;
 		}
 	}
 
 	throw "Error: Sampled a random value higher than total accumulated weight";
 }
 
-MoveInfo CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
+void CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
 {
 	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(mi.specific_info.get());
-	moves[cmi->chosen_move]->step_fractional(kf, cmi->chosen_info, fraction);
-	return mi;
+
+	moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction);
+
+//	MoveInfo ret{ make_unique<CompositeMoveInfo>() };
+//	CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
+//	spec_info.chosen_move = cmi->chosen_move;
+//	spec_info.chosen_info = make_unique<MoveInfo>(
+//			std::move(
+//					moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction)
+//					)
+//	);
+//
+//	return ret;
 }
 
 //void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)

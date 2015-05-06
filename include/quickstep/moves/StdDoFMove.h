@@ -21,7 +21,7 @@ public:
 	StdDoFMove(std::string dofs);
 
 	MoveInfo step(KinematicForest&, bool suggest_only=false);
-	MoveInfo step_fractional(KinematicForest&, MoveInfo&, double fraction);
+	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 private:
 	std::unique_ptr<StdDoFController> dof_controller;
 	std::string dofs;
