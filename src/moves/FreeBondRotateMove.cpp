@@ -8,6 +8,7 @@
 #include "quickstep/moves/FreeBondRotateMove.h"
 
 #include "quickstep/utils.h"
+#include "quickstep/FatalError.h"
 
 
 #include <algorithm>
@@ -16,8 +17,8 @@
 namespace quickstep {
 
 FreeBondRotateMove::FreeBondRotateMove(units::Angle rotationMagnitude_):
-		rotationMagnitude(rotationMagnitude_),
-		cachedKinematicForest(0)
+				rotationMagnitude(rotationMagnitude_),
+				cachedKinematicForest(0)
 {
 
 }
@@ -76,20 +77,20 @@ void FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_mov
 			kf.changeDOFTorsion( childAtom, angle );
 	}
 
-//	//Set up move info
-//	FreeBondRotateMoveInfo info;
-//	info.bond_atom = bond_atom;
-//	info.delta_value = angle.value();
-//
-////	MoveInfo ret(info);
-////
-////	SubTree affected_tree;
-////	//Note: bond_atom itself is not actually affected, but all children are
-////	affected_tree.root_atom = bond_atom;
-////	ret.affected_atoms.push_back(affected_tree);
-////
-////	return ret;
-//	return full_move_info;
+	//	//Set up move info
+	//	FreeBondRotateMoveInfo info;
+	//	info.bond_atom = bond_atom;
+	//	info.delta_value = angle.value();
+	//
+	////	MoveInfo ret(info);
+	////
+	////	SubTree affected_tree;
+	////	//Note: bond_atom itself is not actually affected, but all children are
+	////	affected_tree.root_atom = bond_atom;
+	////	ret.affected_atoms.push_back(affected_tree);
+	////
+	////	return ret;
+	//	return full_move_info;
 }
 
 void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
@@ -99,25 +100,32 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 	rotatableBonds.clear();
 
 	for(int r=0;r<kf.getRoots();r++){
-			//Perform depth-first search starting from root r and collect rotatable atoms
-			std::stack<int> stack;
-			stack.push(kf.roots[r]);
-			while(!stack.empty()){
-				int v = stack.top();
-				stack.pop();
+		//Perform depth-first search starting from root r and collect rotatable atoms
+		std::stack<int> stack;
+		stack.push(kf.roots[r]);
+		while(!stack.empty()){
+			int v = stack.top();
+			stack.pop();
 
-				//v is only rotatable if its not a root
-				auto it0 = std::find(kf.roots.begin(), kf.roots.end(), v);
-				if(it0==kf.roots.end())
-					rotatableBonds.push_back(v);
+			//v is only rotatable if its not a root
+			auto it0 = std::find(kf.roots.begin(), kf.roots.end(), v);
+			if(it0==kf.roots.end())
+				rotatableBonds.push_back(v);
 
-				for(int a=0;a<kf.adjacencyList[v].size();a++)
-					if(kf.adjacencyList[v][a].first==v)
-						stack.push(kf.adjacencyList[v][a].second);
-			}
+			for(int a=0;a<kf.adjacencyList[v].size();a++)
+				if(kf.adjacencyList[v][a].first==v)
+					stack.push(kf.adjacencyList[v][a].second);
 		}
+	}
 
-		cachedKinematicForest = &kf;
+	if(rotatableBonds.size()==0){
+		BOOST_THROW_EXCEPTION(FatalError() <<
+				"FreeBondRotateMove: No rotatable bonds identified");
+	}
+
+	cachedKinematicForest = &kf;
+
+
 }
 
 } /* namespace quickstep */

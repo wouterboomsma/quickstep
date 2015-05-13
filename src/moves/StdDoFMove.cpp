@@ -6,6 +6,7 @@
  */
 
 #include <quickstep/moves/StdDoFMove.h>
+#include <quickstep/FatalError.h>
 
 #include <vector>
 #include <boost/algorithm/string.hpp>
@@ -28,6 +29,10 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 		std::vector<std::string> dof_tokens;
 		boost::split(dof_tokens, dofs, boost::is_any_of(","));
 		dof_controller = make_unique<StdDoFController>(kf, dof_tokens);
+		if(dof_controller->numberOfDoFs()==0){
+			BOOST_THROW_EXCEPTION(FatalError() <<
+					"DOF specification ("<<dofs<<") resulted in 0 actual DOFs");
+		}
 	}
 
 	int dof_num = dof_controller->numberOfDoFs();
