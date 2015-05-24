@@ -1061,7 +1061,7 @@ public:
     inline auto
     transpose() const -> const Quantity<decltype(this->nested().transpose()),
                                         Unit> {
-        return this->nested().tranpose();
+        return this->nested().transpose();
     }
 
     inline void

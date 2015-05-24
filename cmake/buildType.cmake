@@ -1,5 +1,6 @@
 # Set parameters for different build types
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+#set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -Wall")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
 
 # Set default make type
