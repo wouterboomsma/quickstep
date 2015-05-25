@@ -18,6 +18,9 @@ public:
 
     static std::string create_signature(const std::vector<Element> &elements);
 
+    static std::string create_bonded_signature(const std::vector<Element> &elements,
+                                               const std::vector<std::pair<int,int>> &bonds);
+
     static std::map<Element, int> get_counts(const std::vector<Element> &elements);
 
 

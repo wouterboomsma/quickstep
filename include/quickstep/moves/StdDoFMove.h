@@ -8,7 +8,7 @@
 #ifndef STDDOFMOVE_H_
 #define STDDOFMOVE_H_
 
-#include <quickstep/Move.h>
+#include <quickstep/moves/Move.h>
 #include <quickstep/MoveInfo.h>
 #include <quickstep/dofControllers/StdDoFController.h>
 

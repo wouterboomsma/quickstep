@@ -28,6 +28,10 @@ include(installation_locations)
 # Set location for parameter data
 set(QUICKSTEP_DATA_DIR ${CMAKE_BINARY_DIR}/data)
 
+# Copy data directory to build directory
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data)
+INSTALL( DIRECTORY data DESTINATION . REGEX ".svn" EXCLUDE )
+
 # Traverse sources for external libraries
 add_subdirectory(external)
 

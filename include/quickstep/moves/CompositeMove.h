@@ -8,18 +8,36 @@
 #ifndef COMPOSITEMOVE_H_
 #define COMPOSITEMOVE_H_
 
-#include <quickstep/Move.h>
+#include <quickstep/moves/Move.h>
 #include <quickstep/MoveInfo.h>
 #include <quickstep/KinematicForest.h>
+#include <quickstep/MoveFactory.h>
 #include <quickstep/utils.h>
 
 #include <vector>
 #include <random>
+#include <boost/property_tree/ptree_fwd.hpp>
 
 namespace quickstep {
 
+
 class CompositeMove: public Move {
 public:
+
+    class MoveGenerator: public MoveFactory::MoveGenerator {
+	public:
+		virtual std::vector<std::unique_ptr<Move>> operator()(const boost::property_tree::ptree &parameter_input,
+															  Topology &topology,
+															  const MoveParameters &move_parameters) override;
+
+		// NOTE: the registrator variable must be explicitly defined in the .cpp file as well
+		const static struct Registrator {
+			Registrator() {
+				MoveFactory::get().register_generator("MixtureMove", make_unique<CompositeMove::MoveGenerator>());
+			}
+		} registrator;
+	};
+
 	CompositeMove();
 	~CompositeMove(){}
 
@@ -27,7 +45,7 @@ public:
 
 	void step_fractional(KinematicForest&, MoveInfo&, double);
 
-	void add_move(std::unique_ptr<Move> c, double weight);
+	void add_move(std::unique_ptr<Move> c, double weight=1.);
 
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 

@@ -15,6 +15,8 @@
 
 namespace quickstep {
 
+class Selection;
+
 class Topology {
 public:
 
@@ -43,7 +45,7 @@ public:
             return atom1.index < atom2.index;
         }
 
-        //! Overload oudtput operator
+        //! Overload output operator
         friend std::ostream& operator<<(std::ostream& o, const Atom &atom) {
             o << "{"
               << "name:" << atom.name << ","
@@ -85,6 +87,15 @@ public:
         unsigned int index;
         const Chain &chain;
         std::vector<unsigned int> atom_indices;
+
+        //! Overload output operator
+        friend std::ostream& operator<<(std::ostream& o, const Residue &residue) {
+            o << "{"
+            << "name:" << residue.name << ","
+            << "index:"<< residue.index << "}";
+            return o;
+        }
+
     };
 
     class Chain {
@@ -147,6 +158,10 @@ public:
         unit_cell_dimensions = dimensions;
     }
 
+//    const std::vector<std::pair<int,int>> &get_residues_by_signature(const std::string &signature_str);
+    const std::vector<std::reference_wrapper<const Residue>> &get_residues_by_signature(const std::string &signature_str);
+
+    const std::vector<std::set<int>> &get_bond_adjacency_list();
 
     unsigned int n_residues;
     unsigned int n_atoms;
@@ -161,6 +176,10 @@ private:
 
     static void load_bond_definitions(const boost::filesystem::path &filename);
     static std::map<std::string, std::vector<std::pair<std::string, std::string> > > standard_bond_definitions;
+
+//    std::map<std::string, std::vector<std::pair<int,int> > > residue_template_signatures;
+    std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
+    std::vector<std::set<int>> bond_adjacency_list;
 
 
     // Prevent copying

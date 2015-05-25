@@ -8,7 +8,7 @@
 #ifndef COFMMOVE_H_
 #define COFMMOVE_H_
 
-#include <quickstep/Move.h>
+#include <quickstep/moves/Move.h>
 #include <quickstep/MoveInfo.h>
 #include <quickstep/KinematicForest.h>
 #include <quickstep/math/primitives.h>

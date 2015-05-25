@@ -19,6 +19,9 @@ namespace quickstep {
 class Move {
 public:
 	Move(){}
+
+	static std::unique_ptr<Move> parse(const std::string &xml_filename, const std::shared_ptr<Topology> &topology);
+
 	virtual ~Move(){}
 
 	/** Perform a conformational move with the kinematic forest.  */
@@ -26,6 +29,7 @@ public:
 
 	/** Perform a conformational move toward   */
 	virtual void step_fractional(KinematicForest&, MoveInfo&, double fraction) = 0;
+
 };
 
 struct StepFractionalNotImplementedError{

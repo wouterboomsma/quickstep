@@ -3,7 +3,7 @@
 
 namespace quickstep {
 
-const char* const quickstep_data_dir = "@QUICKSTEP_DATA_DIR@";
+const char* const QUICKSTEP_DATA_DIR = "@QUICKSTEP_DATA_DIR@";
 
 }
 

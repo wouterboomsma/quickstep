@@ -16,6 +16,11 @@ add_library(quickstep
   moves/StdDoFMove.cpp
   moves/FreeBondRotateMove.cpp
   moves/InterpolatorMove.cpp
+  moves/GaussianMove.cpp
+  moves/Move.cpp
+  MolecularParameters.cpp
+  MoveParameters.cpp
+  MoveFactory.cpp
   dofControllers/StdDoFController.cpp
 
   ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
@@ -27,6 +32,12 @@ add_library(quickstep
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/StdDoFMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/FreeBondRotateMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/InterpolatorMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/GaussianMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/Move.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/Topology.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/MolecularParameters.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/MoveParameters.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/MoveFactory.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
 )
 

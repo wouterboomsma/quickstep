@@ -1,0 +1,191 @@
+<MixtureMove name="ProteinSidechainRotamerDunbrack1997">
+
+  <Residues>
+
+    <Residue name="NCYS">
+      <Atom name="N"   element="N"/>
+      <Atom name="H1"  element="H"/>
+      <Atom name="H2"  element="H"/>
+      <Atom name="H3"  element="H"/>
+      <Atom name="CA"  element="C"/>
+      <Atom name="HA"  element="H"/>
+      <Atom name="CB"  element="C"/>
+      <Atom name="HB2" element="H"/>
+      <Atom name="HB3" element="H"/>
+      <Atom name="SG"  element="S"/>
+      <Atom name="HG"  element="H"/>
+      <Atom name="C"   element="C"/>
+      <Atom name="O"   element="O"/>
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="0" to="3"/>
+      <Bond from="0" to="4"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="11"/>
+      <Bond from="6" to="7"/>
+      <Bond from="6" to="8"/>
+      <Bond from="6" to="9"/>
+      <Bond from="9" to="10"/>
+      <Bond from="11" to="12"/>
+      <ExternalBond from="11"/>
+    </Residue>
+    <Residue name="CCYS">
+      <Atom name="N"   element="N" />
+      <Atom name="H"   element="H" />
+      <Atom name="CA"  element="C" />
+      <Atom name="HA"  element="H" />
+      <Atom name="CB"  element="C" />
+      <Atom name="HB2" element="H" />
+      <Atom name="HB3" element="H" />
+      <Atom name="SG"  element="S" />
+      <Atom name="HG"  element="H" />
+      <Atom name="C"   element="C" />
+      <Atom name="O"   element="O" />
+      <Atom name="OXT" element="O" />
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="2" to="3"/>
+      <Bond from="2" to="4"/>
+      <Bond from="2" to="9"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="7"/>
+      <Bond from="7" to="8"/>
+      <Bond from="9" to="10"/>
+      <Bond from="9" to="11"/>
+      <ExternalBond from="0"/>
+    </Residue>
+    <Residue name="CYS">
+      <Atom name="N"   element="N"/>
+      <Atom name="H"   element="H"/>
+      <Atom name="CA"  element="C"/>
+      <Atom name="HA"  element="H"/>
+      <Atom name="CB"  element="C"/>
+      <Atom name="HB2" element="H"/>
+      <Atom name="HB3" element="H"/>
+      <Atom name="SG"  element="S"/>
+      <Atom name="HG"  element="H"/>
+      <Atom name="C"   element="C"/>
+      <Atom name="O"   element="O"/>
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="2" to="3"/>
+      <Bond from="2" to="4"/>
+      <Bond from="2" to="9"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="7"/>
+      <Bond from="7" to="8"/>
+      <Bond from="9" to="10"/>
+      <ExternalBond from="0"/>
+      <ExternalBond from="9"/>
+    </Residue>
+    <Residue name="ASP">
+      <Atom name="N"   element="N"/>
+      <Atom name="H"   element="H"/>
+      <Atom name="CA"  element="C"/>
+      <Atom name="HA"  element="H"/>
+      <Atom name="CB"  element="C"/>
+      <Atom name="HB2" element="H"/>
+      <Atom name="HB3" element="H"/>
+      <Atom name="CG"  element="C"/>
+      <Atom name="OD1" element="O"/>
+      <Atom name="OD2" element="O"/>
+      <Atom name="C"   element="C"/>
+      <Atom name="O"   element="O"/>
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="2" to="3"/>
+      <Bond from="2" to="4"/>
+      <Bond from="2" to="10"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="7"/>
+      <Bond from="7" to="8"/>
+      <Bond from="7" to="9"/>
+      <Bond from="10" to="11"/>
+      <ExternalBond from="0"/>
+      <ExternalBond from="10"/>
+    </Residue>
+    <Residue name="NASP">
+      <Atom name="N"   element="N"/>
+      <Atom name="H1"  element="H"/>
+      <Atom name="H2"  element="H"/>
+      <Atom name="H3"  element="H"/>
+      <Atom name="CA"  element="C"/>
+      <Atom name="HA"  element="H"/>
+      <Atom name="CB"  element="C"/>
+      <Atom name="HB2" element="H"/>
+      <Atom name="HB3" element="H"/>
+      <Atom name="CG"  element="C"/>
+      <Atom name="OD1" element="O"/>
+      <Atom name="OD2" element="O"/>
+      <Atom name="C"   element="C"/>
+      <Atom name="O"   element="O"/>
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="0" to="3"/>
+      <Bond from="0" to="4"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="12"/>
+      <Bond from="6" to="7"/>
+      <Bond from="6" to="8"/>
+      <Bond from="6" to="9"/>
+      <Bond from="9" to="10"/>
+      <Bond from="9" to="11"/>
+      <Bond from="12" to="13"/>
+      <ExternalBond from="12"/>
+    </Residue>
+    <Residue name="CASP">
+      <Atom name="N"   element="N"/>
+      <Atom name="H"   element="H"/>
+      <Atom name="CA"  element="C"/>
+      <Atom name="HA"  element="H"/>
+      <Atom name="CB"  element="C"/>
+      <Atom name="HB2" element="H"/>
+      <Atom name="HB3" element="H"/>
+      <Atom name="CG"  element="C"/>
+      <Atom name="OD1" element="O"/>
+      <Atom name="OD2" element="O"/>
+      <Atom name="C"   element="C"/>
+      <Atom name="O"   element="O"/>
+      <Atom name="OXT" element="O"/>
+      <Bond from="0" to="1"/>
+      <Bond from="0" to="2"/>
+      <Bond from="2" to="3"/>
+      <Bond from="2" to="4"/>
+      <Bond from="2" to="10"/>
+      <Bond from="4" to="5"/>
+      <Bond from="4" to="6"/>
+      <Bond from="4" to="7"/>
+      <Bond from="7" to="8"/>
+      <Bond from="7" to="9"/>
+      <Bond from="10" to="11"/>
+      <Bond from="10" to="12"/>
+      <ExternalBond from="0"/>
+    </Residue>
+
+  </Residues>
+
+  <Dofs>
+    <Dihedral name="CYS_CHI1" residue="CYS|NCYS|CCYS" atom1="N" atom2="CA" atom3="CB" atom4="SG" />
+
+    <Dihedral name="ASP_CHI1" residue="ASP|NASP|CASP" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
+    <Dihedral name="ASP_CHI2" residue="ASP|NASP|CASP" atom1="CA" atom2="CB" atom3="CG" atom4="OD1" />
+
+  </Dofs>
+
+  <MixtureMove name="CYS">
+    <GaussianMove dim="1" weight="0.1594" dof="CYS_CHI1" mean="  63.7" stddev="11.5" unit="degr"/>
+    <GaussianMove dim="1" weight="0.2742" dof="CYS_CHI1" mean="-177.3" stddev="11.5" unit="degr"/>
+    <GaussianMove dim="1" weight="0.5664" dof="CYS_CHI1" mean=" -64.3" stddev="10.6" unit="degr"/>   
+  </MixtureMove>
+  <MixtureMove name="ASP">
+    <GaussianMove dim="2" weight="0.0104" dof1="ASP_CHI1" dof2="ASP_CHI2" mean1="57.1" mean2="54.3" stddev11="11.5" stddev22="18.3" unit="degr"/>   
+  </MixtureMove>
+
+
+</MixtureMove>
+
