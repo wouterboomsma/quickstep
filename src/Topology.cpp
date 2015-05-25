@@ -8,7 +8,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <quickstep_config.h>
-#include "quickstep/Selection.h"
 #include "quickstep/FatalError.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>

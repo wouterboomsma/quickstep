@@ -15,8 +15,6 @@
 
 namespace quickstep {
 
-class Selection;
-
 class Topology {
 public:
 
