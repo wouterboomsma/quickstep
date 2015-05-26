@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <stack>
+#include <iostream>
 
 namespace quickstep {
 
@@ -59,6 +60,7 @@ MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
 
 void FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
 {
+	std::cout<<"FreeBondRotateMove::step_fractional(.. "<<fraction<<")"<<std::endl;
 	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo*>(full_move_info.specific_info.get());
 
 	//Ensure that rotatableBonds is in sync with kf

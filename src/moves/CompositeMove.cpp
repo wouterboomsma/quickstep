@@ -15,7 +15,6 @@
 namespace quickstep {
 
 CompositeMove::CompositeMove() {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -30,9 +29,7 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 
 			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
 			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
-
 			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf)) );
-			kf.updatePositions();
 
 			return ret;
 		}
@@ -44,19 +41,7 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 void CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
 {
 	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(mi.specific_info.get());
-
 	moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction);
-
-//	MoveInfo ret{ make_unique<CompositeMoveInfo>() };
-//	CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
-//	spec_info.chosen_move = cmi->chosen_move;
-//	spec_info.chosen_info = make_unique<MoveInfo>(
-//			std::move(
-//					moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction)
-//					)
-//	);
-//
-//	return ret;
 }
 
 //void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
