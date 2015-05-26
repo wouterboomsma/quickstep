@@ -132,6 +132,7 @@ typedef Eigen::QuantityArray<Length, 3, 1> Coordinate;
 typedef Eigen::QuantityArray<Length, 3, Eigen::Dynamic> Coordinates;
 
 typedef Eigen::Map<Eigen::QuantityArray<Length, 3, Eigen::Dynamic>> CoordinatesWrapper;
+typedef Eigen::Map<const Eigen::QuantityArray<Length, 3, Eigen::Dynamic>> ConstCoordinatesWrapper;
 
 typedef Eigen::Map<Eigen::QuantityArray<Length, 3, 1>> CoordinateWrapper;
 typedef const Eigen::Map<const Eigen::QuantityArray<Length, 3, 1>> ConstCoordinateWrapper;

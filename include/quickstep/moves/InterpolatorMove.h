@@ -8,7 +8,7 @@
 #ifndef INTERPOLATORMOVE_H_
 #define INTERPOLATORMOVE_H_
 
-#include <quickstep/Move.h>
+#include <quickstep/moves/Move.h>
 #include <quickstep/MoveInfo.h>
 #include <quickstep/KinematicForest.h>
 #include <quickstep/utils.h>

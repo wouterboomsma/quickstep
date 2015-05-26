@@ -8,6 +8,7 @@ template <typename ExpressionType, typename Unit>
 class QuantityMap: public Quantity<Map<ExpressionType>, Unit> {
 public:
     typedef Quantity<Map<ExpressionType>, Unit> Base;
+    typedef typename Map<ExpressionType>::PointerArgType PointerArgType;
 
     QuantityMap(const Base &other)
             : Base(other) {}
@@ -33,12 +34,23 @@ public:
                        >>::type* = 0)
             : Base(std::move(other)) {}
 
+    template <typename OtherDerived, typename OtherUnit,
+              typename boost::enable_if<
+                      boost::mpl::and_<
+                              typename boost::units::is_implicitly_convertible<OtherUnit,Unit>::type,
+                              boost::units::detail::is_non_narrowing_conversion<typename Quantity<OtherDerived, OtherUnit>::Scalar, typename Base::Scalar>
+                      >>::type* = nullptr>
+    QuantityMap &operator=(const Quantity<OtherDerived, OtherUnit> &other) {
+        Base::operator=(other.derived());
+        return *this;
+    }
 };
 
 template <typename Scalar, int Rows, int Cols>
 class Map<QuantityArray<Scalar, Rows, Cols>>: public Map<Array<Scalar, Rows, Cols>> {
 public:
     typedef Map<Array<Scalar, Rows, Cols>> Base;
+    using Base::PointerArgType;
     using Base::Base;
 
     template<class Dim, class System>
@@ -52,6 +64,7 @@ template <typename Scalar, int Rows, int Cols>
 class Map<QuantityMatrix<Scalar, Rows, Cols>>: public Map<Matrix<Scalar, Rows, Cols>> {
 public:
     typedef Map<Matrix<Scalar, Rows, Cols>> Base;
+    using Base::PointerArgType;
     using Base::Base;
 
     template<class Dim, class System>
@@ -67,28 +80,36 @@ template <typename Unit, typename Scalar, int Rows, int Cols>
 class Map<QuantityArray<boost::units::quantity<Unit, Scalar>, Rows, Cols>>: public QuantityMap<Array<Scalar, Rows, Cols>, Unit> {
 public:
     typedef QuantityMap<Array<Scalar, Rows, Cols>, Unit> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Dim, typename System, int Rows, int Cols>
 class Map<QuantityArray<boost::units::unit<Dim, System>, Rows, Cols>>: public QuantityMap<Array<double, Rows, Cols>, boost::units::unit<Dim, System>> {
 public:
     typedef QuantityMap<Array<double, Rows, Cols>, boost::units::unit<Dim, System>> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Unit, typename Scalar, int Rows, int Cols>
 class Map<const QuantityArray<boost::units::quantity<Unit, Scalar>, Rows, Cols>>: public QuantityMap<const Array<Scalar, Rows, Cols>, Unit> {
 public:
     typedef QuantityMap<const Array<Scalar, Rows, Cols>, Unit> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Dim, typename System, int Rows, int Cols>
 class Map<const QuantityArray<boost::units::unit<Dim, System>, Rows, Cols>>: public QuantityMap<const Array<double, Rows, Cols>, boost::units::unit<Dim, System>> {
 public:
     typedef QuantityMap<const Array<double, Rows, Cols>, boost::units::unit<Dim, System>> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 
@@ -97,28 +118,36 @@ template <typename Unit, typename Scalar, int Rows, int Cols>
 class Map<QuantityMatrix<boost::units::quantity<Unit,Scalar>, Rows, Cols>>: public QuantityMap<Matrix<Scalar, Rows, Cols>, Unit> {
 public:
     typedef QuantityMap<Matrix<Scalar, Rows, Cols>, Unit> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Dim, typename System, int Rows, int Cols>
 class Map<QuantityMatrix<boost::units::unit<Dim, System>, Rows, Cols>>: public QuantityMap<Matrix<double, Rows, Cols>, boost::units::unit<Dim, System>> {
 public:
     typedef QuantityMap<Matrix<double, Rows, Cols>, boost::units::unit<Dim, System>> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Unit, typename Scalar, int Rows, int Cols>
 class Map<const QuantityMatrix<boost::units::quantity<Unit, Scalar>, Rows, Cols>>: public QuantityMap<const Matrix<Scalar, Rows, Cols>, Unit> {
 public:
     typedef QuantityMap<const Matrix<Scalar, Rows, Cols>, Unit> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 template <typename Dim, typename System, int Rows, int Cols>
 class Map<const QuantityMatrix<boost::units::unit<Dim, System>, Rows, Cols>>: public QuantityMap<const Matrix<double, Rows, Cols>, boost::units::unit<Dim, System>> {
 public:
     typedef QuantityMap<const Matrix<double, Rows, Cols>, boost::units::unit<Dim, System>> Base;
+    using typename Base::PointerArgType;
     using Base::Base;
+    using Base::operator=;
 };
 
 

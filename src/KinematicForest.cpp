@@ -143,7 +143,7 @@ units::Angle KinematicForest::getDOFAngle(int atom)
     //return (v2-v1).angle( v0-v1 );
 }
 
-units::Length KinematicForest::getDOFTorsion(int atom)
+units::Angle KinematicForest::getDOFTorsion(int atom)
 {
     assert(atom>=0 && atom<n_atoms);
     if(!pseudoRootsSet)	updatePseudoRoots();
@@ -152,14 +152,28 @@ units::Length KinematicForest::getDOFTorsion(int atom)
     int a2 = parent(a1);
     int a3 = parent(a2);
 
-//    Math3D::Vector3& v0 = pos(atom);
-//    Math3D::Vector3& v1 = pos(a1);
-//    Math3D::Vector3& v2 = pos(a2);
-//    Math3D::Vector3& v3 = pos(a3);
+    units::CoordinatesWrapper::ColXpr a0_pos = pos(atom);
+    units::CoordinatesWrapper::ColXpr a1_pos = pos(a1);
+    units::CoordinatesWrapper::ColXpr a2_pos = pos(a2);
+    units::CoordinatesWrapper::ColXpr a3_pos = pos(a3);
 
-    //TODO: Finish
-    return 0;
-}
+    units::Vector3L v01 = a1_pos - a0_pos;
+    units::Vector3L v12 = a2_pos - a1_pos;
+    units::Vector3L v23 = a3_pos - a2_pos;
+    units::Vector3L cross1{v01.cross(v12)}; cross1.normalize();
+    units::Vector3L cross2{v12.cross(v23)}; cross2.normalize();
+    double product = cross1.dot(cross2).value();
+    if (product > 1.)
+        product = 1.;
+    if (product < -1.)
+        product = -1.;
+    double torsion = acos(product);
+
+    if (cross1.dot(v23).value() < 0.)
+        torsion *= -1;
+
+    return torsion * units::radians;
+};
 
 
 void KinematicForest::changeDOFLength(int atom, units::Length value)
@@ -224,13 +238,8 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
 
     transformations[atom] = transformations[atom]*
         		Eigen::Translation<units::Length, 3>( pos_a1) *
-    			Eigen::AngleAxis<units::Length>(value, axis) *
+    			Eigen::AngleAxis<units::Length>(-value, axis) *
     			Eigen::Translation<units::Length, 3>(-pos_a1);
-//    transformations_queue[atom].push_back(
-//        		Eigen::Translation<units::Length, 3>( pos_a1) *
-//    			Eigen::AngleAxis<units::Length>(value, axis) *
-//    			Eigen::Translation<units::Length, 3>(-pos_a1)
-//    			);
 
 }
 
@@ -391,30 +400,36 @@ const Topology::Atom& KinematicForest::getAtom(int atom)
 }
 
 
-bool KinematicForest::atomMatchesNames(int atom, std::vector<std::string>& dofNames)
+bool KinematicForest::atomMatchesNames(int atom, const std::vector<std::string>& dofNames)
 {
 
-	int p1 = 0;
-	int p2 = dofNames.size()-1;
 	int a = atom;
 
-	bool matchesForward = true;
+	bool matches = true;
 
-	for(int p=0;p<dofNames.size();p++){
-		if(a<0 || a>=n_atoms || getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
+	for (int p=0;p<dofNames.size();p++) {
+		if(a<0 || a>=n_atoms || getAtom(a).name!=dofNames[p]) {
+            matches = false;
+            break;
+        }
 		a = parent(a);
 	}
 
-	return matchesForward;
+    if (matches)
+        return matches;
 
-	//FIXME: Also look backward through dofNames and take special care of DoFs around roots of trees
-//	a = atom;
-//	for(int p=dofNames.size()-1;p>=0;p--){
-//		if(getAtom(a).name!=dofNames[p]) { matchesForward = false; break; }
-//		a = parent(a);
-//	}
-//
-//	return false;
+    a = atom;
+    matches = true;
+    for (int p=dofNames.size()-1; p>=0; --p) {
+        if(a >= n_atoms || getAtom(a).name != dofNames[p]) {
+            matches = false;
+            break;
+        }
+        a = parent(a);
+
+    }
+
+	return matches;
 }
 
 

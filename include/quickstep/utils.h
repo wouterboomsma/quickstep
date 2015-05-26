@@ -3,6 +3,8 @@
 
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
+#include <Eigen/Dense>
+#include <Eigen/Quantity>
 
 namespace quickstep {
 
@@ -14,6 +16,7 @@ inline std::unique_ptr <T> make_unique(Args &&...args) {
 
 
 // Convenience aliases for matrices and vectors
+using Eigen::Dynamic;
 template <class Type, int Rows, int Cols> using Matrix = Eigen::QuantityMatrix<Type, Rows, Cols>;
 template <class Type, int Rows, int Cols> using Array = Eigen::QuantityArray<Type, Rows, Cols>;
 template <class Type, int Cols> using Vector = Eigen::QuantityMatrix<Type, 1, Cols>;

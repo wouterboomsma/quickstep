@@ -8,7 +8,7 @@
 #ifndef FREEBONDROTATEMOVE_H_
 #define FREEBONDROTATEMOVE_H_
 
-#include <quickstep/Move.h>
+#include <quickstep/moves/Move.h>
 #include <quickstep/units.h>
 
 #include <vector>
