@@ -138,10 +138,45 @@ public:
                    std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
             if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
+                BOOST_THROW_EXCEPTION(FatalError() <<
+                                      "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");
+            }
+
+            int parent_index = forest.parent(atom_index);
+
+            //Collect all children of parent
+            for(size_t i=0; i<forest.adjacencyList[parent_index].size();++i){
+            	if( 	forest.adjacencyList[parent_index][i].first == parent_index){
+            		sibling_atom_indices.push_back(forest.adjacencyList[parent_index][i].second);
+            	}
+            }
+        }
+
+        double get_value() override {
+            return forest.getDOFTorsion(this->atom_index).value();
+        };
+
+        void add_value(double delta_value) override {
+            for(int i: sibling_atom_indices)
+            	forest.changeDOFTorsion(i, units::Angle::from_value(delta_value));
+        };
+
+    private:
+        std::vector<int> sibling_atom_indices;
+    };
+
+    class IndependentTorsionDoF: public DoF {
+    public:
+
+        IndependentTorsionDoF(KinematicForest &forest,
+                   std::vector<int> atom_indices,
+                   std::vector<std::string> atom_names)
+                : DoF(forest, atom_indices.back()) {
+            if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
 //                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
 //            if (atom_index == -1) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
-                                      "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");
+                                      "Independent torsion DoF (" << atom_names << ") is not found in KinematicForest.");
             }
         }
 
