@@ -151,9 +151,17 @@ public:
         return boost::units::quantity<Unit>::from_value(this->nested().norm());
     }
 
-    void
-    normalize() {
-        this->nested().normalize();
+    // Removed because normalizing renders the matrix unit-less, which
+    // cannot be represented with an in-place operation. Use matrix.value().normalize()
+    // void
+    // normalize() {
+    //     this->nested().normalize();
+    // }
+
+    inline auto
+//    normalized() const -> Quantity<decltype(this->nested().normalized()), Unit> {
+    normalized() const -> decltype(this->nested().normalized()) {
+        return this->nested().normalized();
     }
 
     inline auto

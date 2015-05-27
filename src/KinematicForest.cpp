@@ -160,16 +160,16 @@ units::Angle KinematicForest::getDOFTorsion(int atom)
     units::Vector3L v01 = a1_pos - a0_pos;
     units::Vector3L v12 = a2_pos - a1_pos;
     units::Vector3L v23 = a3_pos - a2_pos;
-    units::Vector3L cross1{v01.cross(v12)}; cross1.normalize();
-    units::Vector3L cross2{v12.cross(v23)}; cross2.normalize();
-    double product = cross1.dot(cross2).value();
+    units::Vector3L::UnitLess cross1 {v01.cross(v12).normalized()};
+    units::Vector3L::UnitLess cross2 {v12.cross(v23).normalized()};
+    double product = cross1.dot(cross2);
     if (product > 1.)
         product = 1.;
     if (product < -1.)
         product = -1.;
     double torsion = acos(product);
 
-    if (cross1.dot(v23).value() < 0.)
+    if (cross1.dot(v23.value()) < 0.)
         torsion *= -1;
 
     return torsion * units::radians;
@@ -184,9 +184,7 @@ void KinematicForest::changeDOFLength(int atom, units::Length value)
 
     int a1 = parent(atom);
 
-    units::Vector3L d = pos(atom)-pos(a1);
-    d.normalize();
-    d *= value;
+    units::Vector3L d = (pos(atom)-pos(a1)).matrix().normalized() * value;
     transformations[atom] = transformations[atom]*Eigen::Translation<units::Length,3>(d);
 //    transformations_queue[atom].push_back(Eigen::Translation<units::Length,3>(d));
 }
@@ -206,8 +204,7 @@ void KinematicForest::changeDOFAngle(int atom, units::Angle value)
     units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
     units::Vector3L v1 = pos_a2- pos_a1;
     units::Vector3L v2 = pos_a - pos_a1;
-    units::Vector3L axis = v1.cross(v2);
-    axis.normalize();
+    units::Vector3L axis = v1.cross(v2).normalized() * units::Vector3L::Unit();
 
     transformations[atom] = transformations[atom] *
     		Eigen::Translation<units::Length, 3>(pos_a1)*
@@ -233,8 +230,7 @@ void KinematicForest::changeDOFTorsion(int atom, units::Angle value)
     units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
     units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
 
-    units::Vector3L axis = (pos_a2- pos_a1);
-    axis.normalize();
+    units::Vector3L axis = (pos_a2- pos_a1).matrix().normalized() * units::Vector3L::Unit();
 
     transformations[atom] = transformations[atom]*
         		Eigen::Translation<units::Length, 3>( pos_a1) *

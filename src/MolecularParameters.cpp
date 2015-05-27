@@ -57,6 +57,11 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
 
         std::string residue_name = residues_node.second.get<std::string>("<xmlattr>.name");
 
+        if (templates.count(residue_name)) {
+            BOOST_THROW_EXCEPTION(FatalError() <<
+                                  "Multiple <Residue> entries for " << residue_name << ".");
+        }
+
         TemplateData &residue_template =
                 (templates.insert(std::make_pair(residue_name, TemplateData({residue_name})))).first->second;
 
@@ -163,7 +168,7 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
 
 
     for (auto &template_entry:templates) {
-        TemplateData template_data = template_entry.second;
+        const TemplateData &template_data = template_entry.second;
         //        std::string signature =
         //                Element::create_bonded_signature(
         //                        // Create vector of elements from atom vector

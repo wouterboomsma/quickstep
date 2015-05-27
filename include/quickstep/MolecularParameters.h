@@ -32,6 +32,12 @@ public:
         Element element = Element::UNKNOWN;
         std::vector<int> bonded_to;
         int external_bonds = 0;
+
+        //! Overload output operator
+        friend std::ostream& operator<<(std::ostream& o, const TemplateAtomData &data) {
+            o << "name:" << data.name;
+            return o;
+        }
     };
 
     struct VirtualSiteData {

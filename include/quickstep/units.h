@@ -7,6 +7,7 @@
 #include <boost/units/systems/si/io.hpp>
 #include <boost/units/base_units/metric/angstrom.hpp>
 #include <boost/units/base_units/angle/radian.hpp>
+#include <boost/units/systems/angle/degrees.hpp>
 //#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
 #include <Eigen/Quantity>
@@ -126,6 +127,8 @@ BOOST_UNITS_STATIC_CONSTANT(radians, AngleUnit);
 BOOST_UNITS_STATIC_CONSTANT(rad, AngleUnit);
 typedef boost::units::quantity<AngleUnit> Angle_rad;
 typedef Angle_rad Angle;
+typedef boost::units::quantity<boost::units::degree::plane_angle> Angle_degr;
+using boost::units::degree::degrees;
 
 // Containers of coordinates
 typedef Eigen::QuantityArray<Length, 3, 1> Coordinate;

@@ -97,18 +97,18 @@ struct QuantityBase<const CommaInitializer<const ExpressionType>, Unit> {
 }
 
 
-template<typename ExpressionType, class Unit>
+template<typename ExpressionType, class UnitType>
 class Quantity
-//        : public internal::QuantityBase<ExpressionType, Unit, typename internal::traits<ExpressionType>::XprKind>::type {
-        : public internal::QuantityBase<typename std::remove_reference<ExpressionType>::type, Unit>::type {
+//        : public internal::QuantityBase<ExpressionType, UnitType, typename internal::traits<ExpressionType>::XprKind>::type {
+        : public internal::QuantityBase<typename std::remove_reference<ExpressionType>::type, UnitType>::type {
 public:
-
+    typedef UnitType Unit;
+    typedef ExpressionType UnitLess;
     typedef typename internal::QuantityBase<typename std::remove_reference<ExpressionType>::type, Unit>::type Base;
 
     typedef typename std::remove_reference<ExpressionType>::type::Scalar Scalar;
     typedef boost::units::quantity<Unit, Scalar> QuantityType;
     typedef const Quantity& Nested;
-    typedef ExpressionType UnitLess;
 //    typedef typename std::remove_reference<ExpressionType>::type::Index Index;
 
     inline Quantity(){}

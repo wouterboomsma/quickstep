@@ -61,6 +61,15 @@ public:
                   chain(chain) {
         }
 
+        std::vector<std::reference_wrapper<const Atom>> get_atoms_by_name(const std::string &name) const {
+            std::vector<std::reference_wrapper<const Atom>> matches;
+            for (int atom_index: atom_indices) {
+                const Topology::Atom &atom = chain.topology.atoms[atom_index];
+                if (atom.name == name)
+                    matches.push_back(std::ref(atom));
+            }
+            return std::move(matches);
+        }
 //        std::string create_signature() const {
 //            std::map<Element, int> counts;
 //            for (const Atom &atom: atoms) {
@@ -148,11 +157,11 @@ public:
         return bonds;
     }
 
-    const boost::optional<std::array<units::Length, 3> > &get_unit_cell_dimensions() const {
+    const boost::optional<units::Vector3L> &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
-    void set_unit_cell_dimensions(const std::array<units::Length, 3> & dimensions) {
+    void set_unit_cell_dimensions(const units::Vector3L &dimensions) {
         unit_cell_dimensions = dimensions;
     }
 
@@ -168,7 +177,7 @@ public:
     std::vector<Chain> chains;
 
     std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
-    boost::optional<std::array<units::Length, 3> > unit_cell_dimensions;
+    boost::optional<units::Vector3L> unit_cell_dimensions;
 
 private:
 
