@@ -2,6 +2,7 @@
 
 	<Residues>
 
+		<!--
 		<Residue name="NCYS">
 			<Atom name="N"   element="N"/>
 			<Atom name="H1"  element="H"/>
@@ -166,6 +167,7 @@
 			<Bond from="10" to="12"/>
 			<ExternalBond from="0"/>
 		</Residue>
+		-->
 
 		<Residue name="ALA">
 			<Atom name="N" element="N"/>
@@ -1454,6 +1456,7 @@
 			<Bond from="12" to="13"/>
 			<ExternalBond from="12"/>
 		</Residue>
+		
 		<Residue name="NCYS">
 			<Atom name="N" element="N"/>
 			<Atom name="H1" element="H"/>
@@ -2503,9 +2506,9 @@
 	</MixtureMove>
 
 	<MixtureMove name="CYS">
-		<GaussianMove dim="2" weight="0.1594" dof1="CYS_CHI1" mean1="  63.7" stdev11="11.5" unit="degr"/>
-		<GaussianMove dim="2" weight="0.2742" dof1="CYS_CHI1" mean1="-177.3" stdev11="11.5" unit="degr"/>
-		<GaussianMove dim="2" weight="0.5664" dof1="CYS_CHI1" mean1=" -64.3" stdev11="10.6" unit="degr"/>
+		<GaussianMove dim="1" weight="0.1594" dof1="CYS_CHI1" mean1="  63.7" stdev11="11.5" unit="degr"/>
+		<GaussianMove dim="1" weight="0.2742" dof1="CYS_CHI1" mean1="-177.3" stdev11="11.5" unit="degr"/>
+		<GaussianMove dim="1" weight="0.5664" dof1="CYS_CHI1" mean1=" -64.3" stdev11="10.6" unit="degr"/>
 	</MixtureMove>
 
 	<MixtureMove name="GLN">
@@ -2539,10 +2542,10 @@
 		<GaussianMove dim="3" weight="0.0010"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-72.0"  stdev11="17.6" mean2=" 83.7"  stdev22="17.3" mean3="110.1"  stdev33="18.7" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0208"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-66.9"  stdev11="9.8"  mean2="179.0"  stdev22="12.7" mean3="-177.9" stdev33="26.3" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0906"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-66.8"  stdev11="10.5" mean2="-179.7" stdev22="13.8" mean3="-76.8"  stdev33="24.3" unit="degr"/>
-		<GaussianMove dim="3" weight="0.1853" dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-67.5"  stdev11="9.6"  mean2="177.6"  stdev22="12.7" mean3=" -1.1"  stdev33="25.8" unit="degr"/>
+		<GaussianMove dim="3" weight="0.1853"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-67.5"  stdev11="9.6"  mean2="177.6"  stdev22="12.7" mean3=" -1.1"  stdev33="25.8" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0788"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-65.8"  stdev11="9.2"  mean2="-178.9" stdev22="14.0" mean3=" 75.3"  stdev33="22.6" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0031"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-66.1"  stdev11="15.0" mean2="-82.1"  stdev22="10.6" mean3="-111.8" stdev33="29.1" unit="degr"/>
-		<GaussianMove dim="3" weight="0.1466" dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-63.4"  stdev11="9.4"  mean2="-63.2"  stdev22="10.6" mean3="-46.3"  stdev33="19.1" unit="degr"/>
+		<GaussianMove dim="3" weight="0.1466"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-63.4"  stdev11="9.4"  mean2="-63.2"  stdev22="10.6" mean3="-46.3"  stdev33="19.1" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0245"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-67.0"  stdev11="13.4" mean2="-76.5"  stdev22="13.1" mean3=" 44.4"  stdev33="26.9" unit="degr"/>
 		<GaussianMove dim="3" weight="0.0248"  dof1="GLN_CHI1" dof2="GLN_CHI2" dof3="GLN_CHI3" mean1="-68.5"  stdev11="12.8" mean2="-61.2"  stdev22="15.2" mean3="119.9"  stdev33="17.7" unit="degr"/>
 	</MixtureMove>

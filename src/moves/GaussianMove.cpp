@@ -47,6 +47,8 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
         boost::optional<std::string> dof_val;
         if ((        (dof_val = root_node->second.get_optional<std::string>(dof_label_suffixed))) ||
             (i==0 && (dof_val = root_node->second.get_optional<std::string>(dof_label)))) {
+        	if(*dof_val=="")
+        		BOOST_THROW_EXCEPTION(FatalError() << "Empty DOF while reading XML: "<<node_name);
             dofs[i] = *dof_val;
         }
 
@@ -95,7 +97,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
                                                                                  dof_data.atom_names.size()));
                         }
                     } else {
-                        if (dof_atoms.size() != residue_matches.size()) {
+                        if (dof_atoms.size() != matches.size()) {
                             BOOST_THROW_EXCEPTION(FatalError() <<
                                                   "Different number of DOF matches for different dimensions in Gaussian: "
                                                   << dof << " (" << matches.size() << ") vs "

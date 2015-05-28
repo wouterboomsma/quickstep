@@ -3,6 +3,7 @@
 
 #include <string>
 #include "quickstep/Topology.h"
+#include "quickstep/FatalError.h"
 #include <boost/property_tree/ptree_fwd.hpp>
 
 namespace quickstep {
@@ -90,6 +91,10 @@ public:
 
 
     const TemplateData &get_residue_template(std::string residue_name) const {
+    	if(templates.count(residue_name)==0){
+    		BOOST_THROW_EXCEPTION(FatalError() <<
+    		    	    		"Residue named " << residue_name << " not specified in xml");
+    	}
         return templates.at(residue_name);
     }
 

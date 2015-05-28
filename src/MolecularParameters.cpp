@@ -1,7 +1,6 @@
 #include "quickstep/MolecularParameters.h"
 #include "quickstep/Topology.h"
 #include "quickstep/Element.h"
-#include "quickstep/FatalError.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -54,6 +53,13 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
 
 
     for (const auto &residues_node: parameter_input.begin()->second.get_child("Residues")) {
+    	if (residues_node.first=="<xmlcomment>")
+    		continue;
+
+    	if (residues_node.first!="Residue"){
+    	    BOOST_THROW_EXCEPTION(FatalError() <<
+    	    		"Only <Residue name=\"...\"> entries allowed in Residues section: " << residues_node.first << ".");
+    	}
 
         std::string residue_name = residues_node.second.get<std::string>("<xmlattr>.name");
 
