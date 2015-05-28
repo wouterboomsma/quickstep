@@ -97,10 +97,10 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
                                                                                  dof_data.atom_names.size()));
                         }
                     } else {
-                        if (dof_atoms.size() != matches.size()) {
+                        if (dof_atoms.size() != residue_matches.size()) {
                             BOOST_THROW_EXCEPTION(FatalError() <<
                                                   "Different number of DOF matches for different dimensions in Gaussian: "
-                                                  << dof << " (" << matches.size() << ") vs "
+                                                  << dof << " (" << residue_matches.size() << ") vs "
                                                   << dofs[0]<< " (" << dof_atoms.size() << ")");
                         }
                     }
