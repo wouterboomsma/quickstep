@@ -217,9 +217,6 @@ bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> resi
     const Element &element = res_atom.element;
     const std::string &name = res_atom.name;
 
-    std::cout << residue_template.name << "\n";
-    std::cout.flush();
-
     for (unsigned int i=0; i<residue_atom_indices.size(); ++i) {
         const auto &atom = residue_template.atoms[i];
         if (((atom.element != Element::UNKNOWN && atom.element == element)
@@ -228,8 +225,6 @@ bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> resi
             && !has_match[i]
             && atom.bonded_to.size() == bonded_to[position].size()
             && atom.external_bonds == external_bonds[position]) {
-
-            std::cout << "\n" << residue_template.name <<  " " << atom.name << " " << atom.bonded_to << " ";
 
             bool all_bonds_match = true;
             for (auto bonded:bonded_to[position]) {
@@ -302,8 +297,6 @@ std::vector<int> MolecularParameters::match_residue_atoms(const Topology::Residu
         std::tuple<Element, int, int> key{atom.element, atom.bonded_to.size(), atom.external_bonds};
         template_type_count[key] += 1;
     }
-
-    std::cout << "\n\n**" << residue.name << " " << residue_template.name << " " << residue_type_count << " " << template_type_count << "\n\n";
 
     if (residue_type_count != template_type_count)
         return {};

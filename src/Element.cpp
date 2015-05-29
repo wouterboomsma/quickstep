@@ -73,7 +73,6 @@ std::string Element::create_bonded_signature(const std::vector<Element> &element
           adjacency_list[bond.first].insert(bond.second);
           adjacency_list[bond.second].insert(bond.first);
      }
-     std::cout << "Alist: " << adjacency_list << "\n";
 
      std::vector<std::tuple<Element, double, int> > signature_vec;
      for (unsigned int i=0; i<elements.size(); ++i) {
@@ -107,7 +106,7 @@ std::string Element::create_bonded_signature(const std::vector<Element> &element
           }
           if (value_str != "")
                signature += ":" + value_str;
-          signature += ";";u
+          signature += ";";
      }
      return signature;
 }
