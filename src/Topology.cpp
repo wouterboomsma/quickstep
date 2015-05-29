@@ -171,8 +171,26 @@ const std::vector<std::reference_wrapper<const Topology::Residue>> &Topology::ge
     if (residue_template_signatures.empty()) {
         for (const auto &chain: get_chains()) {
             for (const auto &residue: chain.residues) {
+                std::map<int,int> atom_index_map;
+                std::vector<std::pair<int,int> > residue_bonds;
+                for (unsigned int i=0; i<residue.atom_indices.size(); ++i) {
+                    int atom_index = residue.atom_indices[i];
+                    atom_index_map[atom_index] = i;
+                }
+
+                for (unsigned int i=0; i<residue.atom_indices.size(); ++i) {
+                    int atom_index = residue.atom_indices[i];
+                    for (int bonded_atom_index: get_bond_adjacency_list().at(atom_index)) {
+                        // adjacency list includes external bonds - which we exclude here
+                        if (atom_index_map.count(bonded_atom_index)) {
+                            residue_bonds.push_back(std::make_pair(i,
+                                                                   atom_index_map.at(bonded_atom_index)));
+                        }
+                    }
+                }
+
                 std::string signature =
-                        Element::create_signature(
+                        Element::create_bonded_signature(
                                 // Create vector of elements from atom vector
                                 boost::copy_range<std::vector<Element> >(
                                         residue.atom_indices |
@@ -181,7 +199,8 @@ const std::vector<std::reference_wrapper<const Topology::Residue>> &Topology::ge
                                                     return get_atoms()[atom_index].element;
                                                 }
                                         )
-                                )
+                                ),
+                                residue_bonds
                         );
                 // map::operator[] implicitly adds empty vector if key is not found
 //                residue_template_signatures[signature].push_back(std::make_pair(chain.index, residue.index));

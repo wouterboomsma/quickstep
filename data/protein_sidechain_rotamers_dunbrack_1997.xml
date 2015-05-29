@@ -2492,7 +2492,7 @@
 		<Dihedral name="ASP_CHI1" residue="ASP|NASP|CASP" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="CYS_CHI1" residue="CYS|NCYS|CCYS" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="GLN_CHI1" residue="GLN|NGLN|CGLN" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
-		<Dihedral name="GLU_CHI1" residue="GLU" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
+		<Dihedral name="GLU_CHI1" residue="GLU|NGLU|CGLU" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="HIS_CHI1" residue="HID|HIE|HIP|NHID|NHIE|NHIP|CHID|CHIE|CHIP" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="ILE_CHI1" residue="ILE|NILE|CILE" atom1="N" atom2="CA" atom3="CB" atom4="CG1"/>
 		<Dihedral name="LEU_CHI1" residue="LEU|NLEU|CLEU" atom1="N" atom2="CA" atom3="CB" atom4="CG" />

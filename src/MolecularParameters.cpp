@@ -175,25 +175,25 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
 
     for (auto &template_entry:templates) {
         const TemplateData &template_data = template_entry.second;
-        //        std::string signature =
-        //                Element::create_bonded_signature(
-        //                        // Create vector of elements from atom vector
-        //                        boost::copy_range<std::vector<Element> >(
-        //                                template_data.atoms |
-        //                                boost::adaptors::transformed(
-        //                                        [](const TemplateAtomData &atom) {
-        //                                            return atom.element;
-        //                                        })),
-        //                template_data.bonds);
-        std::string signature =
-                Element::create_signature(
-                        // Create vector of elements from atom vector
-                        boost::copy_range<std::vector<Element> >(
-                                template_data.atoms |
-                                boost::adaptors::transformed(
-                                        [](const TemplateAtomData &atom) {
-                                            return atom.element;
-                                        })));
+                std::string signature =
+                        Element::create_bonded_signature(
+                                // Create vector of elements from atom vector
+                                boost::copy_range<std::vector<Element> >(
+                                        template_data.atoms |
+                                        boost::adaptors::transformed(
+                                                [](const TemplateAtomData &atom) {
+                                                    return atom.element;
+                                                })),
+                        template_data.bonds);
+//        std::string signature =
+//                Element::create_signature(
+//                        // Create vector of elements from atom vector
+//                        boost::copy_range<std::vector<Element> >(
+//                                template_data.atoms |
+//                                boost::adaptors::transformed(
+//                                        [](const TemplateAtomData &atom) {
+//                                            return atom.element;
+//                                        })));
         templates_from_signature[signature].push_back(template_data);
         signature_from_residue_name[template_data.name] = signature;
     }
@@ -217,6 +217,9 @@ bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> resi
     const Element &element = res_atom.element;
     const std::string &name = res_atom.name;
 
+    std::cout << residue_template.name << "\n";
+    std::cout.flush();
+
     for (unsigned int i=0; i<residue_atom_indices.size(); ++i) {
         const auto &atom = residue_template.atoms[i];
         if (((atom.element != Element::UNKNOWN && atom.element == element)
@@ -226,21 +229,25 @@ bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> resi
             && atom.bonded_to.size() == bonded_to[position].size()
             && atom.external_bonds == external_bonds[position]) {
 
+            std::cout << "\n" << residue_template.name <<  " " << atom.name << " " << atom.bonded_to << " ";
+
             bool all_bonds_match = true;
             for (auto bonded:bonded_to[position]) {
-                all_bonds_match &= (bonded > position
-                                    ||
-                                    std::find(atom.bonded_to.begin(), atom.bonded_to.end(), matches[bonded]) != atom.bonded_to.end());
-                // If bonds match, call recursively on next atom in residue
-                if (all_bonds_match) {
-                    matches[position] = i;
-                    has_match[i] = true;
+                all_bonds_match = all_bonds_match &&
+                                  (bonded > position
+                                   ||
+                                   std::find(atom.bonded_to.begin(), atom.bonded_to.end(), matches[bonded]) !=
+                                   atom.bonded_to.end());
+            }
+            // If bonds match, call recursively on next atom in residue
+            if (all_bonds_match) {
+                matches[position] = i;
+                has_match[i] = true;
 
-                    if (find_atom_matches(residue_atom_indices, atoms, residue_template, bonded_to, external_bonds, matches, has_match, position+1))
-                        return true;
+                if (find_atom_matches(residue_atom_indices, atoms, residue_template, bonded_to, external_bonds, matches, has_match, position+1))
+                    return true;
 
-                    has_match[i] = false;
-                }
+                has_match[i] = false;
             }
         }
     }
@@ -295,6 +302,8 @@ std::vector<int> MolecularParameters::match_residue_atoms(const Topology::Residu
         std::tuple<Element, int, int> key{atom.element, atom.bonded_to.size(), atom.external_bonds};
         template_type_count[key] += 1;
     }
+
+    std::cout << "\n\n**" << residue.name << " " << residue_template.name << " " << residue_type_count << " " << template_type_count << "\n\n";
 
     if (residue_type_count != template_type_count)
         return {};

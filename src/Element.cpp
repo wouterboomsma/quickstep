@@ -1,6 +1,7 @@
 #include "quickstep/Element.h"
 #include <string>
 #include <algorithm>
+#include "prettyprint.hpp"
 
 namespace quickstep {
 
@@ -67,17 +68,18 @@ std::string Element::create_signature(const std::vector<Element> &elements) {
 std::string Element::create_bonded_signature(const std::vector<Element> &elements,
                                              const std::vector<std::pair<int,int>> &bonds) {
 
-     std::vector<std::vector<int>> adjecency_list(elements.size());
+     std::vector<std::set<int>> adjacency_list(elements.size());
      for (auto bond:bonds) {
-          adjecency_list[bond.first].push_back(bond.second);
-          adjecency_list[bond.second].push_back(bond.first);
+          adjacency_list[bond.first].insert(bond.second);
+          adjacency_list[bond.second].insert(bond.first);
      }
+     std::cout << "Alist: " << adjacency_list << "\n";
 
      std::vector<std::tuple<Element, double, int> > signature_vec;
      for (unsigned int i=0; i<elements.size(); ++i) {
           const Element &element = elements[i];
           double neighbour_mass = 0;
-          for (int index: adjecency_list[i]) {
+          for (int index: adjacency_list[i]) {
                neighbour_mass += elements[index].mass.value();
           }
           signature_vec.push_back(std::make_tuple(element, neighbour_mass, i));
@@ -92,15 +94,20 @@ std::string Element::create_bonded_signature(const std::vector<Element> &element
 
      std::string signature = "";
      for (const auto &entry: signature_vec) {
-          signature += std::get<0>(entry).symbol + ":";
-          const std::vector<int> &neighbor_indices = adjecency_list[std::get<2>(entry)];
-          for (unsigned int i=0; i<neighbor_indices.size(); ++i) {
-               int index = neighbor_indices[i];
-               if (i>0)
-                    signature += ",";
-               signature += std::to_string(index_map[index]);
+          signature += std::get<0>(entry).symbol;
+          std::string value_str = "";
+          bool first = true;
+          for (int index: adjacency_list[std::get<2>(entry)]) {
+               if (index_map[std::get<2>(entry)] > index_map[index]) {
+                    if (!first)
+                         value_str += ",";
+                    value_str += std::to_string(index_map[index]);
+                    first = false;
+               }
           }
-          signature += ";";
+          if (value_str != "")
+               signature += ":" + value_str;
+          signature += ";";u
      }
      return signature;
 }
