@@ -32,7 +32,8 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 
 			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
 			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
-			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf)) );
+			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
+			spec_info.chosen_move = i;
 
 			return ret;
 		}

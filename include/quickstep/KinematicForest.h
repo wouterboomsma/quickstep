@@ -79,6 +79,8 @@ public:
                     break;
             }
         }
+
+        const int get_atom_index(){ return atom_index; }
     protected:
         KinematicForest &forest;
         int atom_index;
