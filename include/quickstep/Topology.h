@@ -113,7 +113,7 @@ public:
         }
         unsigned int index;
         const Topology &topology;
-        std::vector<Residue> residues;
+        std::list<Residue> residues;
     };
 
     Chain &add_chain(){
@@ -145,7 +145,7 @@ public:
     void create_disulfide_bonds(const units::Coordinates &positions);
 
 
-    std::vector<Chain> const &get_chains() const {
+    std::list<Chain> const &get_chains() const {
         return chains;
     }
 
@@ -174,7 +174,8 @@ public:
     unsigned int n_atoms;
 
     std::vector<Atom> atoms;
-    std::vector<Chain> chains;
+
+    std::list<Chain> chains;
 
     std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
     boost::optional<units::Vector3L> unit_cell_dimensions;

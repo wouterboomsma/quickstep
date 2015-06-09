@@ -71,8 +71,9 @@ void Topology::create_standard_bonds() {
             }
         }
 
-        for (int i = 0; i < chain.residues.size(); ++i) {
-            Residue &residue = chain.residues[i];
+        int i=0;
+        for (std::list<Topology::Residue>::iterator it=chain.residues.begin(); it!=chain.residues.end(); ++it, ++i) {
+            Residue &residue = *it;
             std::string name = residue.name;
             auto bond_vec_it = standard_bond_definitions.find(name);
             int from_residue;
