@@ -394,8 +394,8 @@ std::string MolecularParameters::find_match_errors(const Topology::Residue &resi
     if (num_best_match_missing_atoms == 0) {
         const auto &chain_residues = residue.chain.residues;
         std::string output_str = "The set of atoms matches template " + best_match_name + ", but the bonds are different.";
-        if (chain_residues.size() > 1 && (residue.index == chain_residues[0].index ||
-                                          residue.index == chain_residues[chain_residues.size()-1].index)) {
+        if (chain_residues.size() > 1 && (residue.index == chain_residues.front().index ||
+                                          residue.index == chain_residues.back().index)) {
             return output_str + " Missing terminal group?";
         }
         return output_str;
