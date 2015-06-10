@@ -28,10 +28,7 @@ public:
 class MoveInfo{
 public:
 	MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi);
-//	MoveInfo(const MoveInfo&); //Copy constructor
-//	~MoveInfo();
 	std::unique_ptr<SpecificMoveInfo> specific_info;
-//	std::list<std::pair<quickstep::DOFIndex, double>> dof_deltas;
 	std::list<SubTree> affected_atoms;
 };
 

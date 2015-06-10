@@ -45,6 +45,16 @@ private:
     std::vector<std::unique_ptr<KinematicForest::DoF>> dofs;
 };
 
+
+class GaussianMoveInfo: public SpecificMoveInfo
+{
+public:
+	GaussianMoveInfo(Eigen::VectorXd &s): sample(s){}
+	~GaussianMoveInfo(){}
+	Eigen::VectorXd sample;
+};
+
+
 }
 
 #endif // QUICKSTEP_GAUSSIANMOVE_H
