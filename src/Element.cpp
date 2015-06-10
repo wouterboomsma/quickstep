@@ -78,8 +78,11 @@ std::string Element::create_bonded_signature(const std::vector<Element> &element
      for (unsigned int i=0; i<elements.size(); ++i) {
           const Element &element = elements[i];
           double neighbour_mass = 0;
-          for (int index: adjacency_list[i]) {
-               neighbour_mass += elements[index].mass.value();
+          for (int index1: adjacency_list[i]) {
+               neighbour_mass += elements[index1].mass.value();
+               for (int index2: adjacency_list[index1]) {
+                    neighbour_mass += elements[index2].mass.value();
+               }
           }
           signature_vec.push_back(std::make_tuple(element, neighbour_mass, i));
      }

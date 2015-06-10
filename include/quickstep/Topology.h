@@ -180,13 +180,14 @@ public:
     std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
     boost::optional<units::Vector3L> unit_cell_dimensions;
 
+    std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
 private:
 
     static void load_bond_definitions(const boost::filesystem::path &filename);
     static std::map<std::string, std::vector<std::pair<std::string, std::string> > > standard_bond_definitions;
 
 //    std::map<std::string, std::vector<std::pair<int,int> > > residue_template_signatures;
-    std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
+    //std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
     std::vector<std::set<int>> bond_adjacency_list;
 
 

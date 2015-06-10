@@ -2512,7 +2512,7 @@
 		<Dihedral name="GLN_CHI2" residue="GLN|NGLN|CGLN" atom1="CA" atom2="CB" atom3="CG" atom4="CD"  />
 		<Dihedral name="GLU_CHI2" residue="GLU" atom1="CA" atom2="CB" atom3="CG" atom4="CD"  />
 		<Dihedral name="HIS_CHI2" residue="HID|HIE|HIP|NHID|NHIE|NHIP|CHID|CHIE|CHIP" atom1="CA" atom2="CB" atom3="CG" atom4="ND1" />
-		<Dihedral name="ILE_CHI2" residue="ILE|NILE|CILE" atom1="CA" atom2="CB" atom3="CG1" atom4="CD" />
+		<Dihedral name="ILE_CHI2" residue="ILE|NILE|CILE" atom1="CA" atom2="CB" atom3="CG1" atom4="CD1" />
 		<Dihedral name="LEU_CHI2" residue="LEU|NLEU|CLEU" atom1="CA" atom2="CB" atom3="CG" atom4="CD1" />
 		<Dihedral name="LYS_CHI2" residue="LYS|NLYS|CLYS" atom1="CA" atom2="CB" atom3="CG" atom4="CD"  />
 		<Dihedral name="MET_CHI2" residue="MET|NMET|CMET" atom1="CA" atom2="CB" atom3="CG" atom4="SD"  />

@@ -78,6 +78,10 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
             auto template_data = move_parameters.get_residue_template(residue_name);
             std::string signature = move_parameters.get_residue_signature(residue_name);
             auto residue_matches = topology.get_residues_by_signature(signature);
+//            if (residue_matches.empty()) {
+//                std::cout << residue_name << " " << signature << "\n";
+//                std::cout << topology.residue_template_signatures << "\n";
+//            }
             for (unsigned int i=0; i<residue_matches.size(); ++i) {
                 const auto residue = residue_matches[i];
                 std::vector<int> matches = move_parameters.match_residue_atoms(residue, topology.get_atoms(), template_data,
@@ -121,7 +125,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
-        std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
+//        std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
         return_value.push_back(std::move(make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names)));
     }
 
