@@ -225,8 +225,8 @@ const std::vector<std::set<int>> &Topology::get_bond_adjacency_list() {
             bond_adjacency_list.push_back(std::set<int>());
         }
         for (const auto &bond: bonds) {
-            bond_adjacency_list[bond.first.get().index].insert(bond.second.get().index);
-            bond_adjacency_list[bond.second.get().index].insert(bond.first.get().index);
+            bond_adjacency_list[bond.first].insert(bond.second);
+            bond_adjacency_list[bond.second].insert(bond.first);
         }
     }
     return bond_adjacency_list;

@@ -2500,7 +2500,7 @@
 		<Dihedral name="MET_CHI1" residue="MET|NMET|CMET" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="PHE_CHI1" residue="PHE|NPHE|CPHE" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="PRO_CHI1" residue="PRO|NPRO|CPRO" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
-		<Dihedral name="SER_CHI1" residue="SER|NSER|CSER" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
+		<Dihedral name="SER_CHI1" residue="SER|NSER|CSER" atom1="N" atom2="CA" atom3="CB" atom4="OG" />
 		<Dihedral name="THR_CHI1" residue="THR|NTHR|CTHR" atom1="N" atom2="CA" atom3="CB" atom4="OG1"/>
 		<Dihedral name="TRP_CHI1" residue="TRP|NTRP|CTRP" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
 		<Dihedral name="TYR_CHI1" residue="TYR|NTYR|CTYR" atom1="N" atom2="CA" atom3="CB" atom4="CG" />
