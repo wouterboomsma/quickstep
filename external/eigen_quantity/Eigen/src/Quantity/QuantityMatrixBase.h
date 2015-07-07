@@ -58,8 +58,8 @@ public:
         this->nested().applyOnTheRight(p, q, j);
     }
 
-    inline Quantity<ArrayWrapper<ExpressionType>, Unit>
-    array() const {
+    inline auto
+    array() const -> Quantity<decltype(this->nested().array()), Unit> {
         return this->nested().array();
     }
 

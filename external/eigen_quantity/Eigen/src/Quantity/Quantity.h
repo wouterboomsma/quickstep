@@ -391,6 +391,14 @@ operator*(const double &lhs, const Quantity<ExpressionType, Unit> &rhs)
     return lhs*rhs.nested();
 }
 
+//template<typename ExpressionType, typename Unit>
+//inline auto
+//operator*(const double &lhs, const Quantity<ExpressionType, Unit> &rhs)
+//-> const Quantity<decltype(lhs*rhs.nested()),
+//                  Unit>{
+//    return lhs*rhs.nested();
+//}
+
 template<typename ExpressionType, typename Unit, typename OtherUnit>
 inline auto
 operator*(const boost::units::quantity<OtherUnit> &lhs, const Quantity<ExpressionType, Unit> &rhs)
@@ -415,8 +423,8 @@ operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const Quantity<O
 template<typename ExpressionType, typename Unit, typename OtherExpressionType>
 inline auto
 operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const DenseBase<OtherExpressionType> &rhs)
--> const Quantity<decltype(lhs.value()*rhs), Unit> {
-    return lhs.value()*rhs;
+-> const Quantity<decltype(lhs.nested()*rhs), Unit> {
+    return lhs.nested()*rhs;
 }
 
 template<typename ExpressionType, typename Unit, typename OtherExpressionType>
@@ -441,13 +449,6 @@ operator/(const Quantity<ExpressionType, Unit> &lhs, const Quantity<OtherExpress
     return lhs.nested()/rhs.nested();
 }
 
-template<typename ExpressionType, typename Unit>
-inline auto
-operator*(const double &lhs, const Quantity<ExpressionType, Unit> &rhs)
--> const Quantity<decltype(lhs*rhs.nested()),
-                  Unit>{
-    return lhs*rhs.nested();
-}
 
 
 

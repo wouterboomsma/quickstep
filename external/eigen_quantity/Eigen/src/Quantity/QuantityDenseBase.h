@@ -371,13 +371,13 @@ public:
     }
 
     inline auto
-    cwiseInverse() const -> const Quantity<decltype(this->nested().cwiseInverse()), Unit> {
+    cwiseInverse() const -> const Quantity<decltype(this->nested().cwiseInverse()), decltype(boost::units::pow<-1>(Unit()))> {
         return this->nested().cwiseInverse();
     }
 
     template <typename OtherDerived>
     inline auto
-    cwiseMax(const DenseBase<Quantity<OtherDerived, Unit>> &other) const -> const Quantity<decltype(this->nested().cwiseInverse(other.nested())), Unit> {
+    cwiseMax(const DenseBase<Quantity<OtherDerived, Unit>> &other) const -> const Quantity<decltype(this->nested().cwiseMax(other.nested())), Unit> {
         return this->nested().cwiseMax(other.nested());
     }
 
@@ -388,7 +388,7 @@ public:
 
     template <typename OtherDerived>
     inline auto
-    cwiseMin(const DenseBase<Quantity<OtherDerived, Unit>> &other) const -> const Quantity<decltype(this->nested().cwiseInverse(other.nested())), Unit> {
+    cwiseMin(const DenseBase<Quantity<OtherDerived, Unit>> &other) const -> const Quantity<decltype(this->nested().cwiseMin(other.nested())), Unit> {
         return this->nested().cwiseMin(other.nested());
     }
 

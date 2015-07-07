@@ -164,7 +164,7 @@ public:
         return bonds;
     }
 
-    const boost::optional<units::Vector3L> &get_unit_cell_dimensions() const {
+    const boost::optional<units::Array3L> &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
@@ -186,7 +186,7 @@ public:
 
 //    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
     std::set<std::pair<int,int> > bonds;
-    boost::optional<units::Vector3L> unit_cell_dimensions;
+    boost::optional<units::Array3L> unit_cell_dimensions;
 
     std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
 private:
