@@ -59,7 +59,7 @@ public:
         return this->nested().matrix();
     }
 
-    inline const Quantity<MatrixWrapper<ExpressionType>, Unit> matrix() const {
+    inline const Quantity<const MatrixWrapper<const ExpressionType>, Unit> matrix() const {
         return this->nested().matrix();
     }
 

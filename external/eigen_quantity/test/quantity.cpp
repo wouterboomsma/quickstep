@@ -340,6 +340,15 @@ void test_quantity() {
     const std::vector<double> raw_vec_const(3, 0.0);
     Map<const QArray<si::length, 1, 3>> mapped_quantity4 = QArray<double, 1, 3>::Map(raw_vec_const.data(), 3) * si::meter;
 
+
+    // Matrix multiplication of standard Eigen matrix onto quantity matrix (GeneralProduct)
+    Matrix3d rotation_matrix = Matrix3d::Identity();
+    QMatrix<si::length, 3, 1> column_vector;
+    rotation_matrix * column_vector;
+
+    // Testing CwiseBinaryOp on result of multiplication
+    column_vector = rotation_matrix*column_vector + column_vector;
+
     // Output
 //    cout << "length_array: " << length_array << endl;
 //    cout << "area_array:\n " << area_array << endl;

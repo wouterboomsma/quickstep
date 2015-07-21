@@ -70,6 +70,18 @@ public:
     typedef typename ExpressionType::PacketScalar PacketScalar;
     typedef boost::units::quantity<Unit, Scalar> QuantityType;
     typedef boost::units::quantity<Unit, typename ExpressionType::CoeffReturnType> CoeffReturnType;
+    enum {
+        CoeffReadCost = ExpressionType::CoeffReadCost
+    };
+//    enum {
+//        IsVectorAtCompileTime =
+//        CoeffReadCost = ExpressionType::CoeffReadCost,
+//        Flags = ExpressionType::Flags,
+//        RowsAtCompileTime = ExpressionType::RowsAtCompileTime,
+//        ColsAtCompileTime = ExpressionType::ColsAtCompileTime,
+//        MaxRowsAtCompileTime = ExpressionType::MaxRowsAtCompileTime,
+//        MaxColsAtCompileTime = ExpressionType::MaxColsAtCompileTime
+//    };
 
     // Blockmethods typedefs
     /** \internal expression type of a column */

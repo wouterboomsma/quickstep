@@ -12,6 +12,7 @@ template<typename Type, int Rows, int Cols> class QuantityMatrix;
 template<typename Type, int Rows, int Cols> class QuantityArray;
 }
 #define EIGEN_DENSEBASE_PLUGIN "Eigen/src/Quantity/DenseBaseAddons.h"
+#define EIGEN_MATRIXBASE_PLUGIN "Eigen/src/Quantity/MatrixBaseAddons.h"
 
 #include <Eigen/Dense>
 #include "QuantityDenseBase.h"
@@ -21,6 +22,8 @@ template<typename Type, int Rows, int Cols> class QuantityArray;
 #include "QuantityVectorwiseOp.h"
 #include "QuantityDiagonalBase.h"
 #include "QuantityCommaInitializer.h"
+#include "QuantityProductReturnType.h"
+#include "QuantityCwiseBinaryOp.h"
 
 namespace Eigen {
 
@@ -90,8 +93,6 @@ template<typename ExpressionType, class Unit>
 struct QuantityBase<const CommaInitializer<const ExpressionType>, Unit> {
     typedef CommaInitializer<Quantity<const ExpressionType, Unit>> type;
 };
-
-
 
 
 }
@@ -427,12 +428,12 @@ operator*(const DenseBase<Quantity<ExpressionType, Unit>> &lhs, const DenseBase<
     return lhs.nested()*rhs;
 }
 
-template<typename ExpressionType, typename Unit, typename OtherExpressionType>
-inline auto
-operator*(const DenseBase<ExpressionType> &lhs, const DenseBase<Quantity<OtherExpressionType, Unit>> &rhs)
--> const Quantity<decltype(lhs*rhs.value()), Unit> {
-    return lhs*rhs.value();
-}
+//template<typename ExpressionType, typename Unit, typename OtherExpressionType>
+//inline auto
+//operator*(const DenseBase<ExpressionType> &lhs, const DenseBase<Quantity<OtherExpressionType, Unit>> &rhs)
+//-> const Quantity<decltype(lhs*rhs.nested()), Unit> {
+//    return lhs*rhs.nested();
+//}
 
 template<typename ExpressionType, typename Unit, typename OtherExpressionType, typename OtherUnit>
 inline auto
