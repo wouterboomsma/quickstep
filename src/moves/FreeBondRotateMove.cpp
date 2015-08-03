@@ -19,87 +19,98 @@ namespace quickstep {
 
 FreeBondRotateMove::FreeBondRotateMove(units::Angle rotationMagnitude_):
 				rotationMagnitude(rotationMagnitude_),
-				cachedKinematicForest(0)
+				last_used_forest(0)
 {
 
 }
 
-MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
+MoveInfo FreeBondRotateMove::propose(KinematicForest& kf)
 {
 	//Ensure that rotatableBonds is in sync with kf
 	prepareRotatableBonds(kf);
 
 	//Find a random bond
-	int bond_atom = rotatableBonds[ rand()%rotatableBonds.size() ];
+	int bond_atom = rotatable_bonds[ rand()%rotatable_bonds.size() ];
 
 	//Find a random angle
 	units::Angle angle = rotationMagnitude * ((rand()*1.0)/RAND_MAX - 0.5);
 
+	MoveInfo ret;
+
 	//Perform torsion-change on all children leaving bondAtom
 	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
-		int childAtom = kf.adjacencyList[bond_atom][a].second;
-		if(childAtom!=bond_atom) //Not the parent edge
-			kf.changeDOFTorsion( childAtom, angle );
+		int child_atom = kf.adjacencyList[bond_atom][a].second;
+		if(child_atom!=bond_atom){ //Not the parent edge
+//			kf.changeDOFTorsion( child_atom, angle );
+
+		    ret.dof_deltas.push_back(
+		            std::make_pair(
+		                    DOFIndex(child_atom, 2),
+		                    angle
+		                    )
+		    );
+		}
 	}
 
 
-	//Set up move info
-	MoveInfo ret{ make_unique<FreeBondRotateMoveInfo>() };
-	FreeBondRotateMoveInfo& info = *dynamic_cast<FreeBondRotateMoveInfo*>(ret.specific_info.get());
-	info.bond_atom = bond_atom;
-	info.delta_value = angle.value();
-
-
-	SubTree affected_tree;
-	//Note: bond_atom itself is not actually affected, but all children are
-	affected_tree.root_atom = bond_atom;
-	ret.affected_atoms.push_back(affected_tree);
+//	//Set up move info
+//	MoveInfo ret{ make_unique<FreeBondRotateMoveInfo>() };
+//	FreeBondRotateMoveInfo& info = *dynamic_cast<FreeBondRotateMoveInfo*>(ret.specific_info.get());
+//	info.bond_atom = bond_atom;
+//	info.delta_value = angle.value();
+//
+//
+//	SubTree affected_tree;
+//	//Note: bond_atom itself is not actually affected, but all children are
+//	affected_tree.root_atom = bond_atom;
+//	ret.affected_atoms.push_back(affected_tree);
 
 	return ret;
 }
 
-void FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
-{
-	std::cout<<"FreeBondRotateMove::step_fractional(.. "<<fraction<<")"<<std::endl;
-	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo*>(full_move_info.specific_info.get());
-
-	//Ensure that rotatableBonds is in sync with kf
-	prepareRotatableBonds(kf);
-
-	//Find a random bond
-	int bond_atom = orig_move->bond_atom;
-
-	//Find a random angle
-	units::Angle angle = orig_move->delta_value * fraction * units::radians;
-
-	//Perform torsion-change on all children leaving bondAtom
-	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
-		int childAtom = kf.adjacencyList[bond_atom][a].second;
-		if(childAtom!=bond_atom) //Not the parent edge
-			kf.changeDOFTorsion( childAtom, angle );
-	}
-
-	//	//Set up move info
-	//	FreeBondRotateMoveInfo info;
-	//	info.bond_atom = bond_atom;
-	//	info.delta_value = angle.value();
-	//
-	////	MoveInfo ret(info);
-	////
-	////	SubTree affected_tree;
-	////	//Note: bond_atom itself is not actually affected, but all children are
-	////	affected_tree.root_atom = bond_atom;
-	////	ret.affected_atoms.push_back(affected_tree);
-	////
-	////	return ret;
-	//	return full_move_info;
-}
+//void FreeBondRotateMove::step_fractional(KinematicForest& kf, MoveInfo& full_move_info, double fraction)
+//{
+//	std::cout<<"FreeBondRotateMove::step_fractional(.. "<<fraction<<")"<<std::endl;
+//	FreeBondRotateMoveInfo* orig_move = dynamic_cast<FreeBondRotateMoveInfo*>(full_move_info.specific_info.get());
+//
+//	//Ensure that rotatableBonds is in sync with kf
+//	prepareRotatableBonds(kf);
+//
+//	//Find a random bond
+//	int bond_atom = orig_move->bond_atom;
+//
+//	//Find a random angle
+//	units::Angle angle = orig_move->delta_value * fraction * units::radians;
+//
+//	//Perform torsion-change on all children leaving bondAtom
+//	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
+//		int childAtom = kf.adjacencyList[bond_atom][a].second;
+//		if(childAtom!=bond_atom) //Not the parent edge
+//			kf.changeDOFTorsion( childAtom, angle );
+//	}
+//
+//	//	//Set up move info
+//	//	FreeBondRotateMoveInfo info;
+//	//	info.bond_atom = bond_atom;
+//	//	info.delta_value = angle.value();
+//	//
+//	////	MoveInfo ret(info);
+//	////
+//	////	SubTree affected_tree;
+//	////	//Note: bond_atom itself is not actually affected, but all children are
+//	////	affected_tree.root_atom = bond_atom;
+//	////	ret.affected_atoms.push_back(affected_tree);
+//	////
+//	////	return ret;
+//	//	return full_move_info;
+//}
 
 void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 {
-	if(cachedKinematicForest == &kf) return;
+	if(last_used_forest == &kf) return;
 
-	rotatableBonds.clear();
+	rotatable_bonds.clear();
+//	rotatableBonds.clear();
 
 	for(int r=0;r<kf.getRoots();r++){
 		//Perform depth-first search starting from root r and collect rotatable atoms
@@ -109,10 +120,11 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 			int v = stack.top();
 			stack.pop();
 
-			//v is only rotatable if its not a root
-			auto it0 = std::find(kf.roots.begin(), kf.roots.end(), v);
-			if(it0==kf.roots.end())
-				rotatableBonds.push_back(v);
+			//v is only rotatable if its not a root or a leaf
+			if( std::find(kf.roots.begin(), kf.roots.end(), v)==kf.roots.end() &&
+			        kf.adjacencyList[v].size()>1){
+				rotatable_bonds.push_back(v);
+			}
 
 			for(int a=0;a<kf.adjacencyList[v].size();a++)
 				if(kf.adjacencyList[v][a].first==v)
@@ -120,12 +132,12 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 		}
 	}
 
-	if(rotatableBonds.size()==0){
+	if(rotatable_bonds.size()==0){
 		BOOST_THROW_EXCEPTION(FatalError() <<
 				"FreeBondRotateMove: No rotatable bonds identified");
 	}
 
-	cachedKinematicForest = &kf;
+	last_used_forest = &kf;
 
 
 }

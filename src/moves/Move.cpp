@@ -241,4 +241,12 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 
 }
 
+
+void Move::perform(MoveInfo& info)
+{
+    for( std::pair<KinematicForest::DoF, double>& dof_val_pair: info.dof_target_values ){
+        dof_val_pair.first.set_value(dof_val_pair.second);
+    }
+}
+
 }

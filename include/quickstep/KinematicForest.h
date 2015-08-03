@@ -20,6 +20,10 @@ namespace quickstep{
  * whether the bond-length, bond-angle or bond-torsion preceeding the atom should be indexed.
  */
 struct DOFIndex{
+    DOFIndex(int ai, int dt): atom_index(ai), dof_type(dt) {}
+    DOFIndex(): DOFIndex(0,0) {}
+    DOFIndex(const DOFIndex &other): DOFIndex(other.atom_index, other.dof_type) {}
+
 	unsigned int atom_index;
 	unsigned int dof_type; ///< 0 is bond-length, 1 is bond angle, and 2 is bond torsion
 };
@@ -139,6 +143,7 @@ public:
                    std::vector<int> atom_indices,
                    std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
+
             if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
                                       "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");

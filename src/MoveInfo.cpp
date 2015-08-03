@@ -3,11 +3,11 @@
 
 namespace quickstep{
 
-MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
-		specific_info(std::move(smi))
-{
-
-}
+//MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
+//		specific_info(std::move(smi))
+//{
+//
+//}
 
 //MoveInfo::MoveInfo(const MoveInfo& other):
 //		specific_info(other.specific_info),
@@ -22,7 +22,7 @@ MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
 ////		delete specific_info;
 //}
 
-SpecificMoveInfo::~SpecificMoveInfo(){}
-
-
-}
+//SpecificMoveInfo::~SpecificMoveInfo(){}
+//
+//
+//}

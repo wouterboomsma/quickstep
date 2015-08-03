@@ -20,30 +20,34 @@ InterpolatorMove::InterpolatorMove(std::unique_ptr<Move> m, int interpolation_st
 {
 }
 
-MoveInfo InterpolatorMove::step(KinematicForest& kf, bool suggest_only)
+MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 {
-	if(current_step==interpolation_steps){
+	if(current_step==interpolation_steps)
 		current_step = 0;
-	}
 
 	if(current_step==0){
-		current_move_info = make_unique<MoveInfo>( std::move(child_move->step(kf, true)) );
-	}
-	child_move->step_fractional(kf, *(current_move_info.get()), 1.0/interpolation_steps);
+		current_move_info = make_unique<MoveInfo>( std::move(child_move->propose(kf)) );
 
-	MoveInfo ret{ make_unique<InterpolationMoveInfo>() };
-//	InterpolationMoveInfo& spec_info = *dynamic_cast<InterpolationMoveInfo*>(ret.specific_info.get());
-	ret.affected_atoms = current_move_info->affected_atoms;
+		//Scale each dof-change by a facter 1/interpolation_steps
+		for( auto &dd: current_move_info->dof_deltas){
+		    dd.second/=interpolation_steps;
+		}
+	}
+
+//	child_move->step_fractional(kf, *(current_move_info.get()), 1.0/interpolation_steps);
+
+//	MoveInfo ret{ make_unique<InterpolationMoveInfo>() };
+//	ret.affected_atoms = current_move_info->affected_atoms;
 
 	current_step++;
 
-	return ret;
+	return current_move_info;
 }
 
-void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
-{
-	std::cerr<<"InterpolatorMove::step_fractional not implemented."<<std::endl;
-	//TODO: Throw proper exception
-}
+//void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
+//{
+//	std::cerr<<"InterpolatorMove::step_fractional not implemented."<<std::endl;
+//	//TODO: Throw proper exception
+//}
 
 } /* namespace quickstep */

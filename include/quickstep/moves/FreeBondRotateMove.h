@@ -20,28 +20,29 @@ public:
 	FreeBondRotateMove(units::Angle rotationMagnitude);
 	~FreeBondRotateMove(){}
 
-	MoveInfo step(KinematicForest&, bool suggest_only=false);
-	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
+	MoveInfo propose(KinematicForest&);
+//	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 private:
 	units::Angle rotationMagnitude;
 
-	/// Indices of atoms following a rotatable bond
-	std::vector<int> rotatableBonds;
+//	/// Indices of atoms following a rotatable bond
+//	std::vector<int> rotatableBonds;
+	std::vector<int> rotatable_bonds;
 
-	KinematicForest* cachedKinematicForest;
+	KinematicForest* last_used_forest;
 
 	void prepareRotatableBonds(KinematicForest&);
 };
 
 
-class FreeBondRotateMoveInfo: public SpecificMoveInfo
-{
-public:
-	~FreeBondRotateMoveInfo(){}
-	int bond_atom;
-	double delta_value;
-};
+//class FreeBondRotateMoveInfo: public SpecificMoveInfo
+//{
+//public:
+//	~FreeBondRotateMoveInfo(){}
+//	int bond_atom;
+//	double delta_value;
+//};
 
 } /* namespace quickstep */
 

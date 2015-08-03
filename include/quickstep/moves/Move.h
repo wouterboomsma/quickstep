@@ -24,18 +24,12 @@ public:
 
 	virtual ~Move(){}
 
-	/** Perform a conformational move with the kinematic forest.  */
-	virtual MoveInfo step(KinematicForest&, bool suggest_only=false) = 0;
+	/** Suggest a conformational move using the provided kinematic forest.  */
+	virtual MoveInfo propose(KinematicForest&) = 0;
 
-	/** Perform a conformational move toward   */
-	virtual void step_fractional(KinematicForest&, MoveInfo&, double fraction) = 0;
+	void perform(MoveInfo&);
 
 };
-
-struct StepFractionalNotImplementedError{
-	StepFractionalNotImplementedError(){}
-};
-
 
 } /* namespace quickstep */
 

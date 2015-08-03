@@ -21,7 +21,7 @@ CompositeMove::CompositeMove() {
 
 }
 
-MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
+MoveInfo CompositeMove::propose(KinematicForest& kf)
 {
 	assert(accumWeights.size()>0);
 
@@ -30,10 +30,12 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
 
-			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
-			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
-			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
-			spec_info.chosen_move = i;
+//			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
+//			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
+//			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
+//			spec_info.chosen_move = i;
+
+		    MoveInfo ret;
 
 			return ret;
 		}
