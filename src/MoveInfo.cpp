@@ -1,7 +1,7 @@
 
 #include "quickstep/MoveInfo.h"
 
-namespace quickstep{
+//namespace quickstep{
 
 //MoveInfo::MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi):
 //		specific_info(std::move(smi))
@@ -25,4 +25,6 @@ namespace quickstep{
 //SpecificMoveInfo::~SpecificMoveInfo(){}
 //
 //
+//}
+
 //}

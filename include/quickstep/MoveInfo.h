@@ -25,7 +25,8 @@ namespace quickstep{
 //	virtual ~SpecificMoveInfo();
 //};
 
-class MoveInfo{
+
+class MoveInfo {
 public:
     MoveInfo(){}
     MoveInfo(const MoveInfo &other): dof_deltas(other.dof_deltas) {}

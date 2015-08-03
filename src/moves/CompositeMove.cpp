@@ -35,8 +35,7 @@ MoveInfo CompositeMove::propose(KinematicForest& kf)
 //			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
 //			spec_info.chosen_move = i;
 
-		    MoveInfo ret;
-
+		    MoveInfo ret = moves[i]->propose(kf);
 			return ret;
 		}
 	}
@@ -44,11 +43,11 @@ MoveInfo CompositeMove::propose(KinematicForest& kf)
 	throw "Error: Sampled a random value higher than total accumulated weight";
 }
 
-void CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
-{
-	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(mi.specific_info.get());
-	moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction);
-}
+//void CompositeMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
+//{
+//	CompositeMoveInfo* cmi = static_cast<CompositeMoveInfo*>(mi.specific_info.get());
+//	moves[cmi->chosen_move]->step_fractional(kf, *cmi->chosen_info.get(), fraction);
+//}
 
 //void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
 void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)

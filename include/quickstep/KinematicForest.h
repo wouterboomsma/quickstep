@@ -269,7 +269,7 @@ private:
      */
     int parent(int v);
 
-    ///Number of atoms
+    /// Number of atoms
     int n_atoms;
 
     /// Indices of root-atoms
@@ -279,7 +279,6 @@ private:
     std::vector< std::vector< std::pair<int,int> > > adjacencyList;
 
     /// Positions of atoms
-//    std::vector< Math3D::Vector3 > positions;
     std::unique_ptr<units::CoordinatesWrapper> positions;
     units::Coordinates stored_positions;
 
@@ -300,7 +299,6 @@ private:
 
     /// Each atom has an associated transformation
     std::vector< QSTransform > transformations;
-//    std::vector< std::vector< QSTransform > > transformations_queue;
 
     /**
      * \brief Recurse through the tree, update transformations, apply them to atoms, and
