@@ -96,7 +96,7 @@ public:
                   std::vector<int> atom_indices,
                   std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
-            if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
+            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
 //                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
 //            if (atom_index == -1) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
@@ -105,11 +105,11 @@ public:
         }
 
         double get_value() override {
-            return forest.getDOFLength(this->atom_index).value();
+            return forest.get_length(this->atom_index).value();
         };
 
         void add_value(double delta_value) override {
-            forest.changeDOFLength(this->atom_index, units::Length::from_value(delta_value));
+            forest.change_length(this->atom_index, units::Length::from_value(delta_value));
         };
     };
 
@@ -119,7 +119,7 @@ public:
                  std::vector<int> atom_indices,
                  std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
-            if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
+            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
 //                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
 //            if (atom_index == -1) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
@@ -128,11 +128,11 @@ public:
         }
 
         double get_value() override {
-            return forest.getDOFAngle(this->atom_index).value();
+            return forest.get_angle(this->atom_index).value();
         };
 
         void add_value(double delta_value) override {
-            forest.changeDOFAngle(this->atom_index, units::Angle::from_value(delta_value));
+            forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
         };
     };
 
@@ -144,7 +144,7 @@ public:
                    std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
 
-            if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
+            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
                                       "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");
             }
@@ -152,20 +152,20 @@ public:
             int parent_index = forest.parent(atom_index);
 
             //Collect all children of parent
-            for(size_t i=0; i<forest.adjacencyList[parent_index].size();++i){
-            	if( 	forest.adjacencyList[parent_index][i].first == parent_index){
-            		sibling_atom_indices.push_back(forest.adjacencyList[parent_index][i].second);
+            for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
+            	if( 	forest.adjacency_list[parent_index][i].first == parent_index){
+            		sibling_atom_indices.push_back(forest.adjacency_list[parent_index][i].second);
             	}
             }
         }
 
         double get_value() override {
-            return forest.getDOFTorsion(this->atom_index).value();
+            return forest.get_torsion(this->atom_index).value();
         };
 
         void add_value(double delta_value) override {
             for(int i: sibling_atom_indices)
-            	forest.changeDOFTorsion(i, units::Angle::from_value(delta_value));
+            	forest.change_torsion(i, units::Angle::from_value(delta_value));
         };
 
     private:
@@ -179,7 +179,7 @@ public:
                    std::vector<int> atom_indices,
                    std::vector<std::string> atom_names)
                 : DoF(forest, atom_indices.back()) {
-            if (!forest.atomMatchesNames(atom_indices.back(), atom_names)) {
+            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
 //                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
 //            if (atom_index == -1) {
                 BOOST_THROW_EXCEPTION(FatalError() <<
@@ -188,11 +188,11 @@ public:
         }
 
         double get_value() override {
-            return forest.getDOFTorsion(this->atom_index).value();
+            return forest.get_torsion(this->atom_index).value();
         };
 
         void add_value(double delta_value) override {
-            forest.changeDOFTorsion(this->atom_index, units::Angle::from_value(delta_value));
+            forest.change_torsion(this->atom_index, units::Angle::from_value(delta_value));
         };
 
     };
@@ -204,36 +204,36 @@ public:
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
-    units::CoordinatesWrapper &getPositions();
+    units::CoordinatesWrapper &get_positions();
 //    std::vector< Math3D::Vector3 >& getPositions();
 
-    int getRoots();
-    int getRootAtomIndex(int rootIdx);
-    int getAtoms();
+    int get_num_roots();
+    int get_root_atom(int chain_idx);
+    int get_num_atoms();
 
-    units::Length getDOFLength(int atom);
-    units::Angle getDOFAngle(int atom);
-    units::Angle getDOFTorsion(int atom);
+    units::Length get_length(int atom);
+    units::Angle get_angle(int atom);
+    units::Angle get_torsion(int atom);
 
-    void changeDOFLength(int atom, units::Length value);
-    void changeDOFAngle(int atom, units::Angle value);
-    void changeDOFTorsion(int atom, units::Angle value);
+    void change_length(int atom, units::Length value);
+    void change_angle(int atom, units::Angle value);
+    void change_torsion(int atom, units::Angle value);
 
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
-    void changeDOFglobal(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t);
+    void change_global(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t);
 
     /**
      * Goes through the forest and updates positions so they reflect the requested
      * changes to DOFs. Stores the state of the tree so positions can be restored
      * using the restorePositions function.
      */
-    void updatePositions();
+    void update_positions();
 
     /**
      * Restores all positions to the coordinates before the last call to
      * updatePositions.
      */
-    void restorePositions();
+    void restore_positions();
 
 
     // Various helper functions below here
@@ -241,12 +241,12 @@ public:
     /** Print a textual representation of the forest for debugging purposes. */
     void print();
 
-    Topology* getTopology();
+    Topology* get_topology();
 
-    const Topology::Atom& getAtom(int atom);
+    const Topology::Atom& get_atom(int atom);
 
     /** Indicate if atom is the last in the sequence of atom_names */
-    bool atomMatchesNames(int atom, const std::vector<std::string>& atom_names);
+    bool atom_matches_names(int atom, const std::vector<std::string>& atom_names);
 
 private:
 
@@ -261,7 +261,7 @@ private:
      * called recursively on all children of v with an indication that v should be
      * their parent.
      */
-    void rootTree(int v, int p);
+    void root_tree(int v, int p);
 
     /**
      * Return the parent of vertex v. If v is a root return -1,
@@ -276,14 +276,14 @@ private:
     std::vector<int> roots;
 
     /// Adjacency list specifying edges in the tree
-    std::vector< std::vector< std::pair<int,int> > > adjacencyList;
+    std::vector< std::vector< std::pair<int,int> > > adjacency_list;
 
     /// Positions of atoms
     std::unique_ptr<units::CoordinatesWrapper> positions;
     units::Coordinates stored_positions;
 
     units::Coordinates pseudo_root_positions;
-    units::Coordinates stored_pseudo_root_positions;
+//    units::Coordinates stored_pseudo_root_positions;
 
     /**
      * Get the position of atom index i.
@@ -292,9 +292,9 @@ private:
      */
     units::CoordinatesWrapper::ColXpr pos(int i);
 
-    void backupPos(int i);
+    void backup_pos(int i);
 
-    void applyTransformationAtPos(int i);
+//    void apply_transformation_at_pos(int i);
 
 
     /// Each atom has an associated transformation
@@ -308,10 +308,11 @@ private:
      * atom a that is not root. If a is a root the previous transformation is assumed to
      * be identity.
      */
-    void forwardPropagateTransformations(int a=-1);
+    void forward_propagate_transformations(int a=-1);
 
-    bool pseudoRootsSet = false;
-    void updatePseudoRoots();
+//    bool pseudoRootsSet = false;
+    void update_pseudo_roots();
+
 
     friend class CofMMove;
     friend class FreeBondRotateMove;
