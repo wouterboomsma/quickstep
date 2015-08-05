@@ -2,25 +2,14 @@
 #define QUICKSTEP_UNITS_H
 
 #include <boost/units/systems/si.hpp>
-//#include <boost/units/conversion.hpp>
 #include <boost/units/io.hpp>
 #include <boost/units/systems/si/io.hpp>
 #include <boost/units/base_units/metric/angstrom.hpp>
 #include <boost/units/base_units/angle/radian.hpp>
 #include <boost/units/systems/angle/degrees.hpp>
-//#include <boost/units/conversion.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
 #include <Eigen/Quantity>
 #include <Eigen/QuantityGeometry>
-//#include <boost/units/systems/cgs.hpp>
-//#include <boost/units/systems/cgs/mass.hpp>
-//#include <boost/units/quantity.hpp>
-//#include <boost/units/detail/dimension_impl.hpp>
-//#include <boost/units/detail/unscale.hpp>
-//#include <boost/units/heterogeneous_system.hpp>
-//#include <boost/units/systems/si/prefixes.hpp>
-//#include <boost/units/unit.hpp>
-//#include <boost/units/scaled_base_unit.hpp>
 
 namespace quickstep {
 
@@ -74,6 +63,21 @@ typedef boost::units::quantity<AngstromUnit> Length_AA;
 // Time //
 //////////
 
+// Current
+// Hack: define base unit for atomic current to allow
+// specification of charge in elementary units
+struct AtomicCurrentBaseUnit
+        : boost::units::base_unit<AtomicCurrentBaseUnit, boost::units::current_dimension, 12> {
+    static std::string name() {
+        return "Artificial Current base unit for producing elementary charge unit";
+    }
+
+    static std::string symbol() {
+        return "INVALID";
+    }
+};
+
+
 // Picosecond
 typedef boost::units::scaled_base_unit<
         boost::units::si::second_base_unit,
@@ -104,6 +108,7 @@ typedef boost::units::make_system<
         NanometerBaseUnit,
         //DaltonBaseUnit,
         boost::units::cgs::gram_base_unit,
+        AtomicCurrentBaseUnit,
         PicosecondBaseUnit,
         boost::units::si::kelvin_base_unit,
         boost::units::si::mole_base_unit,
@@ -130,6 +135,15 @@ typedef Angle_rad Angle;
 typedef boost::units::quantity<boost::units::degree::plane_angle> Angle_degr;
 using boost::units::degree::degrees;
 
+
+//// Charge
+//// Elementary charge unit can now be directly extracted using the charge dimension in the calorie-system
+typedef boost::units::unit<boost::units::electric_charge_dimension, atomic_system> ChargeUnit_e;
+typedef boost::units::quantity<ChargeUnit_e> Charge_e;
+typedef boost::units::quantity<boost::units::si::electric_charge> Charge_coulomb;
+typedef Charge_e Charge;
+BOOST_UNITS_STATIC_CONSTANT(e, ChargeUnit_e);
+
 // Containers of coordinates
 typedef Eigen::QuantityArray<Length, 3, 1> Coordinate;
 typedef Eigen::QuantityArray<Length, 3, Eigen::Dynamic> Coordinates;
@@ -143,14 +157,27 @@ typedef const Eigen::Map<const Eigen::QuantityArray<Length, 3, 1>> ConstCoordina
 typedef Eigen::QuantityArray<Length_AA, 3, 1> CoordinateAA;
 typedef Eigen::QuantityArray<Length_AA, 3, Eigen::Dynamic> CoordinatesAA;
 
+typedef Eigen::QuantityArray<Length, 3, 1> Array3L;
 typedef Eigen::QuantityMatrix<Length, 3, 1> Vector3L;
 
 }}
+
+// Add scale conversion of atomic current unit
+BOOST_UNITS_DEFINE_CONVERSION_FACTOR(
+        quickstep::units::AtomicCurrentBaseUnit,
+        boost::units::si::ampere_base_unit,
+        double, 1.602176487e-19 * 1e12);
 
 //// Conversion linking Dalton units to corresponding SI mass unit
 //BOOST_UNITS_DEFINE_CONVERSION_FACTOR(
 //        quickstep::units::DaltonBaseUnit,
 //        si::kilogram_base_unit,
 //        double, boost::units::si::constants::codata::m_u.value().value());
+
+namespace boost {
+namespace units {
+inline std::string name_string(const boost::units::reduce_unit<quickstep::units::ChargeUnit_e>::type&) { return "elementary charge"; }
+inline std::string symbol_string(const boost::units::reduce_unit<quickstep::units::ChargeUnit_e>::type&) { return "e"; }
+}}
 
 #endif

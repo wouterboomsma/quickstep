@@ -125,7 +125,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
-//        std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
+        // std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
         return_value.push_back(std::move(make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names)));
     }
 
@@ -156,8 +156,21 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 //        dofs[d]->add_value(a);
         //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
         ret.dof_deltas.push_back( std::make_pair( dofs[d]->get_dofindex(), a ) );
-    }
+
+
+//    Eigen::VectorXd delta_vals(sample.rows(),1);
+//
+//    if(!suggest_only){
+//        for (unsigned int d=0; d<sample.rows(); ++d) {
+//            double a = sample[d] - dofs[d]->get_value();
+//            a += (a>180) ? -360 : (a<-180) ? 360 : 0;
+//            delta_vals[d] = a;
+//            dofs[d]->add_value(a);
+////            dofs[d]->set_value(sample[d]);
+//        }
 //        forest.updatePositions();
+
+    }
 
 
     //Set up move info

@@ -44,6 +44,12 @@ public:
     }
 
     inline auto
+    cwiseInverse() const -> const Quantity<decltype(this->nested().cwiseInverse()),
+                                           decltype(boost::units::pow<-1>(Unit()))> {
+        return this->nested().cwiseInverse();
+    }
+
+    inline auto
     inverse() -> const Quantity<decltype(this->nested().inverse()),
                                 decltype(boost::units::pow<-1>(Unit()))> {
         return this->nested().inverse();
@@ -53,7 +59,7 @@ public:
         return this->nested().matrix();
     }
 
-    inline const Quantity<MatrixWrapper<ExpressionType>, Unit> matrix() const {
+    inline const Quantity<const MatrixWrapper<const ExpressionType>, Unit> matrix() const {
         return this->nested().matrix();
     }
 

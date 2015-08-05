@@ -22,8 +22,7 @@ public:
     class Chain;
 
     Topology()
-            :n_atoms(0),
-             n_residues(0){}
+            :n_atoms(0){}
 
     class Atom {
     public:
@@ -118,12 +117,13 @@ public:
 
     Chain &add_chain(){
         chains.push_back(Chain(chains.size(), *this));
+        n_residues.push_back(0);
         return chains.back();
     }
 
     Residue &add_residue(std::string name, Chain &chain){
-        chain.residues.push_back(Residue(name, n_residues, chain));
-        n_residues++;
+        chain.residues.push_back(Residue(name, n_residues[chain.index], chain));
+        n_residues[chain.index]++;
         return chain.residues.back();
     }
 
@@ -134,11 +134,18 @@ public:
         return atoms.back();
     }
 
+    void add_bond(int atom_idx1, int atom_idx2) {
+        int atom_min_idx = std::min(atom_idx1, atom_idx2);
+        int atom_max_idx = std::max(atom_idx1, atom_idx2);
+        bonds.insert(std::make_pair(atom_min_idx, atom_max_idx));
+    }
+
     void add_bond(const Atom &atom1, const Atom &atom2) {
         const Atom &atom_min_idx = std::min(atom1, atom2);
         const Atom &atom_max_idx = std::max(atom1, atom2);
-        bonds.insert(std::make_pair(std::reference_wrapper<const Atom>(atom_min_idx),
-                                    std::reference_wrapper<const Atom>(atom_max_idx)));
+//        bonds.insert(std::make_pair(std::reference_wrapper<const Atom>(atom_min_idx),
+//                                    std::reference_wrapper<const Atom>(atom_max_idx)));
+        bonds.insert(std::make_pair(atom_min_idx.index, atom_max_idx.index));
     }
 
     void create_standard_bonds();
@@ -153,11 +160,11 @@ public:
         return atoms;
     }
 
-    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > const &get_bonds() const {
+    std::set<std::pair<int,int> > const &get_bonds() const {
         return bonds;
     }
 
-    const boost::optional<units::Vector3L> &get_unit_cell_dimensions() const {
+    const boost::optional<units::Array3L> &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
@@ -170,15 +177,16 @@ public:
 
     const std::vector<std::set<int>> &get_bond_adjacency_list();
 
-    unsigned int n_residues;
+    std::vector<unsigned int> n_residues;
     unsigned int n_atoms;
 
     std::vector<Atom> atoms;
 
     std::list<Chain> chains;
 
-    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
-    boost::optional<units::Vector3L> unit_cell_dimensions;
+//    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
+    std::set<std::pair<int,int> > bonds;
+    boost::optional<units::Array3L> unit_cell_dimensions;
 
     std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
 private:

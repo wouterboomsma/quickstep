@@ -55,8 +55,8 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
     //Kruskals algorithm for finding minimum spanning forest
     DisjointSet ds(n_atoms);
     for( auto bond: topology.get_bonds() ){
-    	const quickstep::Topology::Atom& a1 = bond.first;
-    	const quickstep::Topology::Atom& a2 = bond.second;
+    	const quickstep::Topology::Atom& a1 = topology.atoms[bond.first];
+    	const quickstep::Topology::Atom& a2 = topology.atoms[bond.second];
     	int a1Idx = atomIdxMap[a1.index];
     	int a2Idx = atomIdxMap[a2.index];
     	if(!ds.connected(a1Idx, a2Idx)){

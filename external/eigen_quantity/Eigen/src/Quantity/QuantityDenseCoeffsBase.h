@@ -1,6 +1,8 @@
 #ifndef EIGEN_QUANTITY_DENSE_COEFFS_BASE_H
 #define EIGEN_QUANTITY_DENSE_COEFFS_BASE_H
 
+#include "Quantity.h"
+
 namespace Eigen {
 
 template<typename ExpressionType, typename Unit, int Level>
@@ -71,6 +73,22 @@ public:
 
     static QuantityReferenceValue from_value(ValueType &val)  { return QuantityReferenceValue(val, 0); }
 
+    friend boost::units::quantity<Unit, ValueType> operator/(const QuantityReferenceValue &numerator, const ValueType &denominator) {
+        return boost::units::quantity<Unit, ValueType>::from_value(numerator.value())/denominator;
+    }
+
+    friend boost::units::quantity<decltype(boost::units::pow<-1>(Unit())), ValueType> operator/(const ValueType &numerator, const QuantityReferenceValue &denominator) {
+        return numerator/boost::units::quantity<Unit, ValueType>::from_value(denominator.value());
+    }
+
+    friend boost::units::quantity<Unit, ValueType> operator*(const QuantityReferenceValue &value1, const ValueType &value2) {
+        return boost::units::quantity<Unit, ValueType>::from_value(value1.value()) * value2;
+    }
+
+    friend boost::units::quantity<Unit, ValueType> operator*(const ValueType &value1, const QuantityReferenceValue &value2) {
+        return value1 * boost::units::quantity<Unit, ValueType>::from_value(value2.value());
+    }
+
 private:
     explicit QuantityReferenceValue(ValueType& val, int flag)
             : boost::units::quantity<Unit, ValueType&>(val, flag) { }
@@ -99,6 +117,11 @@ public:
     EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>
     operator[](Index index) {
         return QuantityReferenceValue<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator[](index));
+    }
+
+    EIGEN_STRONG_INLINE boost::units::quantity<Unit, typename ExpressionType::Scalar>
+    operator[](Index index) const {
+        return boost::units::quantity<Unit, typename ExpressionType::Scalar>::from_value(this->nested().operator[](index));
     }
 
     EIGEN_STRONG_INLINE QuantityReferenceValue<Unit, typename ExpressionType::Scalar>

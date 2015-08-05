@@ -58,8 +58,8 @@ public:
         this->nested().applyOnTheRight(p, q, j);
     }
 
-    inline Quantity<ArrayWrapper<ExpressionType>, Unit>
-    array() const {
+    inline auto
+    array() const -> Quantity<decltype(this->nested().array()), Unit> {
         return this->nested().array();
     }
 
@@ -189,6 +189,7 @@ public:
         return this->nested().operator/(other);
     }
 
+
     template<typename OtherDerived>
     inline auto
     operator+(const Quantity<OtherDerived, Unit> &other) const -> const Quantity<decltype(this->nested().operator+(other.nested())),
@@ -256,6 +257,9 @@ public:
 
 
 };
+
+
+
 
 }
 
