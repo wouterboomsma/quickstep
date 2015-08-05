@@ -38,15 +38,15 @@ MoveInfo FreeBondRotateMove::propose(KinematicForest& kf)
 	MoveInfo ret;
 
 	//Perform torsion-change on all children leaving bondAtom
-	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
-		int child_atom = kf.adjacencyList[bond_atom][a].second;
+	for(int a=0;a<kf.adjacency_list[bond_atom].size();a++){
+		int child_atom = kf.adjacency_list[bond_atom][a].second;
 		if(child_atom!=bond_atom){ //Not the parent edge
 //			kf.changeDOFTorsion( child_atom, angle );
 
 		    ret.dof_deltas.push_back(
 		            std::make_pair(
 		                    DOFIndex(child_atom, 2),
-		                    angle
+		                    angle.value()
 		                    )
 		    );
 		}
@@ -83,8 +83,8 @@ MoveInfo FreeBondRotateMove::propose(KinematicForest& kf)
 //	units::Angle angle = orig_move->delta_value * fraction * units::radians;
 //
 //	//Perform torsion-change on all children leaving bondAtom
-//	for(int a=0;a<kf.adjacencyList[bond_atom].size();a++){
-//		int childAtom = kf.adjacencyList[bond_atom][a].second;
+//	for(int a=0;a<kf.adjacency_list[bond_atom].size();a++){
+//		int childAtom = kf.adjacency_list[bond_atom][a].second;
 //		if(childAtom!=bond_atom) //Not the parent edge
 //			kf.changeDOFTorsion( childAtom, angle );
 //	}
@@ -112,7 +112,7 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 	rotatable_bonds.clear();
 //	rotatableBonds.clear();
 
-	for(int r=0;r<kf.getRoots();r++){
+	for(int r=0;r<kf.get_num_roots();r++){
 		//Perform depth-first search starting from root r and collect rotatable atoms
 		std::stack<int> stack;
 		stack.push(kf.roots[r]);
@@ -122,13 +122,13 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 
 			//v is only rotatable if its not a root or a leaf
 			if( std::find(kf.roots.begin(), kf.roots.end(), v)==kf.roots.end() &&
-			        kf.adjacencyList[v].size()>1){
+			        kf.adjacency_list[v].size()>1){
 				rotatable_bonds.push_back(v);
 			}
 
-			for(int a=0;a<kf.adjacencyList[v].size();a++)
-				if(kf.adjacencyList[v][a].first==v)
-					stack.push(kf.adjacencyList[v][a].second);
+			for(int a=0;a<kf.adjacency_list[v].size();a++)
+				if(kf.adjacency_list[v][a].first==v)
+					stack.push(kf.adjacency_list[v][a].second);
 		}
 	}
 

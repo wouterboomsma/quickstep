@@ -31,21 +31,21 @@ MoveInfo CofMMove::propose(KinematicForest& kf)
 //	CofMMoveInfo& spec_info = *dynamic_cast<CofMMoveInfo*>(ret.specific_info.get());
 
 	//Ensure that chainIndices is in sync with kf
-	prepareChainIndices(kf);
+	prepare_chain_indices(kf);
 
 	// Select random chain
-	int root = (int)(rand()%kf.getRoots());
-//	spec_info.root = (int)(rand()%kf.getRoots());
+	int root = (int)(rand()%kf.get_num_roots());
+//	spec_info.root = (int)(rand()%kf.get_num_roots());
 
-	auto rand_tra = randTranslation(translationMagnitude);
-	auto rand_rot = randRotation(rotationMagnitude);
+	auto rand_tra = rand_translation(translationMagnitude);
+	auto rand_rot = rand_rotation(rotationMagnitude);
 
 	// Compute center-of-mass
 	units::Vector3L center_of_mass;
-	for(int a=0;a<chainIndices[root].size();a++){
-	    center_of_mass = center_of_mass + kf.pos(chainIndices[root][a]).matrix();
+	for(int a=0;a<chain_indices[root].size();a++){
+	    center_of_mass = center_of_mass + kf.pos(chain_indices[root][a]).matrix();
 	}
-	center_of_mass = center_of_mass / chainIndices[root].size();
+	center_of_mass = center_of_mass / chain_indices[root].size();
 
 	// Compose the full chain transformation
 	Eigen::Transform<units::Length, 3, Eigen::Affine> full_transform =
@@ -53,6 +53,8 @@ MoveInfo CofMMove::propose(KinematicForest& kf)
 	        Eigen::Translation<units::Length, 3>( center_of_mass) *
 	        rand_rot *
 	        Eigen::Translation<units::Length, 3>(-center_of_mass);
+
+
 
 //	// Suggest random translation
 //	randTranslation(translationMagnitude, spec_info);
@@ -93,7 +95,7 @@ MoveInfo CofMMove::propose(KinematicForest& kf)
 //	CofMMoveInfo& orig_info = *dynamic_cast<CofMMoveInfo*>(mi.specific_info.get());
 //
 //	//Ensure that chainIndices is in sync with kf
-//	prepareChainIndices(kf);
+//	prepare_chain_indices(kf);
 //
 //	Eigen::Transform<units::Length, 3, Eigen::Affine> transform =
 //					Eigen::Translation<units::Length, 3>( orig_info.translation_axis * orig_info.translation_length.value()*fraction) *
@@ -105,33 +107,33 @@ MoveInfo CofMMove::propose(KinematicForest& kf)
 //};
 
 
-void CofMMove::prepareChainIndices(KinematicForest& kf)
+void CofMMove::prepare_chain_indices(KinematicForest& kf)
 {
 	//Use cachedKinematicForest to return quickly if we've seen kf before.
 	if(cachedKinematicForest==&kf) return;
 
-	chainIndices.clear();
-	chainIndices.resize(kf.getRoots());
+	chain_indices.clear();
+	chain_indices.resize(kf.get_num_roots());
 
-	for(int r=0;r<kf.getRoots();r++){
+	for(int r=0;r<kf.get_num_roots();r++){
 		//Perform depth-first search starting from root r and collect all indices
 		std::stack<int> stack;
 		stack.push(kf.roots[r]);
 		while(!stack.empty()){
 			int v = stack.top();
 			stack.pop();
-			chainIndices[r].push_back(v);
+			chain_indices[r].push_back(v);
 
-			for(int a=0;a<kf.adjacencyList[v].size();a++)
-				if(kf.adjacencyList[v][a].first==v)
-					stack.push(kf.adjacencyList[v][a].second);
+			for(int a=0;a<kf.adjacency_list[v].size();a++)
+				if(kf.adjacency_list[v][a].first==v)
+					stack.push(kf.adjacency_list[v][a].second);
 		}
 	}
 
 	cachedKinematicForest = &kf;
 }
 
-Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::randRotation( units::Angle amplitude )
+Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_rotation( units::Angle amplitude )
 {
 	double rand1 = (1.0 * rand()) / RAND_MAX;
 	double rand2 = (1.0 * rand()) / RAND_MAX;
@@ -158,7 +160,7 @@ Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::randRotation( units:
 	return Eigen::AngleAxis<units::Length>(angle, rax);
 }
 
-Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::randTranslation( units::Length amplitude )
+Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_translation( units::Length amplitude )
 {
 	double rand1 = (1.0 * rand()) / RAND_MAX;
 	double rand2 = (1.0 * rand()) / RAND_MAX;

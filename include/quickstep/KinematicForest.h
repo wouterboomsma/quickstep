@@ -20,7 +20,7 @@ namespace quickstep{
  * whether the bond-length, bond-angle or bond-torsion preceeding the atom should be indexed.
  */
 struct DOFIndex{
-    DOFIndex(int ai, int dt): atom_index(ai), dof_type(dt) {}
+    DOFIndex(unsigned int ai, unsigned int dt): atom_index(ai), dof_type(dt) {}
     DOFIndex(): DOFIndex(0,0) {}
     DOFIndex(const DOFIndex &other): DOFIndex(other.atom_index, other.dof_type) {}
 

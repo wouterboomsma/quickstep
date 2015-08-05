@@ -41,7 +41,7 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 
 	current_step++;
 
-	return current_move_info;
+	return *(current_move_info.get());
 }
 
 //void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)

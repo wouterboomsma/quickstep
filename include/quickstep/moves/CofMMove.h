@@ -48,26 +48,26 @@ private:
 	units::Angle rotationMagnitude;
 
 	/** Each entry is a vector containing indices of all atoms in the corresponding chain. */
-	std::vector< std::vector<int> > chainIndices;
+	std::vector< std::vector<int> > chain_indices;
 
 	/** If this reference does not match the one passed to step then chainIndices will be
 	 * recomputed. */
 	KinematicForest* cachedKinematicForest;
 
-	void prepareChainIndices(KinematicForest&);
+	void prepare_chain_indices(KinematicForest&);
 
 	/**
 	 * Changes \a move_info so it contains info for a rotation matrix that uniformly rotates
 	 * points in such a way that the largest possible rotation of any point around the origin
 	 * is \a amplitude.
 	 */
-	Eigen::Transform<units::Length, 3, Eigen::Affine> randRotation( units::Angle amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+	Eigen::Transform<units::Length, 3, Eigen::Affine> rand_rotation( units::Angle amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
 	/**
 	 * Changes \a move_info so it contains info for a translation matrix that uniformly moves
 	 * points in such a way that the largest possible displacement of any point is \a amplitude.
 	 */
-	Eigen::Transform<units::Length, 3, Eigen::Affine> randTranslation( units::Length amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+	Eigen::Transform<units::Length, 3, Eigen::Affine> rand_translation( units::Length amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
 };
 
