@@ -23,42 +23,41 @@ StdDoFMove::StdDoFMove(std::string dofs, double std):
 {
 }
 
-MoveInfo StdDoFMove::propose(KinematicForest& kf)
-{
-	if(!dof_controller || dof_controller->kinematic_forest != &kf){
-		std::vector<std::string> dof_tokens;
-		boost::split(dof_tokens, dofs, boost::is_any_of(","));
-		dof_controller = make_unique<StdDoFController>(kf, dof_tokens);
-		if(dof_controller->numberOfDoFs()==0){
-			BOOST_THROW_EXCEPTION(FatalError() <<
-					"DOF specification ("<<dofs<<") resulted in 0 actual DOFs");
-		}
-	}
+MoveInfo StdDoFMove::propose(KinematicForest& kf) {
+    if (!dof_controller || dof_controller->kinematic_forest != &kf) {
+        std::vector<std::string> dof_tokens;
+        boost::split(dof_tokens, dofs, boost::is_any_of(","));
+        dof_controller = make_unique<StdDoFController>(kf, dof_tokens);
+        if (dof_controller->numberOfDoFs() == 0) {
+            BOOST_THROW_EXCEPTION(FatalError() <<
+                                  "DOF specification (" << dofs << ") resulted in 0 actual DOFs");
+        }
+    }
 
-	int dof_num = dof_controller->numberOfDoFs();
-	int dof_idx = rand()%dof_num;
-	double value = ((rand()/RAND_MAX)-0.5)*std_deviation;
+    int dof_num = dof_controller->numberOfDoFs();
+    int dof_idx = rand() % dof_num;
+    double value = ((rand() / RAND_MAX) - 0.5) * std_deviation;
 //	units::Angle angle = ((rand()/RAND_MAX)-0.5)*2*3.1415/180.0 * units::rad;
 
-	//if(!suggest_only)
-	//	dof_controller->changeDoF(dof_idx, value);
+    //if(!suggest_only)
+    //	dof_controller->changeDoF(dof_idx, value);
 
-	//MoveInfo ret{ make_unique<StdDoFMoveInfo>() };
-	MoveInfo ret;
+    //MoveInfo ret{ make_unique<StdDoFMoveInfo>() };
+    MoveInfo ret;
 
-	//StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
-	DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx] };
-	//info.index = dof;
-	//info.std_dof_index = dof_idx;
-	//info.delta_value = value;
+    //StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
+    DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx]};
+    //info.index = dof;
+    //info.std_dof_index = dof_idx;
+    //info.delta_value = value;
 
-	ret.dof_deltas.push_back( std::make_pair( dof, value ) );
+    ret.dof_deltas.push_back(std::make_pair(dof, value));
 
-	//SubTree affected_tree;
-	//affected_tree.root_atom = dof_controller->dof_atoms[dof_idx];
-	//ret.affected_atoms.push_back(affected_tree);
+    //SubTree affected_tree;
+    //affected_tree.root_atom = dof_controller->dof_atoms[dof_idx];
+    //ret.affected_atoms.push_back(affected_tree);
 
-	return ret;
+    return ret;
 }
 
 //void StdDoFMove::step_fractional(KinematicForest& kf, MoveInfo& mi, double fraction)
@@ -68,7 +67,6 @@ MoveInfo StdDoFMove::propose(KinematicForest& kf)
 //	int dof_idx = orig_info.std_dof_index;
 //	double value = orig_info.delta_value*fraction;
 //	dof_controller->changeDoF(dof_idx, value);
-
-}
+//}
 
 } /* namespace quickstep */

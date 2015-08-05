@@ -47,13 +47,13 @@ private:
 };
 
 
-class GaussianMoveInfo: public SpecificMoveInfo
-{
-public:
-	GaussianMoveInfo(Eigen::VectorXd &s): sample(s){}
-	~GaussianMoveInfo(){}
-	Eigen::VectorXd sample;
-};
+//class GaussianMoveInfo: public SpecificMoveInfo
+//{
+//public:
+//	GaussianMoveInfo(Eigen::VectorXd &s): sample(s){}
+//	~GaussianMoveInfo(){}
+//	Eigen::VectorXd sample;
+//};
 
 
 }

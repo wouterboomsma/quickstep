@@ -88,4 +88,4 @@ private:
 
 } /* namespace quickstep */
 
-#endif /* COFMCHASSE_H_ */
+#endif /* COFMMOVE_H_ */

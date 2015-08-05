@@ -27,7 +27,7 @@ public:
 	/** Suggest a conformational move using the provided kinematic forest.  */
 	virtual MoveInfo propose(KinematicForest&) = 0;
 
-	void perform(MoveInfo&);
+	void perform(KinematicForest&, MoveInfo&);
 
 };
 

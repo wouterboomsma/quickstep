@@ -242,10 +242,15 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 }
 
 
-void Move::perform(MoveInfo& info)
+void Move::perform(KinematicForest& kf, MoveInfo& info)
 {
-    for( std::pair<KinematicForest::DoF, double>& dof_val_pair: info.dof_target_values ){
-        dof_val_pair.first.set_value(dof_val_pair.second);
+    for( std::pair<DOFIndex, double>& dof_val_pair: info.dof_deltas ){
+        switch(dof_val_pair.first.dof_type){
+            case 0: kf.change_length(  dof_val_pair.first.atom_index, dof_val_pair.second * units::nm);
+            case 1: kf.change_angle(   dof_val_pair.first.atom_index, dof_val_pair.second * units::rad);
+            case 2: kf.change_torsion( dof_val_pair.first.atom_index, dof_val_pair.second * units::rad);
+        }
+        //dof_val_pair.first.set_value(dof_val_pair.second);
     }
 }
 
