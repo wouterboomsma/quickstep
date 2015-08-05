@@ -43,7 +43,7 @@ private:
     std::vector<std::vector<int>> dof_atoms;
     std::vector<std::vector<std::string>> dof_atom_names;
     std::vector<std::unique_ptr<KinematicForest::DoF>> dofs;
-    KinematicForest& last_used_forest;
+    //KinematicForest& last_used_forest;
 };
 
 

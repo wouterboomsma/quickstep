@@ -134,8 +134,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
 MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
-    if (dofs.empty() || last_used_forest!=forest) {
-        last_used_forest = forest;
+    if (dofs.empty()) {
         dofs.clear();
         for (unsigned int i=0; i<dof_atoms.size(); ++i) {
             dofs.push_back(  KinematicForest::DoF::construct(forest, dof_atoms[i], dof_atom_names[i])  );
@@ -155,7 +154,8 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         a = (a>180) ? -360 : (a<-180) ? 360 : 0;
 //        delta_vals[d] = a;
 //        dofs[d]->add_value(a);
-        ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
+        //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
+        ret.dof_deltas.push_back( std::make_pair( dofs[d]->get_dofindex(), a ) );
     }
 //        forest.updatePositions();
 

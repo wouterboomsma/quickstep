@@ -56,6 +56,8 @@ public:
                 : forest(forest),
                   atom_index(atom_index) {}
 
+        virtual DOFIndex get_dofindex() = 0;
+
         virtual double get_value() = 0;
 
         virtual void add_value(double value) = 0;
@@ -108,6 +110,8 @@ public:
             return forest.get_length(this->atom_index).value();
         };
 
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 0); }
+
         void add_value(double delta_value) override {
             forest.change_length(this->atom_index, units::Length::from_value(delta_value));
         };
@@ -130,6 +134,8 @@ public:
         double get_value() override {
             return forest.get_angle(this->atom_index).value();
         };
+
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
 
         void add_value(double delta_value) override {
             forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
@@ -163,6 +169,8 @@ public:
             return forest.get_torsion(this->atom_index).value();
         };
 
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
+
         void add_value(double delta_value) override {
             for(int i: sibling_atom_indices)
             	forest.change_torsion(i, units::Angle::from_value(delta_value));
@@ -190,6 +198,8 @@ public:
         double get_value() override {
             return forest.get_torsion(this->atom_index).value();
         };
+
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
 
         void add_value(double delta_value) override {
             forest.change_torsion(this->atom_index, units::Angle::from_value(delta_value));
