@@ -28,7 +28,7 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 	if(!dof_controller || dof_controller->kinematic_forest != &kf){
 		std::vector<std::string> dof_tokens;
 		boost::split(dof_tokens, dofs, boost::is_any_of(","));
-		dof_controller = make_unique<StdDoFController>(kf, dof_tokens);
+		dof_controller = std::make_unique<StdDoFController>(kf, dof_tokens);
 		if(dof_controller->numberOfDoFs()==0){
 			BOOST_THROW_EXCEPTION(FatalError() <<
 					"DOF specification ("<<dofs<<") resulted in 0 actual DOFs");
@@ -43,7 +43,7 @@ MoveInfo StdDoFMove::step(KinematicForest& kf, bool suggest_only)
 	if(!suggest_only)
 		dof_controller->changeDoF(dof_idx, value);
 
-	MoveInfo ret{ make_unique<StdDoFMoveInfo>() };
+	MoveInfo ret{ std::make_unique<StdDoFMoveInfo>() };
 	StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
 	DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx] };
 	info.index = dof;

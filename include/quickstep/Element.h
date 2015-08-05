@@ -41,6 +41,18 @@ public:
         return (element1.mass < element2.mass);
     }
 
+    friend bool operator>(const Element &element1, const Element &element2) {
+        return (element1.mass > element2.mass);
+    }
+
+    friend bool operator<=(const Element &element1, const Element &element2) {
+        return (element1.mass <= element2.mass);
+    }
+
+    friend bool operator>=(const Element &element1, const Element &element2) {
+        return (element1.mass >= element2.mass);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Element& obj) {
         os << obj.name;
         return os;

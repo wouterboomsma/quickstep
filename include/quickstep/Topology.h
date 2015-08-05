@@ -15,18 +15,24 @@
 
 namespace quickstep {
 
+class Selection;
+
 class Topology {
 public:
 
     class Residue;
+
     class Chain;
 
     Topology()
-            :n_atoms(0){}
+            : n_atoms(0) { }
+
+    Topology(Topology &&other) = default;
+
 
     class Atom {
     public:
-        Atom(std::string name, const Element &element, unsigned int index, const Residue &residue):
+        Atom(std::string name, const Element &element, unsigned int index, const Residue &residue) :
                 name(name),
                 element(element),
                 index(index),
@@ -38,16 +44,16 @@ public:
         unsigned int index;
         const Residue &residue;
 
-        friend bool operator< (const Atom &atom1, const Atom &atom2) {
+        friend bool operator<(const Atom &atom1, const Atom &atom2) {
             return atom1.index < atom2.index;
         }
 
         //! Overload output operator
-        friend std::ostream& operator<<(std::ostream& o, const Atom &atom) {
+        friend std::ostream &operator<<(std::ostream &o, const Atom &atom) {
             o << "{"
-              << "name:" << atom.name << ","
-              << "element:" << atom.element << ","
-              << "index:"<< atom.index << "}";
+            << "name:" << atom.name << ","
+            << "element:" << atom.element << ","
+            << "index:" << atom.index << "}";
             return o;
         }
     };
@@ -69,25 +75,25 @@ public:
             }
             return std::move(matches);
         }
-//        std::string create_signature() const {
-//            std::map<Element, int> counts;
-//            for (const Atom &atom: atoms) {
-//                if (!counts.count(atom.element))
-//                    counts.insert(std::make_pair(atom.element, 0));
-//                counts.at(atom.element) += 1;
-//            }
-//            std::vector<std::pair<Element, int> > signature_vec;
-//            for (const auto &entry:counts) {
-//                signature_vec.push_back(entry);
-//            }
-//            std::sort(signature_vec.begin(), signature_vec.end());
-//            std::string signature = "";
-//            for (const auto &entry:counts) {
-//                signature += entry.first.symbol+std::to_string(entry.second);
-//            }
-////            std::cout << signature_vec << " " << signature << "\n";
-//            return signature;
-//        }
+        //        std::string create_signature() const {
+        //            std::map<Element, int> counts;
+        //            for (const Atom &atom: atoms) {
+        //                if (!counts.count(atom.element))
+        //                    counts.insert(std::make_pair(atom.element, 0));
+        //                counts.at(atom.element) += 1;
+        //            }
+        //            std::vector<std::pair<Element, int> > signature_vec;
+        //            for (const auto &entry:counts) {
+        //                signature_vec.push_back(entry);
+        //            }
+        //            std::sort(signature_vec.begin(), signature_vec.end());
+        //            std::string signature = "";
+        //            for (const auto &entry:counts) {
+        //                signature += entry.first.symbol+std::to_string(entry.second);
+        //            }
+        ////            std::cout << signature_vec << " " << signature << "\n";
+        //            return signature;
+        //        }
 
         std::string name;
         unsigned int index;
@@ -95,10 +101,10 @@ public:
         std::vector<unsigned int> atom_indices;
 
         //! Overload output operator
-        friend std::ostream& operator<<(std::ostream& o, const Residue &residue) {
+        friend std::ostream &operator<<(std::ostream &o, const Residue &residue) {
             o << "{"
             << "name:" << residue.name << ","
-            << "index:"<< residue.index << "}";
+            << "index:" << residue.index << "}";
             return o;
         }
 
@@ -110,18 +116,19 @@ public:
                 : index(index),
                   topology(topology) {
         }
+
         unsigned int index;
         const Topology &topology;
         std::list<Residue> residues;
     };
 
-    Chain &add_chain(){
+    Chain &add_chain() {
         chains.push_back(Chain(chains.size(), *this));
         n_residues.push_back(0);
         return chains.back();
     }
 
-    Residue &add_residue(std::string name, Chain &chain){
+    Residue &add_residue(std::string name, Chain &chain) {
         chain.residues.push_back(Residue(name, n_residues[chain.index], chain));
         n_residues[chain.index]++;
         return chain.residues.back();
@@ -143,14 +150,14 @@ public:
     void add_bond(const Atom &atom1, const Atom &atom2) {
         const Atom &atom_min_idx = std::min(atom1, atom2);
         const Atom &atom_max_idx = std::max(atom1, atom2);
-//        bonds.insert(std::make_pair(std::reference_wrapper<const Atom>(atom_min_idx),
-//                                    std::reference_wrapper<const Atom>(atom_max_idx)));
+        //        bonds.insert(std::make_pair(std::reference_wrapper<const Atom>(atom_min_idx),
+        //                                    std::reference_wrapper<const Atom>(atom_max_idx)));
         bonds.insert(std::make_pair(atom_min_idx.index, atom_max_idx.index));
     }
 
     void create_standard_bonds();
-    void create_disulfide_bonds(const units::Coordinates &positions);
 
+    void create_disulfide_bonds(const units::Coordinates &positions);
 
     std::list<Chain> const &get_chains() const {
         return chains;
@@ -160,7 +167,7 @@ public:
         return atoms;
     }
 
-    std::set<std::pair<int,int> > const &get_bonds() const {
+    std::set<std::pair<int, int> > const &get_bonds() const {
         return bonds;
     }
 
@@ -172,8 +179,9 @@ public:
         unit_cell_dimensions = dimensions;
     }
 
-//    const std::vector<std::pair<int,int>> &get_residues_by_signature(const std::string &signature_str);
-    const std::vector<std::reference_wrapper<const Residue>> &get_residues_by_signature(const std::string &signature_str);
+    //    const std::vector<std::pair<int,int>> &get_residues_by_signature(const std::string &signature_str);
+    const std::vector<std::reference_wrapper<const Residue>> &get_residues_by_signature(
+            const std::string &signature_str);
 
     const std::vector<std::set<int>> &get_bond_adjacency_list();
 
@@ -184,25 +192,33 @@ public:
 
     std::list<Chain> chains;
 
-//    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
-    std::set<std::pair<int,int> > bonds;
+    Selection select(const std::string &selection_string);
+
+    //    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
+    std::set<std::pair<int, int> > bonds;
     boost::optional<units::Array3L> unit_cell_dimensions;
 
     std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
 private:
 
     static void load_bond_definitions(const boost::filesystem::path &filename);
+
     static std::map<std::string, std::vector<std::pair<std::string, std::string> > > standard_bond_definitions;
 
-//    std::map<std::string, std::vector<std::pair<int,int> > > residue_template_signatures;
+    //    std::map<std::string, std::vector<std::pair<int,int> > > residue_template_signatures;
     //std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
     std::vector<std::set<int>> bond_adjacency_list;
 
 
     // Prevent copying
-    Topology(const Topology &other);
-    Topology &operator=(const Topology &other);
+    Topology(const Topology &other) = delete;
+
+    Topology &operator=(const Topology &other) = delete;
 };
+
+
+Topology filter(const Selection &selection, const Topology &source);
+
 
 }
 

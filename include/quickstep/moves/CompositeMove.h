@@ -33,7 +33,7 @@ public:
 		// NOTE: the registrator variable must be explicitly defined in the .cpp file as well
 		const static struct Registrator {
 			Registrator() {
-				MoveFactory::get().register_generator("MixtureMove", make_unique<CompositeMove::MoveGenerator>());
+				MoveFactory::get().register_generator("MixtureMove", std::make_unique<CompositeMove::MoveGenerator>());
 			}
 		} registrator;
 	};

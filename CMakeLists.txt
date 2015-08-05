@@ -16,8 +16,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_BINAR
 # Set policies
 include(policies NO_POLICY_SCOPE)
 
-# Add C++11 support
-include(c++11)
+# Add C++14 support
+include(cxx_compiler)
 
 # Set build type parameters
 include(buildType)

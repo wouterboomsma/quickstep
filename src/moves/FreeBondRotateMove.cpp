@@ -44,7 +44,7 @@ MoveInfo FreeBondRotateMove::step(KinematicForest& kf, bool suggest_only)
 
 
 	//Set up move info
-	MoveInfo ret{ make_unique<FreeBondRotateMoveInfo>() };
+	MoveInfo ret{ std::make_unique<FreeBondRotateMoveInfo>() };
 	FreeBondRotateMoveInfo& info = *dynamic_cast<FreeBondRotateMoveInfo*>(ret.specific_info.get());
 	info.bond_atom = bond_atom;
 	info.delta_value = angle.value();

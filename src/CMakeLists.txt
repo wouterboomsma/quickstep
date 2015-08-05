@@ -10,6 +10,7 @@ add_library(quickstep
   Element.cpp
   KinematicForest.cpp
   Topology.cpp
+  Selection.cpp
   MoveInfo.cpp
   moves/CompositeMove.cpp
   moves/CofMMove.cpp
@@ -35,6 +36,7 @@ add_library(quickstep
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/GaussianMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/Move.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/Topology.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/Selection.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MolecularParameters.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MoveParameters.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MoveFactory.h

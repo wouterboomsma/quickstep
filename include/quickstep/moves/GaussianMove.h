@@ -21,7 +21,7 @@ public:
         // NOTE: the registrator variable must be explicitly defined in the .cpp file as well
         const static struct Registrator {
             Registrator() {
-                MoveFactory::get().register_generator("GaussianMove", make_unique<GaussianMove::MoveGenerator>());
+                MoveFactory::get().register_generator("GaussianMove", std::make_unique<GaussianMove::MoveGenerator>());
             }
         } registrator;
     };

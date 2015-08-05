@@ -26,7 +26,7 @@ CofMMove::CofMMove(units::Length translationMagnitude_, units::Angle rotationMag
 
 MoveInfo CofMMove::step(KinematicForest& kf, bool suggest_only)
 {
-	MoveInfo ret{ make_unique<CofMMoveInfo>() };
+	MoveInfo ret{ std::make_unique<CofMMoveInfo>() };
 	CofMMoveInfo& spec_info = *dynamic_cast<CofMMoveInfo*>(ret.specific_info.get());
 
 	//Ensure that chainIndices is in sync with kf

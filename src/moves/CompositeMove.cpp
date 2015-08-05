@@ -30,9 +30,9 @@ MoveInfo CompositeMove::step(KinematicForest& kf, bool suggest_only)
 	for(int i=0;i<accumWeights.size();i++){
 		if(randVal<=accumWeights[i]){
 
-			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
+			MoveInfo ret{ std::make_unique<CompositeMoveInfo>() };
 			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
-			spec_info.chosen_info = make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
+			spec_info.chosen_info = std::make_unique<MoveInfo>( std::move(moves[i]->step(kf, suggest_only)) );
 			spec_info.chosen_move = i;
 
 			return ret;
@@ -61,8 +61,8 @@ std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_
 {
 	std::unique_ptr<CompositeMove> ret(new CompositeMove());
 
-	ret->add_move( make_unique<CofMMove>(0.01*units::nm, 0.05*units::radians), 0.05);      // max-translation: 0.1Å, max-rotation ~1 degree
-	ret->add_move( make_unique<FreeBondRotateMove>(0.17*units::radians), 0.05);  // max-rotation: ~1 degree
+	ret->add_move( std::make_unique<CofMMove>(0.01*units::nm, 0.05*units::radians), 0.05);      // max-translation: 0.1Å, max-rotation ~1 degree
+	ret->add_move( std::make_unique<FreeBondRotateMove>(0.17*units::radians), 0.05);  // max-rotation: ~1 degree
 
 	return ret;
 }
@@ -76,7 +76,7 @@ std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(cons
 	auto root_node = parameter_input.begin();
 	const std::string &node_name = root_node->first;
 	// std::cout << "Initializing..." << node_name << "\n";
-	auto move = make_unique<CompositeMove>();
+	auto move = std::make_unique<CompositeMove>();
 
 	const auto name_attr = root_node->second.get_optional<std::string>("name");
 	// if (name_attr)

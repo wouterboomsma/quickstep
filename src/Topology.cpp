@@ -9,6 +9,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <quickstep_config.h>
 #include "quickstep/FatalError.h"
+#include "quickstep/Selection.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "prettyprint.hpp"
@@ -230,6 +231,40 @@ const std::vector<std::set<int>> &Topology::get_bond_adjacency_list() {
         }
     }
     return bond_adjacency_list;
+}
+
+Selection Topology::select(const std::string &selection_string) {
+    return Selection::parse(*this, selection_string);
+}
+
+
+Topology filter(const Selection &selection, const Topology &source) {
+    Topology new_topology;
+    for (const Topology::Chain &chain: source.chains) {
+        boost::optional<Topology::Chain &> new_chain;
+        for (const Topology::Residue &residue: chain.residues) {
+            boost::optional<Topology::Residue &> new_residue;
+            for (const int atom_index: residue.atom_indices) {
+                const Topology::Atom &atom = source.atoms[atom_index];
+                if (selection.get_active_atom_map()[atom_index]) {
+
+                    // Lazy initialization to avoid inclusion of empty chains and residues
+                    if (!new_chain)
+                        new_chain = new_topology.add_chain();
+                    if (!new_residue)
+                        new_residue = new_topology.add_residue(residue.name, *new_chain);
+
+                    new_topology.add_atom(atom.name, atom.element, *new_residue);
+                }
+            }
+        }
+    }
+    for (const auto &bond: source.bonds) {
+        if (selection.get_active_atom_map()[bond.first] &&
+            selection.get_active_atom_map()[bond.second])
+            new_topology.add_bond(bond.first, bond.second);
+    }
+    return std::move(new_topology);
 }
 
 }

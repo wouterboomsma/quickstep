@@ -126,7 +126,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
         // std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
-        return_value.push_back(std::move(make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names)));
+        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names)));
     }
 
     return std::move(return_value);
@@ -154,12 +154,12 @@ MoveInfo GaussianMove::step(KinematicForest &forest, bool suggest_only) {
             dofs[d]->add_value(a);
 //            dofs[d]->set_value(sample[d]);
         }
-        forest.updatePositions();
+        //forest.updatePositions();
     }
 
 
     //Set up move info
-    MoveInfo ret{ make_unique<GaussianMoveInfo>(delta_vals) };
+    MoveInfo ret{ std::make_unique<GaussianMoveInfo>(delta_vals) };
     GaussianMoveInfo& info = *dynamic_cast<GaussianMoveInfo*>(ret.specific_info.get());
 
     SubTree affected_tree;

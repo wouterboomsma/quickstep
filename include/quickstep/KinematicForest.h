@@ -65,13 +65,13 @@ public:
                                               std::vector<std::string> atom_names) {
             switch (atom_indices.size()) {
                 case 2:
-                    return make_unique<LengthDoF>(forest, atom_indices, atom_names);
+                    return std::make_unique<LengthDoF>(forest, atom_indices, atom_names);
                     break;
                 case 3:
-                    return make_unique<AngleDoF>(forest, atom_indices, atom_names);
+                    return std::make_unique<AngleDoF>(forest, atom_indices, atom_names);
                     break;
                 case 4:
-                    return make_unique<TorsionDoF>(forest, atom_indices, atom_names);
+                    return std::make_unique<TorsionDoF>(forest, atom_indices, atom_names);
                     break;
                 default:
                     BOOST_THROW_EXCEPTION(FatalError() <<

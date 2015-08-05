@@ -226,7 +226,7 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
         if (moves.size() == 1)
             return std::move(moves[0]);
         else {
-            auto composite = make_unique<CompositeMove>();
+            auto composite = std::make_unique<CompositeMove>();
             for (auto &move: moves) {
                 composite->add_move(std::move(move));
             }
