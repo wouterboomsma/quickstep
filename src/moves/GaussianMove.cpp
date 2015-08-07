@@ -151,11 +151,24 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
     for (unsigned int d=0; d<sample.rows(); ++d) {
         double a = sample[d] - dofs[d]->get_value();
-        a = (a>180) ? -360 : (a<-180) ? 360 : 0;
+        //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
+        //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
+        a += (a>M_PI) ? -2*M_PI : (a<-M_PI) ? 2*M_PI : 0; // Might not strictly be necessary
 //        delta_vals[d] = a;
 //        dofs[d]->add_value(a);
         //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
-        ret.dof_deltas.push_back( std::make_pair( dofs[d]->get_dofindex(), a ) );
+        DOFIndex di = dofs[d]->get_dofindex();
+        //ret.dof_deltas.push_back( std::make_pair( di, a ) );
+
+        int parent_index = forest.parent(di.atom_index);
+
+        //Add all children of parent
+        for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
+            if( 	forest.adjacency_list[parent_index][i].first == parent_index){
+                di.atom_index = forest.adjacency_list[parent_index][i].second;
+                ret.dof_deltas.push_back( std::make_pair( di, a ) );
+            }
+        }
 
 
 //    Eigen::VectorXd delta_vals(sample.rows(),1);

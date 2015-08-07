@@ -169,7 +169,7 @@ public:
             return forest.get_torsion(this->atom_index).value();
         };
 
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
 
         void add_value(double delta_value) override {
             for(int i: sibling_atom_indices)
@@ -199,7 +199,7 @@ public:
             return forest.get_torsion(this->atom_index).value();
         };
 
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
+        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
 
         void add_value(double delta_value) override {
             forest.change_torsion(this->atom_index, units::Angle::from_value(delta_value));
@@ -326,6 +326,7 @@ private:
 
     friend class CofMMove;
     friend class FreeBondRotateMove;
+    friend class GaussianMove;
 };
 
 }

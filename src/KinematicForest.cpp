@@ -212,6 +212,7 @@ void KinematicForest::change_angle(int atom, units::Angle value)
 
 void KinematicForest::change_torsion(int atom, units::Angle value)
 {
+    //cout<<"KinematicForest::change_torsion("<<atom<<", "<<value<<")"<<endl;
     assert(atom>=0 && atom<n_atoms);
 //    if(!pseudoRootsSet)	update_pseudo_roots();
 //    if(atom==0) return;
