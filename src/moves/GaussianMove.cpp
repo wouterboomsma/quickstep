@@ -132,9 +132,10 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     return std::move(return_value);
 }
 
-MoveInfo GaussianMove::step(KinematicForest &forest, bool suggest_only) {
+MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
     if (dofs.empty()) {
+        dofs.clear();
         for (unsigned int i=0; i<dof_atoms.size(); ++i) {
             dofs.push_back(  KinematicForest::DoF::construct(forest, dof_atoms[i], dof_atom_names[i])  );
         }
@@ -144,46 +145,57 @@ MoveInfo GaussianMove::step(KinematicForest &forest, bool suggest_only) {
                                                                               [&](int, int = 0) {
                                                                                   return normal_distribution();
                                                                               })) + mean};
-    Eigen::VectorXd delta_vals(sample.rows(),1);
+//    Eigen::VectorXd delta_vals(sample.rows(),1);
 
-    if(!suggest_only){
-        for (unsigned int d=0; d<sample.rows(); ++d) {
-            double a = sample[d] - dofs[d]->get_value();
-            a += (a>180) ? -360 : (a<-180) ? 360 : 0;
-            delta_vals[d] = a;
-            dofs[d]->add_value(a);
-//            dofs[d]->set_value(sample[d]);
+    MoveInfo ret;
+
+    for (unsigned int d=0; d<sample.rows(); ++d) {
+        double a = sample[d] - dofs[d]->get_value();
+        //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
+        //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
+        a += (a>M_PI) ? -2*M_PI : (a<-M_PI) ? 2*M_PI : 0; // Might not strictly be necessary
+//        delta_vals[d] = a;
+//        dofs[d]->add_value(a);
+        //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
+        DOFIndex di = dofs[d]->get_dofindex();
+        //ret.dof_deltas.push_back( std::make_pair( di, a ) );
+
+        int parent_index = forest.parent(di.atom_index);
+
+        //Add all children of parent
+        for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
+            if( 	forest.adjacency_list[parent_index][i].first == parent_index){
+                di.atom_index = forest.adjacency_list[parent_index][i].second;
+                ret.dof_deltas.push_back( std::make_pair( di, a ) );
+            }
         }
-        //forest.updatePositions();
     }
 
 
     //Set up move info
-    MoveInfo ret{ std::make_unique<GaussianMoveInfo>(delta_vals) };
-    GaussianMoveInfo& info = *dynamic_cast<GaussianMoveInfo*>(ret.specific_info.get());
+//    MoveInfo ret{ std::make_unique<GaussianMoveInfo>(delta_vals) };
+//    GaussianMoveInfo& info = *dynamic_cast<GaussianMoveInfo*>(ret.specific_info.get());
 
-    SubTree affected_tree;
-    affected_tree.root_atom = dofs[0]->get_atom_index();
-    ret.affected_atoms.push_back(affected_tree);
+//    SubTree affected_tree;
+//    affected_tree.root_atom = dofs[0]->get_atom_index();
+//    ret.affected_atoms.push_back(affected_tree);
     return ret;
-
-//    return MoveInfo(make_unique<SpecificMoveInfo>());
 }
 
-void GaussianMove::step_fractional(KinematicForest &forest, MoveInfo &info, double fraction) {
-//    if (dofs.empty()) {
-//        for (unsigned int i=0; i<dof_atoms.size(); ++i) {
-//            dofs.push_back(  KinematicForest::DoF::construct(forest, dof_atoms[i], dof_atom_names[i])  );
-//        }
+//void GaussianMove::step_fractional(KinematicForest &forest, MoveInfo &info, double fraction) {
+////    if (dofs.empty()) {
+////        for (unsigned int i=0; i<dof_atoms.size(); ++i) {
+////            dofs.push_back(  KinematicForest::DoF::construct(forest, dof_atoms[i], dof_atom_names[i])  );
+////        }
+////    }
+//    GaussianMoveInfo& spec_info = *dynamic_cast<GaussianMoveInfo*>(info.specific_info.get());
+//    Eigen::VectorXd& delta_vals = spec_info.sample;
+//
+//    for (unsigned int d=0; d<delta_vals.rows(); ++d) {
+//        dofs[d]->add_value(delta_vals[d]*fraction);
 //    }
-    GaussianMoveInfo& spec_info = *dynamic_cast<GaussianMoveInfo*>(info.specific_info.get());
-    Eigen::VectorXd& delta_vals = spec_info.sample;
-
-    for (unsigned int d=0; d<delta_vals.rows(); ++d) {
-        dofs[d]->add_value(delta_vals[d]*fraction);
-    }
-//    forest.updatePositions();
-}
+////    forest.updatePositions();
+//}
 
 GaussianMove::GaussianMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &cov,
                            std::vector<std::vector<int>> &dof_atoms,

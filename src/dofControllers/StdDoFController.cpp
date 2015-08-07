@@ -33,10 +33,10 @@ StdDoFController::StdDoFController(KinematicForest &kf, vector< string > dofs): 
 	}
 
 	//Go through each atom. If it matches dofMatches, add a DoF
-	Topology* top = kf.getTopology();
-	for(int a=0; a<kf.getAtoms(); a++){
+	Topology* top = kf.get_topology();
+	for(int a=0; a<kf.get_num_atoms(); a++){
 		for(int d=0;d<dof_matches.size();d++){
-			if(kf.atomMatchesNames(a, dof_matches[d])){
+			if(kf.atom_matches_names(a, dof_matches[d])){
 				int atoms_in_dof = dof_matches[d].size();
 				int dof_type = -1;
 				switch(atoms_in_dof){
@@ -66,9 +66,9 @@ int StdDoFController::numberOfDoFs()
 void StdDoFController::changeDoF(int DoFIdx, double changeValueBy)
 {
 	switch(dof_types[DoFIdx]){
-	case DOF_BOND_LENGTH: 	kinematic_forest->changeDOFLength(	dof_atoms[DoFIdx], changeValueBy*units::nm); 	break;
-	case DOF_BOND_ANGLE: 	kinematic_forest->changeDOFAngle(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
-	case DOF_BOND_TORSION: 	kinematic_forest->changeDOFTorsion(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
+	case DOF_BOND_LENGTH: 	kinematic_forest->change_length(	dof_atoms[DoFIdx], changeValueBy*units::nm); 	break;
+	case DOF_BOND_ANGLE: 	kinematic_forest->change_angle(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
+	case DOF_BOND_TORSION: 	kinematic_forest->change_torsion(	dof_atoms[DoFIdx], changeValueBy*units::rad); 	break;
 	}
 }
 
@@ -79,7 +79,7 @@ int StdDoFController::DoFType(int DoFIdx)
 
 void StdDoFController::updatePositions()
 {
-	kinematic_forest->updatePositions();
+	kinematic_forest->update_positions();
 }
 
 

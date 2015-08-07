@@ -19,8 +19,8 @@ class InterpolatorMove: public Move {
 public:
 	InterpolatorMove(std::unique_ptr<Move> move, int interpolation_steps=2048);
 
-	MoveInfo step(KinematicForest&, bool suggest_only=false);
-	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
+	MoveInfo propose(KinematicForest&);
+//	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 private:
 	std::unique_ptr<MoveInfo> current_move_info;
@@ -30,10 +30,10 @@ private:
 	std::unique_ptr<Move> child_move;
 };
 
-class InterpolationMoveInfo: public SpecificMoveInfo{
-public:
-	//TODO: Fill out in case we want to interpolate interpolations
-};
+//class InterpolationMoveInfo: public SpecificMoveInfo{
+//public:
+//	//TODO: Fill out in case we want to interpolate interpolations
+//};
 
 
 } /* namespace quickstep */

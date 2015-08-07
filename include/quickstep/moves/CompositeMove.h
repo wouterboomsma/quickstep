@@ -41,9 +41,11 @@ public:
 	CompositeMove();
 	~CompositeMove(){}
 
-	MoveInfo step(KinematicForest&, bool suggest_only=false);
+	MoveInfo propose(KinematicForest& kf);
 
-	void step_fractional(KinematicForest&, MoveInfo&, double);
+//	MoveInfo step(KinematicForest&, bool suggest_only=false);
+//
+//	void step_fractional(KinematicForest&, MoveInfo&, double);
 
 	void add_move(std::unique_ptr<Move> c, double weight=1.);
 
@@ -54,12 +56,12 @@ private:
 	std::vector<double> accumWeights;
 };
 
-class CompositeMoveInfo: public SpecificMoveInfo
-{
-public:
-	int chosen_move;
-	std::unique_ptr<MoveInfo> chosen_info;
-};
+//class CompositeMoveInfo: public SpecificMoveInfo
+//{
+//public:
+//	int chosen_move;
+//	std::unique_ptr<MoveInfo> chosen_info;
+//};
 
 } /* namespace quickstep */
 

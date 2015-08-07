@@ -15,21 +15,25 @@
 
 namespace quickstep{
 
-struct SubTree{
-	int root_atom;
-	std::list<int> excluded_atoms;
-};
+//struct SubTree{
+//	int root_atom;
+//	std::list<int> excluded_atoms;
+//};
 
-class SpecificMoveInfo{
-public:
-	virtual ~SpecificMoveInfo();
-};
+//class SpecificMoveInfo{
+//public:
+//	virtual ~SpecificMoveInfo();
+//};
 
-class MoveInfo{
+
+class MoveInfo {
 public:
-	MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi);
-	std::unique_ptr<SpecificMoveInfo> specific_info;
-	std::list<SubTree> affected_atoms;
+    MoveInfo(){}
+    MoveInfo(const MoveInfo &other): dof_deltas(other.dof_deltas) {}
+//	MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi);
+//	std::unique_ptr<SpecificMoveInfo> specific_info;
+//	std::list<SubTree> affected_atoms;
+    std::list< std::pair<DOFIndex, double> > dof_deltas;
 };
 
 }
