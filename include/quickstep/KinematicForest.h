@@ -4,12 +4,13 @@
 #include <vector>
 #include <utility>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "math/primitives.h"
 #include "quickstep/Topology.h"
 #include "quickstep/FatalError.h"
 #include "quickstep/utils.h"
-#include "Eigen/QuantityGeometry"
+#include <Eigen/QuantityGeometry>
 #include <Eigen/Geometry>
 
 namespace quickstep{
@@ -279,6 +280,9 @@ private:
      */
     int parent(int v);
 
+    /** Return true iff v1 is an ancestor of v2 */
+    bool ancestor_of(int v1, int v2);
+
     /// Number of atoms
     int n_atoms;
 
@@ -319,6 +323,10 @@ private:
      * be identity.
      */
     void forward_propagate_transformations(int a=-1);
+
+    /** Indices of all roots of all subtrees that had their positions changed. When only few atoms are moving this
+    presents a significant speedup. */
+    std::unordered_set<int> moved_subtrees;
 
 //    bool pseudoRootsSet = false;
     void update_pseudo_roots();

@@ -185,10 +185,14 @@ void KinematicForest::change_length(int atom, units::Length value)
 
     units::Vector3L d = (pos(atom)-pos(a1)).matrix().normalized() * value;
     transformations[atom] = transformations[atom]*Eigen::Translation<units::Length,3>(d);
+
+    moved_subtrees.insert(atom);
+
 }
 
 void KinematicForest::change_angle(int atom, units::Angle value)
 {
+    //std::cout<<"change_angle("<<atom<<", "<<value<<")"<<std::endl;
     assert(atom>=0 && atom<n_atoms);
 //    if(!pseudoRootsSet)	update_pseudo_roots();
 //    if(atom==0) return;
@@ -200,14 +204,16 @@ void KinematicForest::change_angle(int atom, units::Angle value)
     units::CoordinatesWrapper::ColXpr pos_a = pos(atom);
     units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
     units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
-    units::Vector3L v1 = pos_a2- pos_a1;
-    units::Vector3L v2 = pos_a - pos_a1;
+    units::Vector3L v1 = pos_a2 - pos_a1;
+    units::Vector3L v2 = pos_a  - pos_a1;
     units::Vector3L axis = v1.cross(v2).normalized() * units::Vector3L::Unit();
 
     transformations[atom] = transformations[atom] *
     		Eigen::Translation<units::Length, 3>(pos_a1)*
 			Eigen::AngleAxis<units::Length>(value, axis)*
 			Eigen::Translation<units::Length, 3>(-pos_a1);
+
+    moved_subtrees.insert(atom);
 }
 
 void KinematicForest::change_torsion(int atom, units::Angle value)
@@ -231,6 +237,7 @@ void KinematicForest::change_torsion(int atom, units::Angle value)
     			Eigen::AngleAxis<units::Length>(-value, axis) *
     			Eigen::Translation<units::Length, 3>(-pos_a1);
 
+    moved_subtrees.insert(atom);
 }
 
 void KinematicForest::change_global(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t)
@@ -239,12 +246,34 @@ void KinematicForest::change_global(int chain, Eigen::Transform<units::Length, 3
 //	int idx1 = parent(parent(roots[chain]));
     int idx1 = roots[chain];
 	transformations[idx1] = transformations[idx1] * t;//Eigen::Transform<units::Length, 3, Eigen::Affine>(t);
+    moved_subtrees.insert(idx1);
 }
 
 void KinematicForest::update_positions()
 {
 //	if(!pseudoRootsSet)	update_pseudo_roots();
-    forward_propagate_transformations(-1);
+    //forward_propagate_transformations(-1);
+
+    //Ensure that moved_subtrees dont contain two vertices where one is an ancestor of the other
+    unordered_set<int> to_remove;
+    for(const int& r1: moved_subtrees){
+        for(const int& r2: moved_subtrees){
+            if(r1==r2) break;
+            if(ancestor_of(r1,r2)) to_remove.insert(r2);
+            else if(ancestor_of(r2,r1)) to_remove.insert(r1);
+        }
+    }
+    for(const int& r: to_remove) {
+        moved_subtrees.erase(r);
+        //cout << "Removed " << r << " from subtrees to be moved"<<endl;
+    }
+
+    for(const int& subtree_root: moved_subtrees){
+        //cout<<"Moving subtree "<<subtree_root<<endl;
+        forward_propagate_transformations(subtree_root);
+    }
+
+    moved_subtrees.clear();
 }
 
 
@@ -367,6 +396,16 @@ int KinematicForest::parent(int v)
     return -1;
 }
 
+bool KinematicForest::ancestor_of(int v1, int v2)
+{
+    int v = parent(v2);
+    while(v>0){
+        if(v==v1) return true;
+        v = parent(v);
+    }
+    return false;
+}
+
 void KinematicForest::print()
 {
     std::cout<<"KinematicForest:"<<std::endl;
@@ -416,7 +455,8 @@ bool KinematicForest::atom_matches_names(int atom, const std::vector<std::string
     a = atom;
     matches = true;
     for (int p=dofNames.size()-1; p>=0; --p) {
-        if(a >= n_atoms || get_atom(a).name != dofNames[p]) {
+        //if(a >= n_atoms || get_atom(a).name != dofNames[p]) {
+        if(a < 0 || get_atom(a).name != dofNames[p]) {
             matches = false;
             break;
         }

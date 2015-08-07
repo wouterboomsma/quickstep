@@ -36,7 +36,7 @@ MoveInfo StdDoFMove::propose(KinematicForest& kf) {
 
     int dof_num = dof_controller->numberOfDoFs();
     int dof_idx = rand() % dof_num;
-    double value = ((rand() / RAND_MAX) - 0.5) * std_deviation;
+    double value = ((rand() / (double)RAND_MAX) - 0.5) * std_deviation;
 //	units::Angle angle = ((rand()/RAND_MAX)-0.5)*2*3.1415/180.0 * units::rad;
 
     //if(!suggest_only)
