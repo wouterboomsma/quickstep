@@ -488,11 +488,11 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
     //     return boost::spirit::repository::distinct(boost::spirit::qi::char_("a-zA-Z_0-9"))[keyword_string];
     // }
 
-    /** Helper function for constructing a keyword that is not a prefix of a label */
-    auto keyword(std::string keyword_string) -> decltype(boost::spirit::qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !boost::spirit::qi::char_("a-zA-Z_0-9")]) {
-        namespace qi = boost::spirit::qi;
-        return qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !qi::char_("a-zA-Z_0-9")];
-    }
+    ///** Helper function for constructing a keyword that is not a prefix of a label */
+    //auto keyword(std::string keyword_string) -> decltype(boost::spirit::qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !boost::spirit::qi::char_("a-zA-Z_0-9")]) {
+    //    namespace qi = boost::spirit::qi;
+    //    return qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !qi::char_("a-zA-Z_0-9")];
+    //}
 
 
     Grammar(): Grammar::base_type(start) {
@@ -533,7 +533,7 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
                 ( attribute >> -lit("==") >> literal ) [_val = _0];
 
         range_condition =
-                (attribute >> literal >> keyword("to") >> literal) [_val = _0];
+                (attribute >> literal >> qi::lexeme[boost::spirit::qi::lit("to") >> !qi::char_("a-zA-Z_0-9")] >> literal) [_val = _0];
 
         bonded = ( lit("bonded") >> attribute >> -lit("==") >> literal >> *(lit("-") >> literal) ) [_val = _0];
 
