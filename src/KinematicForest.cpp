@@ -284,8 +284,6 @@ void KinematicForest::forward_propagate_transformations(int atom)
 //	std::cout<<"forwardPropagateTransformations "<<atom<<std::endl;
     if(atom<0){
         for(size_t i=0;i<roots.size();i++){
-//            forward_propagate_transformations(parent(parent(roots[i])));
-
             forward_propagate_transformations(roots[i]);
         }
     }else{
@@ -296,8 +294,9 @@ void KinematicForest::forward_propagate_transformations(int atom)
 
         backup_pos(atom);
 
-//        apply_transformation_at_pos(atom);
-        positions->col(atom) = stored_positions.col(atom) = transformations[atom] * positions->col(atom).matrix();
+        stored_positions.col(atom) = positions->col(atom);
+        positions->col(atom) = transformations[atom] * positions->col(atom).matrix();
+
         stored_indices.insert(atom);
 
 
@@ -307,30 +306,20 @@ void KinematicForest::forward_propagate_transformations(int atom)
         }
         transformations[atom].setIdentity();
 
-//        transformations_queue[atom].clear();
     }
 }
 
 void KinematicForest::restore_positions()
 {
-    //for(int i=0;i<n_atoms;i++){
     for(auto &i: stored_indices){
 		positions->col(i) = stored_positions.col(i);
 	}
-//	for(int i=0;i<stored_pseudo_root_positions.cols();i++){
-//		pseudo_root_positions.col(i) = stored_pseudo_root_positions.col(i);
-//	}
 }
 
 units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
 {
 //    assert(i>-4 && i<n_atoms);
 
-//    if(i>=n_atoms){
-//    	units::CoordinatesWrapper wrapper =
-//    			units::CoordinatesWrapper::UnitLess(pseudo_root_positions.data(), 3, pseudo_root_positions.cols()) * units::nm ;
-//    	return wrapper.col(i-n_atoms);
-//    }
     if(i<0 && i>-4){
         units::CoordinatesWrapper wrapper =
                 units::CoordinatesWrapper::UnitLess( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() ) * units::nm;
@@ -346,11 +335,6 @@ void KinematicForest::backup_pos(int i)
 
     stored_positions.col(i) = positions->col(i);
 
-//    if(i>=n_atoms){
-//    	stored_pseudo_root_positions.col(i-n_atoms) = pseudo_root_positions.col(i-n_atoms);
-//    }else{
-//    	stored_positions.col(i) = positions->col(i);
-//    }
 }
 
 //void KinematicForest::apply_transformation_at_pos(int i)
