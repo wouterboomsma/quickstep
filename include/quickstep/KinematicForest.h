@@ -328,6 +328,8 @@ private:
     presents a significant speedup. */
     std::unordered_set<int> moved_subtrees;
 
+    std::unordered_set<int> stored_indices;
+
 //    bool pseudoRootsSet = false;
     void update_pseudo_roots();
 

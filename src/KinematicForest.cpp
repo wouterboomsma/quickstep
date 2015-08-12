@@ -268,6 +268,8 @@ void KinematicForest::update_positions()
         //cout << "Removed " << r << " from subtrees to be moved"<<endl;
     }
 
+    stored_indices.clear();
+
     for(const int& subtree_root: moved_subtrees){
         //cout<<"Moving subtree "<<subtree_root<<endl;
         forward_propagate_transformations(subtree_root);
@@ -295,7 +297,8 @@ void KinematicForest::forward_propagate_transformations(int atom)
         backup_pos(atom);
 
 //        apply_transformation_at_pos(atom);
-        positions->col(atom) = transformations[atom] * positions->col(atom).matrix();
+        positions->col(atom) = stored_positions.col(atom) = transformations[atom] * positions->col(atom).matrix();
+        stored_indices.insert(atom);
 
 
         for(int c=0;c<adjacency_list[atom].size();c++){
@@ -310,7 +313,8 @@ void KinematicForest::forward_propagate_transformations(int atom)
 
 void KinematicForest::restore_positions()
 {
-	for(int i=0;i<n_atoms;i++){
+    //for(int i=0;i<n_atoms;i++){
+    for(auto &i: stored_indices){
 		positions->col(i) = stored_positions.col(i);
 	}
 //	for(int i=0;i<stored_pseudo_root_positions.cols();i++){
