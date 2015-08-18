@@ -188,6 +188,8 @@ private:
 const std::map<std::string, Attribute::FieldTypes> Attribute::fields = make_keyword_map<Attribute::FieldTypes>(
         {{{"resi","resid"}, std::function<int(const Topology::Atom&)>(
                 [](const Topology::Atom &atom){return atom.residue.index;})},
+         {{"resn"}, std::function<std::string(const Topology::Atom&)>(
+                 [](const Topology::Atom &atom){return atom.residue.name;})},
          {{"type","element","symbol"}, std::function<Element(const Topology::Atom&)>(
                  [](const Topology::Atom &atom){return atom.element;})},
          {{"name"}, std::function<std::string(const Topology::Atom&)>(
@@ -609,7 +611,6 @@ std::vector<std::reference_wrapper<Topology::Atom>> Selection::get_atoms() {
 std::vector<std::vector<std::reference_wrapper<Topology::Atom>>> Selection::get_bonds() {
     std::vector<std::vector<std::reference_wrapper<Topology::Atom>>> bonds;
     bonds.reserve(active_bonds.size());
-    std::cout << active_atoms << "\n";
     for (const auto bond: active_bonds) {
         std::vector<std::reference_wrapper<Topology::Atom>> bond_atom_vector;
         bool include = true;

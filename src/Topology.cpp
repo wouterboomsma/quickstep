@@ -52,8 +52,8 @@ void Topology::create_standard_bonds() {
         load_bond_definitions(boost::filesystem::path(QUICKSTEP_DATA_DIR) / "openmm" / "residues.xml");
     }
 
-    std::vector<std::map<std::string, std::reference_wrapper<Atom> > > atom_maps;
     for (Chain &chain:chains) {
+        std::vector<std::map<std::string, std::reference_wrapper<Atom> > > atom_maps;
         for (Residue &residue:chain.residues) {
             atom_maps.push_back(std::map<std::string, std::reference_wrapper<Atom> >());
             //<<<<<<< HEAD:external/quickstep/src/Topology.cpp
@@ -75,6 +75,7 @@ void Topology::create_standard_bonds() {
         int i=0;
         for (std::list<Topology::Residue>::iterator it=chain.residues.begin(); it!=chain.residues.end(); ++it, ++i) {
             Residue &residue = *it;
+            int residue_index = residue.index;
             std::string name = residue.name;
             auto bond_vec_it = standard_bond_definitions.find(name);
             int from_residue;
@@ -112,9 +113,10 @@ void Topology::create_standard_bonds() {
                     auto from_atom_it = atom_maps[from_residue].find(from_atom);
                     auto to_atom_it = atom_maps[to_residue].find(to_atom);
                     if (from_atom_it != atom_maps[from_residue].end() &&
-                        to_atom_it != atom_maps[to_residue].end())
+                        to_atom_it != atom_maps[to_residue].end()) {
                         this->add_bond(from_atom_it->second,
                                        to_atom_it->second);
+                    }
                 }
             }
         }

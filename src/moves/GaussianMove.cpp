@@ -150,6 +150,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
     MoveInfo ret;
 
     for (unsigned int d=0; d<sample.rows(); ++d) {
+        std::cout << "New torsion: " << sample[d] << "(" << mean << ")\n";
         double a = sample[d] - dofs[d]->get_value();
         //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
         //a += (a>180) ? -360 : (a<-180) ? 360 : 0;

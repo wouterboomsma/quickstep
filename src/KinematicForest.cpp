@@ -13,6 +13,19 @@
 using namespace std;
 using namespace quickstep;
 
+std::vector<int> DOFIndex::get_atoms(const KinematicForest &forest) const {
+    std::vector<int> get_atoms(const KinematicForest &forest); {
+        std::vector<int> atoms(dof_type+1);
+        atoms[0] = atom_index;
+        int current_atom_index = atom_index;
+        for (int i=1; i<dof_type+1; ++i) {
+            current_atom_index = forest.parent(current_atom_index);
+            atoms[i] = current_atom_index;
+        }
+        return atoms;
+    }
+}
+
 KinematicForest::KinematicForest():
 		n_atoms(0),
 		topology(NULL)
@@ -372,7 +385,7 @@ void KinematicForest::root_tree(int v, int p)
     }
 }
 
-int KinematicForest::parent(int v)
+int KinematicForest::parent(int v) const
 {
     if(v<0) return v-1;
 
@@ -491,6 +504,5 @@ void KinematicForest::update_pseudo_roots()
 
 
 }
-
 
 

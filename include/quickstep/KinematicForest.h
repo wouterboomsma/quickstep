@@ -15,6 +15,8 @@
 
 namespace quickstep{
 
+class KinematicForest;
+
 /**
  * Indicates the index of a DOF in the KinematicForest. Each DOF is defined by an atom-index
  * indicating the first atom whose position is affected by the DOF and a DOF type indicating
@@ -24,6 +26,8 @@ struct DOFIndex{
     DOFIndex(unsigned int ai, unsigned int dt): atom_index(ai), dof_type(dt) {}
     DOFIndex(): DOFIndex(0,0) {}
     DOFIndex(const DOFIndex &other): DOFIndex(other.atom_index, other.dof_type) {}
+
+    std::vector<int> get_atoms(const KinematicForest &forest) const;
 
 	unsigned int atom_index;
 	unsigned int dof_type; ///< 0 is bond-length, 1 is bond angle, and 2 is bond torsion
@@ -260,6 +264,7 @@ public:
     bool atom_matches_names(int atom, const std::vector<std::string>& atom_names);
 
 private:
+    friend class DOFIndex;
 
     typedef Eigen::Transform<units::Length, 3, Eigen::AffineCompact> QSTransform;
 
@@ -278,7 +283,7 @@ private:
      * Return the parent of vertex v. If v is a root return -1,
      * if v<0 return (v-1)
      */
-    int parent(int v);
+    int parent(int v) const;
 
     /** Return true iff v1 is an ancestor of v2 */
     bool ancestor_of(int v1, int v2);
