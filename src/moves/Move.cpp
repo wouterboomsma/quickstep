@@ -255,11 +255,9 @@ void Move::perform(KinematicForest& kf, MoveInfo& info)
 }
 
 double Move::calc_log_bias(const MoveInfo &move_info) const {
-    std::cout << "type: " << typeid(*this).name() << "\n";
     if (log_bias_delegate)
         return log_bias_delegate->calc_log_bias(move_info);
     auto log_bias = calc_log_bias_impl(move_info);
-    std::cout << "move bias: " << log_bias[0] << " -> " << log_bias[1] << "\n";
     return -(log_bias[1] - log_bias[0]);
 }
 

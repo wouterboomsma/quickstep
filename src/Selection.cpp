@@ -600,7 +600,6 @@ Selection Selection::parse(Topology &topology, const std::string &selection_stri
 std::vector<std::reference_wrapper<Topology::Atom>> Selection::get_atoms() {
     std::vector<std::reference_wrapper<Topology::Atom>> atoms;
     atoms.reserve(active_atoms.size());
-    std::cout << active_atoms.rows() << " " << active_atoms.cols() << " " << active_atoms.size() << "\n";
     for (int i=0; i<active_atoms.size(); ++i) {
         if (active_atoms[i])
             atoms.push_back(std::ref(topology.atoms[i]));

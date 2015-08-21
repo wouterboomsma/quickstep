@@ -162,7 +162,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //old_value[d] = dofs[d]->get_value();
         //new_value[d] = sample[d];
         sample[d] = std::fmod(std::fmod(sample[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
-        std::cout << "New torsion: " << sample[d] << "(" << mean << ")    previous: " << dofs[d]->get_value() << "\n";
+        //std::cout << "New torsion: " << sample[d] << "(" << mean << ")    previous: " << dofs[d]->get_value() << "\n";
         //std::cout << "New torsion: " << new_value[d];
         double a = sample[d] - dofs[d]->get_value();
         //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
@@ -311,8 +311,8 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
                               -0.5 * (x_new).dot(inverse_cov * (x_new)));
         double log_likelihood_old = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
                               -0.5 * (x_old).dot(inverse_cov * (x_old)));
-        std::cout << "*Old value likelihood: " << old_value.transpose() << " " << mean.transpose() << " " << log_likelihood_old << "\n";
-        std::cout << "*New value likelihood: " << new_value.transpose() << " " << mean.transpose() << " " << log_likelihood_new << "\n";
+        //std::cout << "*Old value likelihood: " << old_value.transpose() << " " << mean.transpose() << " " << log_likelihood_old << "\n";
+        //std::cout << "*New value likelihood: " << new_value.transpose() << " " << mean.transpose() << " " << log_likelihood_new << "\n";
     return Eigen::Array<double, 2, 1>(log_likelihood_old, log_likelihood_new);
         //return -(log_likelihood_new - log_likelihood_old);
     //}
