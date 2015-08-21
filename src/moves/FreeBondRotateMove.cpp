@@ -35,7 +35,7 @@ MoveInfo FreeBondRotateMove::propose(KinematicForest& kf)
 	//Find a random angle
 	units::Angle angle = rotationMagnitude * ((rand()*1.0)/RAND_MAX - 0.5);
 
-	MoveInfo ret;
+	MoveInfo ret(*this, kf);
 
 	//Perform torsion-change on all children leaving bondAtom
 	for(int a=0;a<kf.adjacency_list[bond_atom].size();a++){

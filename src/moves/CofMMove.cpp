@@ -26,7 +26,7 @@ CofMMove::CofMMove(units::Length translationMagnitude_, units::Angle rotationMag
 
 MoveInfo CofMMove::propose(KinematicForest& kf)
 {
-    MoveInfo ret;
+    MoveInfo ret(*this, kf);
 //	MoveInfo ret{ make_unique<CofMMoveInfo>() };
 //	CofMMoveInfo& spec_info = *dynamic_cast<CofMMoveInfo*>(ret.specific_info.get());
 

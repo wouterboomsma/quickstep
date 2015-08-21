@@ -5,8 +5,8 @@
  *      Author: rfonseca
  */
 
-#ifndef COMPOSITEMOVE_H_
-#define COMPOSITEMOVE_H_
+#ifndef COMPOSITE_MOVE_H_
+#define COMPOSITE_MOVE_H_
 
 #include <quickstep/moves/Move.h>
 #include <quickstep/MoveInfo.h>
@@ -33,15 +33,16 @@ public:
 		// NOTE: the registrator variable must be explicitly defined in the .cpp file as well
 		const static struct Registrator {
 			Registrator() {
-				MoveFactory::get().register_generator("MixtureMove", std::make_unique<CompositeMove::MoveGenerator>());
+				MoveFactory::get().register_generator("CompositeMove", std::make_unique<CompositeMove::MoveGenerator>());
 			}
 		} registrator;
 	};
 
 	CompositeMove();
 	~CompositeMove(){}
+	CompositeMove(CompositeMove &&other) = default;
 
-	MoveInfo propose(KinematicForest& kf);
+	virtual MoveInfo propose(KinematicForest& kf);
 
 //	MoveInfo step(KinematicForest&, bool suggest_only=false);
 //
@@ -51,9 +52,11 @@ public:
 
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
-private:
+	const std::vector<std::unique_ptr<Move>> &get_moves() const;
+
+protected:
 	std::vector<std::unique_ptr<Move>> moves;
-	std::vector<double> accumWeights;
+	std::vector<double> accum_weights;
 };
 
 //class CompositeMoveInfo: public SpecificMoveInfo
@@ -65,4 +68,4 @@ private:
 
 } /* namespace quickstep */
 
-#endif /* COMPOSITEMOVE_H_ */
+#endif /* COMPOSITE_MOVE_H_ */

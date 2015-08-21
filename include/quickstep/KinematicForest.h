@@ -228,7 +228,7 @@ public:
 
     units::Length get_length(int atom);
     units::Angle get_angle(int atom);
-    units::Angle get_torsion(int atom);
+    units::Angle get_torsion(int atom) const;
 
     void change_length(int atom, units::Length value);
     void change_angle(int atom, units::Angle value);
@@ -310,6 +310,7 @@ private:
      * is returned.
      */
     units::CoordinatesWrapper::ColXpr pos(int i);
+    units::Coordinate pos(int i) const;
 
     void backup_pos(int i);
 

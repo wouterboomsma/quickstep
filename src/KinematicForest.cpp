@@ -155,7 +155,7 @@ units::Angle KinematicForest::get_angle(int atom)
     return acos(v1.dot(v2).value()/(v1_len*v2_len).value()) * units::radians;
 }
 
-units::Angle KinematicForest::get_torsion(int atom)
+units::Angle KinematicForest::get_torsion(int atom) const
 {
     assert(atom>=0 && atom<n_atoms);
 //    if(!pseudoRootsSet)	update_pseudo_roots();
@@ -164,10 +164,10 @@ units::Angle KinematicForest::get_torsion(int atom)
     int a2 = parent(a1);
     int a3 = parent(a2);
 
-    units::CoordinatesWrapper::ColXpr a0_pos = pos(atom);
-    units::CoordinatesWrapper::ColXpr a1_pos = pos(a1);
-    units::CoordinatesWrapper::ColXpr a2_pos = pos(a2);
-    units::CoordinatesWrapper::ColXpr a3_pos = pos(a3);
+    units::Coordinate a0_pos = pos(atom);
+    units::Coordinate a1_pos = pos(a1);
+    units::Coordinate a2_pos = pos(a2);
+    units::Coordinate a3_pos = pos(a3);
 
     units::Vector3L v01 = a1_pos - a0_pos;
     units::Vector3L v12 = a2_pos - a1_pos;
@@ -336,6 +336,19 @@ units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
     if(i<0 && i>-4){
         units::CoordinatesWrapper wrapper =
                 units::CoordinatesWrapper::UnitLess( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() ) * units::nm;
+        return wrapper.col(i+3);
+    }
+
+    return positions->col(i);
+}
+
+units::Coordinate KinematicForest::pos(int i) const
+{
+    //    assert(i>-4 && i<n_atoms);
+
+    if(i<0 && i>-4){
+        units::ConstCoordinatesWrapper wrapper =
+                units::ConstCoordinatesWrapper::UnitLess( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() ) * units::nm;
         return wrapper.col(i+3);
     }
 

@@ -23,12 +23,12 @@ CompositeMove::CompositeMove() {
 
 MoveInfo CompositeMove::propose(KinematicForest& kf)
 {
-	assert(accumWeights.size()>0);
+	assert(accum_weights.size()>0);
 
-	float randVal = accumWeights.back() * (rand()*1.0/RAND_MAX);
+	float randVal = accum_weights.back() * (rand()*1.0/RAND_MAX);
 
-	for(int i=0;i<accumWeights.size();i++){
-		if(randVal<=accumWeights[i]){
+	for(int i=0;i<accum_weights.size();i++){
+		if(randVal<=accum_weights[i]){
 
 //			MoveInfo ret{ make_unique<CompositeMoveInfo>() };
 //			CompositeMoveInfo& spec_info = *dynamic_cast<CompositeMoveInfo*>(ret.specific_info.get());
@@ -54,8 +54,8 @@ void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
 {
 	moves.push_back( std::move(m) );
 
-	double weightSum = accumWeights.empty()?0.0:accumWeights[accumWeights.size()-1];
-	accumWeights.push_back(weightSum+weight);
+	double weightSum = accum_weights.empty()?0.0:accum_weights[accum_weights.size()-1];
+	accum_weights.push_back(weightSum+weight);
 }
 
 std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_random_engine &rand_eng)
@@ -108,5 +108,9 @@ std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(cons
 	if (move->moves.size() > 0)
 		return_value.push_back(std::move(move));
 	return std::move(return_value);
+}
+
+const std::vector<std::unique_ptr<Move>> &CompositeMove::get_moves() const {
+	return moves;
 }
 } /* namespace quickstep */

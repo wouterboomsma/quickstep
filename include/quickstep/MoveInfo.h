@@ -15,6 +15,7 @@
 
 namespace quickstep{
 
+class Move;
 //struct SubTree{
 //	int root_atom;
 //	std::list<int> excluded_atoms;
@@ -28,12 +29,27 @@ namespace quickstep{
 
 class MoveInfo {
 public:
-    MoveInfo(){}
-    MoveInfo(const MoveInfo &other): dof_deltas(other.dof_deltas) {}
+    MoveInfo(const Move &move, const KinematicForest &forest)
+            : move(move), forest(forest) {}
+    MoveInfo(const MoveInfo &other)
+            : dof_deltas(other.dof_deltas),
+              dof_deltas2(other.dof_deltas2),
+              forest(other.forest),
+              move(other.move){}
+
+    const Move &get_move() const {
+        return move.get();
+    }
 //	MoveInfo(std::unique_ptr<SpecificMoveInfo>&& smi);
 //	std::unique_ptr<SpecificMoveInfo> specific_info;
 //	std::list<SubTree> affected_atoms;
     std::list< std::pair<DOFIndex, double> > dof_deltas;
+
+    // TODO: find a compromise between dof_deltas and dof_deltas2
+    std::vector<std::list<std::pair<double, std::vector<int> > > > dof_deltas2;
+    std::reference_wrapper<const KinematicForest> forest;  // Enden up including forest here, to make information retrieval possible in calc_log_bias
+private:
+    std::reference_wrapper<const Move> move;
 };
 
 }

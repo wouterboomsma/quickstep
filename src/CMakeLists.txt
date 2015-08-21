@@ -13,6 +13,7 @@ add_library(quickstep
   Selection.cpp
   MoveInfo.cpp
   moves/CompositeMove.cpp
+  moves/MixtureMove.cpp
   moves/CofMMove.cpp
   moves/StdDoFMove.cpp
   moves/FreeBondRotateMove.cpp
@@ -29,6 +30,7 @@ add_library(quickstep
   ${PROJECT_SOURCE_DIR}/include/quickstep/KinematicForest.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/MoveInfo.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/CompositeMove.h
+  ${PROJECT_SOURCE_DIR}/include/quickstep/moves/MixtureMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/CofMMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/StdDoFMove.h
   ${PROJECT_SOURCE_DIR}/include/quickstep/moves/FreeBondRotateMove.h

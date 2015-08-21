@@ -1,4 +1,4 @@
-<MixtureMove name="ProteinSidechainRotamerDunbrack1997">
+<CompositeMove name="ProteinSidechainRotamerDunbrack1997">
 
 	<Residues>
 
@@ -2972,10 +2972,13 @@
 	</MixtureMove>
 
 	<MixtureMove name="VAL">
-		<GaussianMove dim="1" weight="0.0740" dof1="VAL_CHI1" mean1=" 65.5" stddev11="11.1" unit="degr"/>
-		<GaussianMove dim="1" weight="0.7390" dof1="VAL_CHI1" mean1="175.9" stddev11=" 6.9" unit="degr"/>
-		<GaussianMove dim="1" weight="0.1870" dof1="VAL_CHI1" mean1="-61.7" stddev11=" 8.4" unit="degr"/>
+		<!--<GaussianMove dim="1" weight="0.0740" dof1="VAL_CHI1" mean1=" 65.5" stddev11="11.1" unit="degr"/>-->
+		<!--<GaussianMove dim="1" weight="0.7390" dof1="VAL_CHI1" mean1="175.9" stddev11=" 6.9" unit="degr"/>-->
+		<!--<GaussianMove dim="1" weight="0.1870" dof1="VAL_CHI1" mean1="-61.7" stddev11=" 8.4" unit="degr"/>-->
+		<GaussianMove dim="1" weight="0.3" dof1="VAL_CHI1" mean1=" 65.5" stddev11="11.1" unit="degr"/>
+		<GaussianMove dim="1" weight="0.1" dof1="VAL_CHI1" mean1="175.9" stddev11="20.0" unit="degr"/>
+		<GaussianMove dim="1" weight="0.6" dof1="VAL_CHI1" mean1="-61.7" stddev11=" 8.4" unit="degr"/>
 	</MixtureMove>
 
 
-</MixtureMove>
+</CompositeMove>

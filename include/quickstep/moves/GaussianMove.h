@@ -36,9 +36,17 @@ public:
 //    virtual void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
 
+
+
+    virtual Eigen::Array<double, 2, 1> calc_log_bias_impl(const MoveInfo &move_info) const override;
+
 private:
-    Eigen::MatrixXd mean;
+    Eigen::VectorXd mean;
+    Eigen::MatrixXd inverse_cov;
     Eigen::MatrixXd sampling_transform;
+
+    //Eigen::VectorXd old_value;
+    //Eigen::VectorXd new_value;
 
     std::vector<std::vector<int>> dof_atoms;
     std::vector<std::vector<std::string>> dof_atom_names;

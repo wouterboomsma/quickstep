@@ -43,7 +43,7 @@ MoveInfo StdDoFMove::propose(KinematicForest& kf) {
     //	dof_controller->changeDoF(dof_idx, value);
 
     //MoveInfo ret{ make_unique<StdDoFMoveInfo>() };
-    MoveInfo ret;
+    MoveInfo ret(*this, kf);
 
     //StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
     DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx]};
