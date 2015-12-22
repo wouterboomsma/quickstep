@@ -3,6 +3,7 @@
 #include "quickstep/FatalError.h"
 #include <boost/property_tree/ptree.hpp>
 #include <quickstep/random.h>
+#include <quickstep/dofs/DihedralDof.h>
 
 namespace quickstep {
 
@@ -137,7 +138,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
     if (dofs.empty()) {
         dofs.clear();
         for (unsigned int i=0; i<dof_atoms.size(); ++i) {
-            dofs.push_back(  KinematicForest::DoF::construct(forest, dof_atoms[i], dof_atom_names[i])  );
+            dofs.push_back(Dof::construct(forest, dof_atoms[i], dof_atom_names[i])  );
         }
     }
 
@@ -157,50 +158,52 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
     Eigen::VectorXd new_value(sample.rows());
     for (unsigned int d=0; d<sample.rows(); ++d) {
 
-        ret.dof_deltas2.push_back({});
+        //ret.dof_deltas2.push_back({});
 
         //old_value[d] = dofs[d]->get_value();
         //new_value[d] = sample[d];
         sample[d] = std::fmod(std::fmod(sample[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
         //std::cout << "New torsion: " << sample[d] << "(" << mean << ")    previous: " << dofs[d]->get_value() << "\n";
         //std::cout << "New torsion: " << new_value[d];
-        double a = sample[d] - dofs[d]->get_value();
+        double value = sample[d] - dofs[d]->get_value();
         //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
         //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
-        a += (a>M_PI) ? -2*M_PI : (a<-M_PI) ? 2*M_PI : 0; // Might not strictly be necessary
+        value += (value>M_PI) ? -2*M_PI : (value<-M_PI) ? 2*M_PI : 0; // Might not strictly be necessary
 //        delta_vals[d] = a;
 //        dofs[d]->add_value(a);
         //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
-        DOFIndex di = dofs[d]->get_dofindex();
+        //DOFIndex di = dofs[d]->get_dofindex();
+        int dof_atom_index = dofs[d]->get_atom_index();
         //ret.dof_deltas.push_back( std::make_pair( di, a ) );
 
-        int parent_index = forest.parent(di.atom_index);
-
-        int atom_index3 = forest.parent(parent_index);
-        int atom_index4 = forest.parent(atom_index3);
+        //int parent_index = forest.parent(dof_atom_index);
+        //
+        //int atom_index3 = forest.parent(parent_index);
+        //int atom_index4 = forest.parent(atom_index3);
 
         // The primary dof always appears first
-        ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{(int)di.atom_index, parent_index, atom_index3, atom_index4}));
+        //ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{dof_atom_index, parent_index, atom_index3, atom_index4}));
+        ret.dof_deltas.push_back(std::make_pair(std::make_unique<DihedralDof>(forest, dof_atom_index), value));
         //ret.atoms.push_back({(int)di.atom_index, parent_index, atom_index3, atom_index4});
 
 
 
-        //Add all children of parent
-        for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
-            if( 	forest.adjacency_list[parent_index][i].first == parent_index){
-
-                int a0 = di.atom_index;
-                int a1 = forest.parent(a0);
-                int a2 = forest.parent(a1);
-                int a3 = forest.parent(a2);
-
-                if (a0 != dofs[d]->get_dofindex().atom_index)
-                    ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{a0, a1, a2, a3}));
-
-                di.atom_index = forest.adjacency_list[parent_index][i].second;
-                ret.dof_deltas.push_back( std::make_pair( di, a ) );
-            }
-        }
+        ////Add all children of parent
+        //for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
+        //    if(forest.adjacency_list[parent_index][i].first == parent_index){
+        //
+        //        int a0 = dof_atom_index;
+        //        int a1 = forest.parent(a0);
+        //        int a2 = forest.parent(a1);
+        //        int a3 = forest.parent(a2);
+        //
+        //        if (a0 != dof_atom_index)
+        //            ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{a0, a1, a2, a3}));
+        //
+        //        dof_atom_index = forest.adjacency_list[parent_index][i].second;
+        //        //ret.dof_deltas.push_back( std::make_pair( di, a ) );
+        //    }
+        //}
 
     }
 
@@ -274,18 +277,19 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
     //std::cout << "Old value likelihood: " << old_value << " " << mean << " " << inverse_cov.inverse() << " " << inverse_cov << " " << log_likelihood_old << "\n";
     //std::cout << "New value likelihood: " << new_value << " " << mean << " " << inverse_cov.inverse() << " " << inverse_cov << " " << log_likelihood_new << "\n";
 
-    Eigen::VectorXd new_value(move_info.dof_deltas2.size());
-    Eigen::VectorXd old_value(move_info.dof_deltas2.size());
-    for (unsigned int d=0; d<move_info.dof_deltas2.size(); ++d) {
-        new_value[d] = move_info.forest.get().get_torsion(move_info.dof_deltas2[d].front().second[0]).value();
+    Eigen::VectorXd new_value(move_info.dof_deltas.size());
+    Eigen::VectorXd old_value(move_info.dof_deltas.size());
+    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
+        new_value[d] = move_info.dof_deltas[d].first->get_value();
+        //new_value[d] = move_info.forest.get().get_torsion(move_info.dof_deltas[d].front().second[0]).value();
     }
 
-    Eigen::VectorXd delta(move_info.dof_deltas2.size());
-    for (unsigned int d=0; d<move_info.dof_deltas2.size(); ++d) {
-        delta[d] = move_info.dof_deltas2[d].front().first;
+    Eigen::VectorXd delta(move_info.dof_deltas.size());
+    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
+        delta[d] = move_info.dof_deltas[d].second;
     }
     old_value = new_value - delta;
-    for (unsigned int d=0; d<move_info.dof_deltas2.size(); ++d) {
+    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
         //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
         old_value[d] = std::fmod(std::fmod(old_value[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
     }

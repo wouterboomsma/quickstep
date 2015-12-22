@@ -4,6 +4,7 @@
 #include "quickstep/moves/Move.h"
 #include "quickstep/MoveFactory.h"
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <quickstep/dofs/Dof.h>
 
 namespace quickstep {
 
@@ -50,7 +51,7 @@ private:
 
     std::vector<std::vector<int>> dof_atoms;
     std::vector<std::vector<std::string>> dof_atom_names;
-    std::vector<std::unique_ptr<KinematicForest::DoF>> dofs;
+    std::vector<std::unique_ptr<Dof>> dofs;
     //KinematicForest& last_used_forest;
 };
 

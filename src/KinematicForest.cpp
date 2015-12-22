@@ -13,18 +13,18 @@
 using namespace std;
 using namespace quickstep;
 
-std::vector<int> DOFIndex::get_atoms(const KinematicForest &forest) const {
-    std::vector<int> get_atoms(const KinematicForest &forest); {
-        std::vector<int> atoms(dof_type+1);
-        atoms[0] = atom_index;
-        int current_atom_index = atom_index;
-        for (int i=1; i<dof_type+1; ++i) {
-            current_atom_index = forest.parent(current_atom_index);
-            atoms[i] = current_atom_index;
-        }
-        return atoms;
-    }
-}
+//std::vector<int> DOFIndex::get_atoms(const KinematicForest &forest) const {
+//    std::vector<int> get_atoms(const KinematicForest &forest); {
+//        std::vector<int> atoms(dof_type+1);
+//        atoms[0] = atom_index;
+//        int current_atom_index = atom_index;
+//        for (int i=1; i<dof_type+1; ++i) {
+//            current_atom_index = forest.parent(current_atom_index);
+//            atoms[i] = current_atom_index;
+//        }
+//        return atoms;
+//    }
+//}
 
 KinematicForest::KinematicForest():
 		n_atoms(0),
@@ -518,4 +518,30 @@ void KinematicForest::update_pseudo_roots()
 
 }
 
+
+int KinematicForest::get_parent(int atom_index) {
+    return parent(atom_index);
+}
+
+std::vector<int> KinematicForest::get_ancestors(int atom_index, Dof::Type dof_type) {
+    std::vector<int> atoms(dof_type+1);
+    atoms[0] = atom_index;
+    int current_atom_index = atom_index;
+    for (int i=1; i<dof_type+1; ++i) {
+        current_atom_index = parent(current_atom_index);
+        atoms[i] = current_atom_index;
+    }
+    return atoms;
+}
+
+// TODO: adjencency list should be reimplemented so that this function can just return a reference
+std::vector<int> KinematicForest::get_children(int parent_index) {
+    std::vector<int> child_atom_indices;
+    for(size_t i=0; i<adjacency_list[parent_index].size();++i) {
+        if(adjacency_list[parent_index][i].first == parent_index) {
+            child_atom_indices.push_back(adjacency_list[parent_index][i].second);
+        }
+    }
+    return child_atom_indices;
+}
 

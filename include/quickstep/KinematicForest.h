@@ -10,6 +10,7 @@
 #include "quickstep/Topology.h"
 #include "quickstep/FatalError.h"
 #include "quickstep/utils.h"
+#include "quickstep/dofs/Dof.h"
 #include <Eigen/QuantityGeometry>
 #include <Eigen/Geometry>
 
@@ -17,21 +18,21 @@ namespace quickstep{
 
 class KinematicForest;
 
-/**
- * Indicates the index of a DOF in the KinematicForest. Each DOF is defined by an atom-index
- * indicating the first atom whose position is affected by the DOF and a DOF type indicating
- * whether the bond-length, bond-angle or bond-torsion preceeding the atom should be indexed.
- */
-struct DOFIndex{
-    DOFIndex(unsigned int ai, unsigned int dt): atom_index(ai), dof_type(dt) {}
-    DOFIndex(): DOFIndex(0,0) {}
-    DOFIndex(const DOFIndex &other): DOFIndex(other.atom_index, other.dof_type) {}
-
-    std::vector<int> get_atoms(const KinematicForest &forest) const;
-
-	unsigned int atom_index;
-	unsigned int dof_type; ///< 0 is bond-length, 1 is bond angle, and 2 is bond torsion
-};
+///**
+// * Indicates the index of a DOF in the KinematicForest. Each DOF is defined by an atom-index
+// * indicating the first atom whose position is affected by the DOF and a DOF type indicating
+// * whether the bond-length, bond-angle or bond-torsion preceeding the atom should be indexed.
+// */
+//struct DOFIndex{
+//    DOFIndex(unsigned int ai, unsigned int dt): atom_index(ai), dof_type(dt) {}
+//    DOFIndex(): DOFIndex(0,0) {}
+//    DOFIndex(const DOFIndex &other): DOFIndex(other.atom_index, other.dof_type) {}
+//
+//    std::vector<int> get_atoms(const KinematicForest &forest) const;
+//
+//	unsigned int atom_index;
+//	unsigned int dof_type; ///< 0 is bond-length, 1 is bond angle, and 2 is bond torsion
+//};
 
 
 /**
@@ -50,167 +51,167 @@ struct DOFIndex{
 class KinematicForest
 {
 public:
-    class LengthDoF;
-    class AngleDoF;
-    class TorsionDoF;
-
-    class DoF {
-    public:
-        DoF(KinematicForest &forest,
-            int atom_index)
-                : forest(forest),
-                  atom_index(atom_index) {}
-
-        virtual DOFIndex get_dofindex() = 0;
-
-        virtual double get_value() = 0;
-
-        virtual void add_value(double value) = 0;
-
-        virtual void set_value(double value) {
-            add_value( - get_value() + value);
-        }
-
-        static std::unique_ptr<DoF> construct(KinematicForest &forest,
-                                              std::vector<int> atom_indices,
-                                              std::vector<std::string> atom_names) {
-            switch (atom_indices.size()) {
-                case 2:
-                    return std::make_unique<LengthDoF>(forest, atom_indices, atom_names);
-                    break;
-                case 3:
-                    return std::make_unique<AngleDoF>(forest, atom_indices, atom_names);
-                    break;
-                case 4:
-                    return std::make_unique<TorsionDoF>(forest, atom_indices, atom_names);
-                    break;
-                default:
-                    BOOST_THROW_EXCEPTION(FatalError() <<
-                                          "Unexpected number of atoms specified for DoF (" << atom_indices.size() << ")");
-                    break;
-            }
-        }
-
-        const int get_atom_index(){ return atom_index; }
-    protected:
-        KinematicForest &forest;
-        int atom_index;
-    };
-
-    class LengthDoF: public DoF {
-    public:
-        LengthDoF(KinematicForest &forest,
-                  std::vector<int> atom_indices,
-                  std::vector<std::string> atom_names)
-                : DoF(forest, atom_indices.back()) {
-            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
-//                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
-//            if (atom_index == -1) {
-                BOOST_THROW_EXCEPTION(FatalError() <<
-                                      "Length DoF (" << atom_names << ") is not found in KinematicForest.");
-            }
-        }
-
-        double get_value() override {
-            return forest.get_length(this->atom_index).value();
-        };
-
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 0); }
-
-        void add_value(double delta_value) override {
-            forest.change_length(this->atom_index, units::Length::from_value(delta_value));
-        };
-    };
-
-    class AngleDoF: public DoF {
-    public:
-        AngleDoF(KinematicForest &forest,
-                 std::vector<int> atom_indices,
-                 std::vector<std::string> atom_names)
-                : DoF(forest, atom_indices.back()) {
-            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
-//                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
-//            if (atom_index == -1) {
-                BOOST_THROW_EXCEPTION(FatalError() <<
-                                      "Angle DoF (" << atom_names << ") is not found in KinematicForest.");
-            }
-        }
-
-        double get_value() override {
-            return forest.get_angle(this->atom_index).value();
-        };
-
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
-
-        void add_value(double delta_value) override {
-            forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
-        };
-    };
-
-    class TorsionDoF: public DoF {
-    public:
-
-        TorsionDoF(KinematicForest &forest,
-                   std::vector<int> atom_indices,
-                   std::vector<std::string> atom_names)
-                : DoF(forest, atom_indices.back()) {
-
-            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
-                BOOST_THROW_EXCEPTION(FatalError() <<
-                                      "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");
-            }
-
-            int parent_index = forest.parent(atom_index);
-
-            //Collect all children of parent
-            for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
-            	if( 	forest.adjacency_list[parent_index][i].first == parent_index){
-            		sibling_atom_indices.push_back(forest.adjacency_list[parent_index][i].second);
-            	}
-            }
-        }
-
-        double get_value() override {
-            return forest.get_torsion(this->atom_index).value();
-        };
-
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
-
-        void add_value(double delta_value) override {
-            for(int i: sibling_atom_indices)
-            	forest.change_torsion(i, units::Angle::from_value(delta_value));
-        };
-
-    private:
-        std::vector<int> sibling_atom_indices;
-    };
-
-    class IndependentTorsionDoF: public DoF {
-    public:
-
-        IndependentTorsionDoF(KinematicForest &forest,
-                   std::vector<int> atom_indices,
-                   std::vector<std::string> atom_names)
-                : DoF(forest, atom_indices.back()) {
-            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
-//                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
-//            if (atom_index == -1) {
-                BOOST_THROW_EXCEPTION(FatalError() <<
-                                      "Independent torsion DoF (" << atom_names << ") is not found in KinematicForest.");
-            }
-        }
-
-        double get_value() override {
-            return forest.get_torsion(this->atom_index).value();
-        };
-
-        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
-
-        void add_value(double delta_value) override {
-            forest.change_torsion(this->atom_index, units::Angle::from_value(delta_value));
-        };
-
-    };
+//    class LengthDoF;
+//    class AngleDoF;
+//    class TorsionDoF;
+//
+//    class DoF {
+//    public:
+//        DoF(KinematicForest &forest,
+//            int atom_index)
+//                : forest(forest),
+//                  atom_index(atom_index) {}
+//
+//        virtual DOFIndex get_dofindex() = 0;
+//
+//        virtual double get_value() = 0;
+//
+//        virtual void add_value(double value) = 0;
+//
+//        virtual void set_value(double value) {
+//            add_value( - get_value() + value);
+//        }
+//
+//        static std::unique_ptr<DoF> construct(KinematicForest &forest,
+//                                              std::vector<int> atom_indices,
+//                                              std::vector<std::string> atom_names) {
+//            switch (atom_indices.size()) {
+//                case 2:
+//                    return std::make_unique<LengthDoF>(forest, atom_indices, atom_names);
+//                    break;
+//                case 3:
+//                    return std::make_unique<AngleDoF>(forest, atom_indices, atom_names);
+//                    break;
+//                case 4:
+//                    return std::make_unique<TorsionDoF>(forest, atom_indices, atom_names);
+//                    break;
+//                default:
+//                    BOOST_THROW_EXCEPTION(FatalError() <<
+//                                          "Unexpected number of atoms specified for DoF (" << atom_indices.size() << ")");
+//                    break;
+//            }
+//        }
+//
+//        const int get_atom_index(){ return atom_index; }
+//    protected:
+//        KinematicForest &forest;
+//        int atom_index;
+//    };
+//
+//    class LengthDoF: public DoF {
+//    public:
+//        LengthDoF(KinematicForest &forest,
+//                  std::vector<int> atom_indices,
+//                  std::vector<std::string> atom_names)
+//                : DoF(forest, atom_indices.back()) {
+//            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
+////                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
+////            if (atom_index == -1) {
+//                BOOST_THROW_EXCEPTION(FatalError() <<
+//                                      "Length DoF (" << atom_names << ") is not found in KinematicForest.");
+//            }
+//        }
+//
+//        double get_value() override {
+//            return forest.get_length(this->atom_index).value();
+//        };
+//
+//        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 0); }
+//
+//        void add_value(double delta_value) override {
+//            forest.change_length(this->atom_index, units::Length::from_value(delta_value));
+//        };
+//    };
+//
+//    class AngleDoF: public DoF {
+//    public:
+//        AngleDoF(KinematicForest &forest,
+//                 std::vector<int> atom_indices,
+//                 std::vector<std::string> atom_names)
+//                : DoF(forest, atom_indices.back()) {
+//            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
+////                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
+////            if (atom_index == -1) {
+//                BOOST_THROW_EXCEPTION(FatalError() <<
+//                                      "Angle DoF (" << atom_names << ") is not found in KinematicForest.");
+//            }
+//        }
+//
+//        double get_value() override {
+//            return forest.get_angle(this->atom_index).value();
+//        };
+//
+//        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 1); }
+//
+//        void add_value(double delta_value) override {
+//            forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
+//        };
+//    };
+//
+//    class TorsionDoF: public DoF {
+//    public:
+//
+//        TorsionDoF(KinematicForest &forest,
+//                   std::vector<int> atom_indices,
+//                   std::vector<std::string> atom_names)
+//                : DoF(forest, atom_indices.back()) {
+//
+//            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
+//                BOOST_THROW_EXCEPTION(FatalError() <<
+//                                      "Torsion DoF (" << atom_names << ") is not found in KinematicForest.");
+//            }
+//
+//            int parent_index = forest.parent(atom_index);
+//
+//            //Collect all children of parent
+//            for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
+//            	if( 	forest.adjacency_list[parent_index][i].first == parent_index){
+//            		sibling_atom_indices.push_back(forest.adjacency_list[parent_index][i].second);
+//            	}
+//            }
+//        }
+//
+//        double get_value() override {
+//            return forest.get_torsion(this->atom_index).value();
+//        };
+//
+//        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
+//
+//        void add_value(double delta_value) override {
+//            for(int i: sibling_atom_indices)
+//            	forest.change_torsion(i, units::Angle::from_value(delta_value));
+//        };
+//
+//    private:
+//        std::vector<int> sibling_atom_indices;
+//    };
+//
+//    class IndependentTorsionDoF: public DoF {
+//    public:
+//
+//        IndependentTorsionDoF(KinematicForest &forest,
+//                   std::vector<int> atom_indices,
+//                   std::vector<std::string> atom_names)
+//                : DoF(forest, atom_indices.back()) {
+//            if (!forest.atom_matches_names(atom_indices.back(), atom_names)) {
+////                : DoF(forest, forest.find_dof_atom_index(atom_indices, atom_names)) {
+////            if (atom_index == -1) {
+//                BOOST_THROW_EXCEPTION(FatalError() <<
+//                                      "Independent torsion DoF (" << atom_names << ") is not found in KinematicForest.");
+//            }
+//        }
+//
+//        double get_value() override {
+//            return forest.get_torsion(this->atom_index).value();
+//        };
+//
+//        DOFIndex get_dofindex(){ return DOFIndex(atom_index, 2); }
+//
+//        void add_value(double delta_value) override {
+//            forest.change_torsion(this->atom_index, units::Angle::from_value(delta_value));
+//        };
+//
+//    };
 
     /** Construct a kinematic forest spanning all atoms in the topology. */
     KinematicForest(quickstep::Topology& topology, const units::CoordinatesWrapper &coordinates);
@@ -220,6 +221,13 @@ public:
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
     units::CoordinatesWrapper &get_positions();
+
+    int get_parent(int atom_index);
+
+    std::vector<int> get_ancestors(int atom_index, Dof::Type dof_type);
+
+    // TODO: This function should return a reference - requires change of underlying representation
+    std::vector<int> get_children(int parent_index);
 //    std::vector< Math3D::Vector3 >& getPositions();
 
     int get_num_roots();

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <quickstep/dofs/Dof.h>
 #include "quickstep/utils.h"
 
 namespace quickstep {
@@ -46,12 +47,22 @@ MoveInfo StdDoFMove::propose(KinematicForest& kf) {
     MoveInfo ret(*this, kf);
 
     //StdDoFMoveInfo& info = *dynamic_cast<StdDoFMoveInfo*>(ret.specific_info.get());
-    DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx]};
+    //DOFIndex dof = {dof_controller->dof_atoms[dof_idx], dof_controller->dof_types[dof_idx]};
+    int atom_index = dof_controller->dof_atoms[dof_idx];
+    int dof_type = dof_controller->dof_types[dof_idx];
+    std::vector<int> atoms(dof_type+1);
+    atoms[0] = atom_index;
+    int current_atom_index = atom_index;
+    for (int i=1; i<dof_type+1; ++i) {
+        current_atom_index = kf.get_parent(current_atom_index);
+        atoms[i] = current_atom_index;
+    }
+
     //info.index = dof;
     //info.std_dof_index = dof_idx;
     //info.delta_value = value;
 
-    ret.dof_deltas.push_back(std::make_pair(dof, value));
+    ret.dof_deltas.push_back(std::make_pair(Dof::construct(kf, atoms), value));
 
     //SubTree affected_tree;
     //affected_tree.root_atom = dof_controller->dof_atoms[dof_idx];

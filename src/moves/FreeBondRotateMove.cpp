@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <stack>
 #include <iostream>
+#include <quickstep/dofs/DihedralDof.h>
 
 namespace quickstep {
 
@@ -45,7 +46,7 @@ MoveInfo FreeBondRotateMove::propose(KinematicForest& kf)
 
 		    ret.dof_deltas.push_back(
 		            std::make_pair(
-		                    DOFIndex(child_atom, 2),
+							std::make_unique<DihedralDof>(kf, child_atom),
 		                    angle.value()
 		                    )
 		    );
