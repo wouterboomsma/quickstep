@@ -152,27 +152,29 @@ const EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> filte
     return output;
 }
 
-/** Overloads for filter operation on specific containers: Eigen array<dynamic,fixed>
- *  @param selection Selection used as basis for filter
- *  @param source Object to be filtered
- *  \returns a vector consisting of the entries that matched the selection **/
-template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYPE, int DIM1, int _Options, int _MaxRows, int _MaxCols, typename Unit>
-const Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>, Unit> filter(const Selection &selection, const Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>, Unit> &source) {
-    if (source.cols() != selection.get_active_atom_map().size())
-        BOOST_THROW_EXCEPTION(FatalError() <<
-                              "Mismatch between filter and target sequence size.");
-
-    int entries = selection.get_active_atom_map().count();
-    Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>,Unit> output(EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>(DIM1, entries));
-    int added = 0;
-    for (unsigned int i = 0; i < source.cols(); ++i) {
-        if (selection.get_active_atom_map()[i]) {
-            output.col(added) = source.col(i);
-            added++;
-        }
-    }
-    return output;
-}
+///** Overloads for filter operation on specific containers: Eigen array<dynamic,fixed>
+// *  @param selection Selection used as basis for filter
+// *  @param source Object to be filtered
+// *  \returns a vector consisting of the entries that matched the selection **/
+//template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYPE, int DIM1, int _Options, int _MaxRows, int _MaxCols, typename Unit>
+////const Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>, Unit> filter(const Selection &selection, const Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>, Unit> &source) {
+//const EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> filter(const Selection &selection, const EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> &source) {
+//    if (source.cols() != selection.get_active_atom_map().size())
+//        BOOST_THROW_EXCEPTION(FatalError() <<
+//                              "Mismatch between filter and target sequence size.");
+//
+//    int entries = selection.get_active_atom_map().count();
+//    //Eigen::Quantity<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>,Unit> output(EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>(DIM1, entries));
+//    EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> output(EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>(DIM1, entries));
+//    int added = 0;
+//    for (unsigned int i = 0; i < source.cols(); ++i) {
+//        if (selection.get_active_atom_map()[i]) {
+//            output.col(added) = source.col(i);
+//            added++;
+//        }
+//    }
+//    return output;
+//}
 
 /** Overloads for filter operation on specific containers: Eigen Quantity array<fixed, dynamic>
  *  @param selection Selection used as basis for filter
@@ -201,13 +203,15 @@ const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> filte
  *  @param source Object to be filtered
  *  \returns a vector consisting of the entries that matched the selection **/
 template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYPE, int DIM2, int _Options, int _MaxRows, int _MaxCols, typename Unit>
-const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> filter(const Selection &selection, const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> &source) {
+//const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> filter(const Selection &selection, const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> &source) {
+const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> filter(const Selection &selection, const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> &source) {
     if (source.rows() != selection.get_active_atom_map().size())
         BOOST_THROW_EXCEPTION(FatalError() <<
                               "Mismatch between filter and target sequence size.");
 
     int entries = selection.get_active_atom_map().count();
-    Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>,Unit> output(EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>(entries, DIM2));
+    //Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>,Unit> output(EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>(entries, DIM2));
+    EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> output(EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>(entries, DIM2));
     int added = 0;
     for (unsigned int i = 0; i < source.rows(); ++i) {
         if (selection.get_active_atom_map()[i]) {

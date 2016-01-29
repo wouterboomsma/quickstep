@@ -61,13 +61,13 @@ private:
 	 * points in such a way that the largest possible rotation of any point around the origin
 	 * is \a amplitude.
 	 */
-	Eigen::Transform<units::Length, 3, Eigen::Affine> rand_rotation( units::Angle amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+	Eigen::Transform<double, 3, Eigen::Affine> rand_rotation( units::Angle amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
 	/**
 	 * Changes \a move_info so it contains info for a translation matrix that uniformly moves
 	 * points in such a way that the largest possible displacement of any point is \a amplitude.
 	 */
-	Eigen::Transform<units::Length, 3, Eigen::Affine> rand_translation( units::Length amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
+	Eigen::Transform<double, 3, Eigen::Affine> rand_translation( units::Length amplitude ); //, CofMMoveInfo& move_info); //Eigen::Transform<units::Length, 3, Eigen::Affine> &M );
 
 };
 

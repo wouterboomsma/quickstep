@@ -4,7 +4,6 @@
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
 #include <Eigen/Dense>
-#include <Eigen/Quantity>
 
 namespace quickstep {
 
@@ -17,17 +16,27 @@ namespace quickstep {
 
 // Convenience aliases for matrices and vectors
 using Eigen::Dynamic;
-template <class Type, int Rows, int Cols> using Matrix = Eigen::QuantityMatrix<Type, Rows, Cols>;
-template <class Type, int Rows, int Cols> using Array = Eigen::QuantityArray<Type, Rows, Cols>;
-template <class Type, int Cols> using Vector = Eigen::QuantityMatrix<Type, 1, Cols>;
-template <class Type> using Vector3 = Eigen::QuantityMatrix<Type, 3, 1>;
+template <class Type, int Rows, int Cols> using Matrix = Eigen::Matrix<Type, Rows, Cols>;
+template <class Type, int Rows, int Cols> using Array = Eigen::Array<Type, Rows, Cols>;
+template <class Type, int Cols> using Vector = Eigen::Matrix<Type, 1, Cols>;
+template <class Type> using Vector3 = Eigen::Matrix<Type, 3, 1>;
+template <class Type> using Array3 = Eigen::Array<Type, 3, 1>;
+
+typedef Eigen::Array<double, 3, 1> Coordinate;
+typedef Eigen::Array<double, 3, Eigen::Dynamic> Coordinates;
+
+typedef Eigen::Map<Coordinates> CoordinatesWrapper;
+typedef Eigen::Map<const Coordinates> ConstCoordinatesWrapper;
+
+typedef Eigen::Array<double, 3, 1> Array3d;
+typedef Eigen::Matrix<double, 3, 1> Vector3d;
 
 
-// TODO: Remove
-template <typename T>
-void print_template(const T &t) {
-    static_assert(Eigen::internal::DependentBool<false, T>(), "printing template");
-}
+//// TODO: Remove
+//template <typename T>
+//void print_template(const T &t) {
+//    static_assert(Eigen::internal::DependentBool<false, T>(), "printing template");
+//}
 
 }
 

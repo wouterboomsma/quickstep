@@ -8,9 +8,6 @@ find_package(Eigen3 REQUIRED)
 message(STATUS "Found Eigen ${EIGEN3_VERSION} in ${EIGEN3_INCLUDE_DIR}")
 list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 
-# Eigen Quantity
-list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/eigen_quantity/)
-
 # Boost
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 list(APPEND quickstep_EXTERNAL_LIBRARIES ${Boost_LIBRARIES})

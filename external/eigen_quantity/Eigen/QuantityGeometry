@@ -1,8 +1,0 @@
-#ifndef EIGEN_QUANTITY_GEOMETRY_MODULE
-#define EIGEN_QUANTITY_GEOMETRY_MODULE
-
-#include "Eigen/src/Quantity/Geometry/QuantityTransform.h"
-#include "Eigen/src/Quantity/Geometry/QuantityTranslation.h"
-#include "Eigen/src/Quantity/Geometry/QuantityAngleAxis.h"
-
-#endif

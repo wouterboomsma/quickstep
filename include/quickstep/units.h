@@ -8,8 +8,8 @@
 #include <boost/units/base_units/angle/radian.hpp>
 #include <boost/units/systems/angle/degrees.hpp>
 #include <boost/units/systems/si/codata/physico-chemical_constants.hpp>
-#include <Eigen/Quantity>
-#include <Eigen/QuantityGeometry>
+//#include <Eigen/Quantity>
+//#include <Eigen/QuantityGeometry>
 
 namespace quickstep {
 
@@ -143,22 +143,6 @@ typedef boost::units::quantity<ChargeUnit_e> Charge_e;
 typedef boost::units::quantity<boost::units::si::electric_charge> Charge_coulomb;
 typedef Charge_e Charge;
 BOOST_UNITS_STATIC_CONSTANT(e, ChargeUnit_e);
-
-// Containers of coordinates
-typedef Eigen::QuantityArray<Length, 3, 1> Coordinate;
-typedef Eigen::QuantityArray<Length, 3, Eigen::Dynamic> Coordinates;
-
-typedef Eigen::Map<Eigen::QuantityArray<Length, 3, Eigen::Dynamic>> CoordinatesWrapper;
-typedef Eigen::Map<const Eigen::QuantityArray<Length, 3, Eigen::Dynamic>> ConstCoordinatesWrapper;
-
-typedef Eigen::Map<Eigen::QuantityArray<Length, 3, 1>> CoordinateWrapper;
-typedef const Eigen::Map<const Eigen::QuantityArray<Length, 3, 1>> ConstCoordinateWrapper;
-
-typedef Eigen::QuantityArray<Length_AA, 3, 1> CoordinateAA;
-typedef Eigen::QuantityArray<Length_AA, 3, Eigen::Dynamic> CoordinatesAA;
-
-typedef Eigen::QuantityArray<Length, 3, 1> Array3L;
-typedef Eigen::QuantityMatrix<Length, 3, 1> Vector3L;
 
 }}
 

@@ -11,7 +11,6 @@
 #include "quickstep/FatalError.h"
 #include "quickstep/utils.h"
 #include "quickstep/dofs/Dof.h"
-#include <Eigen/QuantityGeometry>
 #include <Eigen/Geometry>
 
 namespace quickstep{
@@ -214,13 +213,13 @@ public:
 //    };
 
     /** Construct a kinematic forest spanning all atoms in the topology. */
-    KinematicForest(quickstep::Topology& topology, const units::CoordinatesWrapper &coordinates);
+    KinematicForest(quickstep::Topology& topology, const CoordinatesWrapper &coordinates);
 
     KinematicForest();
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
-    units::CoordinatesWrapper &get_positions();
+    CoordinatesWrapper &get_positions();
 
     int get_parent(int atom_index);
 
@@ -243,7 +242,7 @@ public:
     void change_torsion(int atom, units::Angle value);
 
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
-    void change_global(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t);
+    void change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
 
     /**
      * Goes through the forest and updates positions so they reflect the requested
@@ -274,7 +273,7 @@ public:
 private:
     friend class DOFIndex;
 
-    typedef Eigen::Transform<units::Length, 3, Eigen::AffineCompact> QSTransform;
+    typedef Eigen::Transform<double, 3, Eigen::AffineCompact> QSTransform;
 
     quickstep::Topology* topology;
 
@@ -306,10 +305,10 @@ private:
     std::vector< std::vector< std::pair<int,int> > > adjacency_list;
 
     /// Positions of atoms
-    std::unique_ptr<units::CoordinatesWrapper> positions;
-    units::Coordinates stored_positions;
+    std::unique_ptr<CoordinatesWrapper> positions;
+    Coordinates stored_positions;
 
-    units::Coordinates pseudo_root_positions;
+    Coordinates pseudo_root_positions;
 //    units::Coordinates stored_pseudo_root_positions;
 
     /**
@@ -317,8 +316,8 @@ private:
      * If n_atoms <= i < n_atoms+roots.size()*2 the corresponding member of pseudo_roots
      * is returned.
      */
-    units::CoordinatesWrapper::ColXpr pos(int i);
-    units::Coordinate pos(int i) const;
+    CoordinatesWrapper::ColXpr pos(int i);
+    Coordinate pos(int i) const;
 
     void backup_pos(int i);
 

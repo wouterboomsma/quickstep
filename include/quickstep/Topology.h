@@ -12,6 +12,7 @@
 
 #include "quickstep/Element.h"
 #include "quickstep/units.h"
+#include "utils.h"
 
 namespace quickstep {
 
@@ -157,7 +158,7 @@ public:
 
     void create_standard_bonds();
 
-    void create_disulfide_bonds(const units::Coordinates &positions);
+    void create_disulfide_bonds(const Coordinates &positions);
 
     std::list<Chain> const &get_chains() const {
         return chains;
@@ -171,11 +172,11 @@ public:
         return bonds;
     }
 
-    const boost::optional<units::Array3L> &get_unit_cell_dimensions() const {
+    const boost::optional<Array3d> &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
-    void set_unit_cell_dimensions(const units::Vector3L &dimensions) {
+    void set_unit_cell_dimensions(const Array3d &dimensions) {
         unit_cell_dimensions = dimensions;
     }
 
@@ -196,9 +197,9 @@ public:
 
     //    std::set<std::pair<std::reference_wrapper<const Atom>, std::reference_wrapper<const Atom> > > bonds;
     std::set<std::pair<int, int> > bonds;
-    boost::optional<units::Array3L> unit_cell_dimensions;
 
     std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
+
 private:
 
     static void load_bond_definitions(const boost::filesystem::path &filename);
@@ -209,6 +210,7 @@ private:
     //std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
     std::vector<std::set<int>> bond_adjacency_list;
 
+    boost::optional<Array3d> unit_cell_dimensions;
 
     // Prevent copying
     Topology(const Topology &other) = delete;

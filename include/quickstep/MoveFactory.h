@@ -2,6 +2,7 @@
 #define QUICKSTEP_MOVEFACTORY_H
 
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <vector>
 #include "quickstep/utils.h"
 
 namespace quickstep {

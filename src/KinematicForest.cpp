@@ -39,9 +39,9 @@ KinematicForest::KinematicForest():
 
 }
 
-KinematicForest::KinematicForest(quickstep::Topology &topology, const units::CoordinatesWrapper &coordinates):
+KinematicForest::KinematicForest(quickstep::Topology &topology, const CoordinatesWrapper &coordinates):
 		topology(&topology),
-		positions(make_unique<units::CoordinatesWrapper>(coordinates)),
+		positions(make_unique<CoordinatesWrapper>(coordinates)),
 		stored_positions(coordinates.rows(), coordinates.cols()) // Stored positions is a matrix and must be initialized with two sizes
 {
 	//Associate each atom with a unique index between 0 and the total number of atoms
@@ -105,7 +105,7 @@ KinematicForest::KinematicForest(quickstep::Topology &topology, const units::Coo
 
 }
 
-units::CoordinatesWrapper &KinematicForest::get_positions()
+CoordinatesWrapper &KinematicForest::get_positions()
 {
     return *positions.get();
 }
@@ -131,9 +131,9 @@ units::Length KinematicForest::get_length(int atom)
 //    if(!pseudoRootsSet)	update_pseudo_roots();
 
     int a1 = parent(atom);
-    units::Vector3L v = pos(atom)-pos(a1);
+    Vector3d v = pos(atom)-pos(a1);
 
-    return v.norm();
+    return v.norm() * units::nm;
 }
 
 units::Angle KinematicForest::get_angle(int atom)
@@ -145,14 +145,14 @@ units::Angle KinematicForest::get_angle(int atom)
     int a2 = parent(a1);
 
     // Note the use of ColXpr instead of standard references
-    units::CoordinatesWrapper::ColXpr a0_pos = pos(atom);
-    units::CoordinatesWrapper::ColXpr a1_pos = pos(a1);
-    units::CoordinatesWrapper::ColXpr a2_pos = pos(a2);
-    units::Vector3L v1 = a2_pos-a1_pos;
-    units::Vector3L v2 = a0_pos-a1_pos;
-    units::Length v1_len = v1.norm();
-    units::Length v2_len = v2.norm();
-    return acos(v1.dot(v2).value()/(v1_len*v2_len).value()) * units::radians;
+    CoordinatesWrapper::ColXpr a0_pos = pos(atom);
+    CoordinatesWrapper::ColXpr a1_pos = pos(a1);
+    CoordinatesWrapper::ColXpr a2_pos = pos(a2);
+    Vector3d v1 = a2_pos-a1_pos;
+    Vector3d v2 = a0_pos-a1_pos;
+    double v1_len = v1.norm();
+    double v2_len = v2.norm();
+    return acos(v1.dot(v2)/(v1_len*v2_len)) * units::radians;
 }
 
 units::Angle KinematicForest::get_torsion(int atom) const
@@ -164,16 +164,16 @@ units::Angle KinematicForest::get_torsion(int atom) const
     int a2 = parent(a1);
     int a3 = parent(a2);
 
-    units::Coordinate a0_pos = pos(atom);
-    units::Coordinate a1_pos = pos(a1);
-    units::Coordinate a2_pos = pos(a2);
-    units::Coordinate a3_pos = pos(a3);
+    Coordinate a0_pos = pos(atom);
+    Coordinate a1_pos = pos(a1);
+    Coordinate a2_pos = pos(a2);
+    Coordinate a3_pos = pos(a3);
 
-    units::Vector3L v01 = a1_pos - a0_pos;
-    units::Vector3L v12 = a2_pos - a1_pos;
-    units::Vector3L v23 = a3_pos - a2_pos;
-    units::Vector3L::UnitLess cross1 {v01.cross(v12).normalized()};
-    units::Vector3L::UnitLess cross2 {v12.cross(v23).normalized()};
+    Vector3d v01 = a1_pos - a0_pos;
+    Vector3d v12 = a2_pos - a1_pos;
+    Vector3d v23 = a3_pos - a2_pos;
+    Vector3d cross1 {v01.cross(v12).normalized()};
+    Vector3d cross2 {v12.cross(v23).normalized()};
     double product = cross1.dot(cross2);
     if (product > 1.)
         product = 1.;
@@ -181,7 +181,7 @@ units::Angle KinematicForest::get_torsion(int atom) const
         product = -1.;
     double torsion = acos(product);
 
-    if (cross1.dot(v23.value()) < 0.)
+    if (cross1.dot(v23) < 0.)
         torsion *= -1;
 
     return torsion * units::radians;
@@ -196,8 +196,8 @@ void KinematicForest::change_length(int atom, units::Length value)
 
     int a1 = parent(atom);
 
-    units::Vector3L d = (pos(atom)-pos(a1)).matrix().normalized() * value;
-    transformations[atom] = transformations[atom]*Eigen::Translation<units::Length,3>(d);
+    Vector3d d = (pos(atom)-pos(a1)).matrix().normalized() * value.value();
+    transformations[atom] = transformations[atom]*Eigen::Translation<double,3>(d);
 
     moved_subtrees.insert(atom);
 
@@ -214,17 +214,17 @@ void KinematicForest::change_angle(int atom, units::Angle value)
     int a2 = parent(a1);
 
     // Note the use of ColXpr instead of standard references
-    units::CoordinatesWrapper::ColXpr pos_a = pos(atom);
-    units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
-    units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
-    units::Vector3L v1 = pos_a2 - pos_a1;
-    units::Vector3L v2 = pos_a  - pos_a1;
-    units::Vector3L axis = v1.cross(v2).normalized() * units::Vector3L::Unit();
+    CoordinatesWrapper::ColXpr pos_a = pos(atom);
+    CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
+    CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
+    Vector3d v1 = pos_a2 - pos_a1;
+    Vector3d v2 = pos_a  - pos_a1;
+    Vector3d axis = v1.cross(v2).normalized();
 
     transformations[atom] = transformations[atom] *
-    		Eigen::Translation<units::Length, 3>(pos_a1)*
-			Eigen::AngleAxis<units::Length>(value, axis)*
-			Eigen::Translation<units::Length, 3>(-pos_a1);
+    		Eigen::Translation<double, 3>(pos_a1)*
+			Eigen::AngleAxis<double>(value.value(), axis)*
+			Eigen::Translation<double, 3>(-pos_a1);
 
     moved_subtrees.insert(atom);
 }
@@ -240,20 +240,20 @@ void KinematicForest::change_torsion(int atom, units::Angle value)
     int a2 = parent(a1);
 
     // Note the use of ColXpr instead of standard references
-    units::CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
-    units::CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
+    CoordinatesWrapper::ColXpr pos_a1 = pos(a1);
+    CoordinatesWrapper::ColXpr pos_a2 = pos(a2);
 
-    units::Vector3L axis = (pos_a2 - pos_a1).matrix().normalized() * units::Vector3L::Unit();
+    Vector3d axis = (pos_a2 - pos_a1).matrix().normalized();
 
     transformations[atom] = transformations[atom]*
-        		Eigen::Translation<units::Length, 3>( pos_a1) *
-    			Eigen::AngleAxis<units::Length>(-value, axis) *
-    			Eigen::Translation<units::Length, 3>(-pos_a1);
+        		Eigen::Translation<double, 3>( pos_a1) *
+    			Eigen::AngleAxis<double>(-value.value(), axis) *
+    			Eigen::Translation<double, 3>(-pos_a1);
 
     moved_subtrees.insert(atom);
 }
 
-void KinematicForest::change_global(int chain, Eigen::Transform<units::Length, 3, Eigen::Affine>& t)
+void KinematicForest::change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t)
 {
 //	if(!pseudoRootsSet)	update_pseudo_roots();
 //	int idx1 = parent(parent(roots[chain]));
@@ -329,26 +329,26 @@ void KinematicForest::restore_positions()
 	}
 }
 
-units::CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
+CoordinatesWrapper::ColXpr KinematicForest::pos(int i)
 {
 //    assert(i>-4 && i<n_atoms);
 
     if(i<0 && i>-4){
-        units::CoordinatesWrapper wrapper =
-                units::CoordinatesWrapper::UnitLess( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() ) * units::nm;
+        CoordinatesWrapper wrapper =
+                CoordinatesWrapper( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() );
         return wrapper.col(i+3);
     }
 
     return positions->col(i);
 }
 
-units::Coordinate KinematicForest::pos(int i) const
+Coordinate KinematicForest::pos(int i) const
 {
     //    assert(i>-4 && i<n_atoms);
 
     if(i<0 && i>-4){
-        units::ConstCoordinatesWrapper wrapper =
-                units::ConstCoordinatesWrapper::UnitLess( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() ) * units::nm;
+        ConstCoordinatesWrapper wrapper =
+                ConstCoordinatesWrapper( pseudo_root_positions.data(), 3, pseudo_root_positions.cols() );
         return wrapper.col(i+3);
     }
 

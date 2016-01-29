@@ -41,18 +41,18 @@ MoveInfo CofMMove::propose(KinematicForest& kf)
 	auto rand_rot = rand_rotation(rotationMagnitude);
 
 	// Compute center-of-mass
-	units::Vector3L center_of_mass;
+	Vector3d center_of_mass;
 	for(int a=0;a<chain_indices[root].size();a++){
 	    center_of_mass = center_of_mass + kf.pos(chain_indices[root][a]).matrix();
 	}
 	center_of_mass = center_of_mass / chain_indices[root].size();
 
 	// Compose the full chain transformation
-	Eigen::Transform<units::Length, 3, Eigen::Affine> full_transform =
+	Eigen::Transform<double, 3, Eigen::Affine> full_transform =
 	        rand_tra *
-	        Eigen::Translation<units::Length, 3>( center_of_mass) *
+	        Eigen::Translation<double, 3>( center_of_mass) *
 	        rand_rot *
-	        Eigen::Translation<units::Length, 3>(-center_of_mass);
+	        Eigen::Translation<double, 3>(-center_of_mass);
 
 
 
@@ -133,7 +133,7 @@ void CofMMove::prepare_chain_indices(KinematicForest& kf)
 	cachedKinematicForest = &kf;
 }
 
-Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_rotation( units::Angle amplitude )
+Eigen::Transform<double, 3, Eigen::Affine> CofMMove::rand_rotation( units::Angle amplitude )
 {
 	double rand1 = (1.0 * rand()) / RAND_MAX;
 	double rand2 = (1.0 * rand()) / RAND_MAX;
@@ -148,19 +148,19 @@ Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_rotation( units
 //	);
 //	move_info.rotation_angle = (rand3-0.5)*amplitude;
 
-	units::Vector3L rax(
-			sin(theta)*cos(phi) * units::nm,
-			sin(theta)*sin(phi) * units::nm,
-			cos(theta) 			* units::nm
+	Vector3d rax(
+			sin(theta)*cos(phi),
+			sin(theta)*sin(phi),
+			cos(theta)
 	);
 	units::Angle angle = (rand3-0.5)*amplitude;
 //	M.setIdentity();
 //	M = M * Eigen::AngleAxis<units::Length>(angle, rax);
 
-	return Eigen::AngleAxis<units::Length>(angle, rax);
+	return Eigen::Transform<double, 3, Eigen::Affine>(Eigen::AngleAxis<double>(angle.value(), rax));
 }
 
-Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_translation( units::Length amplitude )
+Eigen::Transform<double, 3, Eigen::Affine> CofMMove::rand_translation( units::Length amplitude )
 {
 	double rand1 = (1.0 * rand()) / RAND_MAX;
 	double rand2 = (1.0 * rand()) / RAND_MAX;
@@ -175,7 +175,7 @@ Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_translation( un
 //				cos(theta) 			* units::nm
 //		);
 
-	units::Length l = pow(rand3,1.0/3.0)*amplitude;
+	double l = pow(rand3,1.0/3.0)*amplitude.value();
 //	M.setIdentity();
 //	M = M * Eigen::Translation<units::Length, 3>(
 //			l*sin(theta)*cos(phi),
@@ -183,11 +183,11 @@ Eigen::Transform<units::Length, 3, Eigen::Affine> CofMMove::rand_translation( un
 //			l*cos(theta)
 //			);
 
-	return Eigen::Translation<units::Length, 3>(
+	return Eigen::Transform<double, 3, Eigen::Affine>(Eigen::Translation<double, 3>(
 	                  l*sin(theta)*cos(phi),
 	                  l*sin(theta)*sin(phi),
 	                  l*cos(theta)
-	                  );
+	                  ));
 }
 
 } /* namespace quickstep */
