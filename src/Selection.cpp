@@ -1,14 +1,14 @@
 #include "quickstep/Selection.h"
 
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/qi_lit.hpp>
-#include <boost/spirit/repository/include/qi_distinct.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/fusion/include/vector.hpp>
-#include <boost/fusion/include/at_c.hpp>
-#include <boost/bind.hpp>
+#include <qsboost/spirit/include/qi.hpp>
+#include <qsboost/spirit/include/phoenix_operator.hpp>
+#include <qsboost/spirit/include/phoenix_object.hpp>
+//#include <boost/spirit/include/qi_lit.hpp>
+//#include <boost/spirit/repository/include/qi_distinct.hpp>
+//#include <boost/lambda/lambda.hpp>
+#include <qsboost/fusion/include/vector.hpp>
+#include <qsboost/fusion/include/at_c.hpp>
+//#include <boost/bind.hpp>
 
 #include "quickstep/Topology.h"
 #include "prettyprint.hpp"
@@ -106,10 +106,10 @@ private:
 
 
 /** \class OperatorVistor
- *  \ brief Visitor pattern for iterating over boost::variant operator types */
+ *  \ brief Visitor pattern for iterating over qsboost::variant operator types */
 template<typename Operator>
 class OperatorVisitor
-        : public boost::static_visitor<bool> {
+        : public qsboost::static_visitor<bool> {
 public:
     /** Create a new visitor */
     OperatorVisitor(const Operator &op,
@@ -157,8 +157,8 @@ std::map<std::string, FieldTypes> make_keyword_map(std::vector<std::pair<std::ve
  *  \brief Grammar node for modeling atom attributes */
 struct Attribute: public Node {
 
-    // Different field types are encoded as a single type using boost::Variant
-    typedef boost::variant<std::function<int        (const Topology::Atom&)>,
+    // Different field types are encoded as a single type using qsboost::Variant
+    typedef qsboost::variant<std::function<int        (const Topology::Atom&)>,
                            std::function<double     (const Topology::Atom&)>,
                            std::function<std::string(const Topology::Atom&)>,
                            std::function<Element    (const Topology::Atom&)>> FieldTypes;
@@ -179,7 +179,7 @@ struct Attribute: public Node {
     template<typename Operator>
     bool binary_op(const Operator &op,
                    const Topology::Atom &atom, const std::string &token_value) const {
-        return boost::apply_visitor(OperatorVisitor<Operator>(op, atom, token_value), fields.at(field_name));
+        return qsboost::apply_visitor(OperatorVisitor<Operator>(op, atom, token_value), fields.at(field_name));
     };
 
 private:
@@ -207,10 +207,10 @@ struct BinaryOp: public Node {
     BinaryOp(){}
 
     /** Construct from two nodes and a string representing the operator */
-    BinaryOp(const boost::fusion::vector3<AnyNode, std::string, AnyNode> &tokens)
-            : operand1(boost::fusion::at_c<0>(tokens)),
-              operator_str(boost::fusion::at_c<1>(tokens)),
-              operand2(boost::fusion::at_c<2>(tokens)){}
+    BinaryOp(const qsboost::fusion::vector3<AnyNode, std::string, AnyNode> &tokens)
+            : operand1(qsboost::fusion::at_c<0>(tokens)),
+              operator_str(qsboost::fusion::at_c<1>(tokens)),
+              operand2(qsboost::fusion::at_c<2>(tokens)){}
 
     /** Create selection based on current topology
      *  @param topology Current topology
@@ -247,9 +247,9 @@ struct UnaryOp: public Node {
     UnaryOp(){}
 
     /** Construct from a node and a string representing the operator */
-    UnaryOp(const boost::fusion::vector2<std::string, AnyNode> &tokens)
-            : operator_str(boost::fusion::at_c<0>(tokens)),
-              operand(boost::fusion::at_c<1>(tokens)){}
+    UnaryOp(const qsboost::fusion::vector2<std::string, AnyNode> &tokens)
+            : operator_str(qsboost::fusion::at_c<0>(tokens)),
+              operand(qsboost::fusion::at_c<1>(tokens)){}
 
     /** Create selection based on current topology
      *  @param topology Current topology
@@ -282,9 +282,9 @@ struct EqualityCondition : public Node {
     EqualityCondition(){}
 
     /** Construct from an Attribute and a string representing the value */
-    EqualityCondition(const boost::fusion::vector2<Attribute, std::string> &tokens)
-            : attribute(boost::fusion::at_c<0>(tokens)),
-              value(boost::fusion::at_c<1>(tokens)){}
+    EqualityCondition(const qsboost::fusion::vector2<Attribute, std::string> &tokens)
+            : attribute(qsboost::fusion::at_c<0>(tokens)),
+              value(qsboost::fusion::at_c<1>(tokens)){}
 
     /** Create selection based on current topology
      *  @param topology Current topology
@@ -318,10 +318,10 @@ struct RangeCondition: public Node {
     RangeCondition(){}
 
     /** Construct from an Attribute and a strings representing lower and upper bounds */
-    RangeCondition(const boost::fusion::vector3<Attribute, std::string, std::string> &tokens)
-            : attribute(boost::fusion::at_c<0>(tokens)),
-              start(boost::fusion::at_c<1>(tokens)),
-              end(boost::fusion::at_c<2>(tokens)){}
+    RangeCondition(const qsboost::fusion::vector3<Attribute, std::string, std::string> &tokens)
+            : attribute(qsboost::fusion::at_c<0>(tokens)),
+              start(qsboost::fusion::at_c<1>(tokens)),
+              end(qsboost::fusion::at_c<2>(tokens)){}
 
     /** Create selection based on current topology
      *  @param topology Current topology
@@ -356,10 +356,10 @@ struct Bonded: public Node {
     Bonded(){}
 
     /** Construct from an Attribute and a vector of strings representing values along the bonded chain */
-    Bonded(const boost::fusion::vector3<Attribute, std::string, std::vector<std::string>> &tokens)
-            : attribute(boost::fusion::at_c<0>(tokens)),
-              values({boost::fusion::at_c<1>(tokens)}) {
-        values.insert(values.end(), boost::fusion::at_c<2>(tokens).begin(), boost::fusion::at_c<2>(tokens).end());
+    Bonded(const qsboost::fusion::vector3<Attribute, std::string, std::vector<std::string>> &tokens)
+            : attribute(qsboost::fusion::at_c<0>(tokens)),
+              values({qsboost::fusion::at_c<1>(tokens)}) {
+        values.insert(values.end(), qsboost::fusion::at_c<2>(tokens).begin(), qsboost::fusion::at_c<2>(tokens).end());
     }
 
     /** Create selection based on current topology
@@ -426,7 +426,7 @@ private:
 /** \class Grammar
  *  \brief The main grammar */
 template <typename Iterator>
-struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::ascii::space_type> {
+struct Grammar: qsboost::spirit::qi::grammar<Iterator, AnyNode(), qsboost::spirit::ascii::space_type> {
 
     /** \class Rule. Inner class for increasing ease with which debug can be turned on for all rules */
     template <typename RuleType>
@@ -443,7 +443,7 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
         {
             RuleType::operator=(expr);
             if (debug)
-                boost::spirit::qi::debug(*this);
+                qsboost::spirit::qi::debug(*this);
             return *this;
         }
         template <typename Expr>
@@ -451,7 +451,7 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
         {
             static_cast<RuleType&>(*this)%=expr;
             if (debug)
-                boost::spirit::qi::debug(*this);
+                qsboost::spirit::qi::debug(*this);
             return *this;
         }
         template <typename Expr>
@@ -459,7 +459,7 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
         {
             static_cast<RuleType&>(*this) %= std::move(expr);
             if (debug)
-                boost::spirit::qi::debug(*this);
+                qsboost::spirit::qi::debug(*this);
             return *this;
         }
     private:
@@ -467,44 +467,44 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
     };
 
     // Rule variable definition (these must be defined here rather than in the constructor)
-    Rule<boost::spirit::qi::rule<Iterator, std::string(), boost::spirit::ascii::space_type>> number_int = {"number_int"};
-    Rule<boost::spirit::qi::rule<Iterator, boost::spirit::ascii::space_type>> number_float = {"number_float"};
-    Rule<boost::spirit::qi::rule<Iterator, std::string(), boost::spirit::ascii::space_type>> identifier = {"identifier"};
-    Rule<boost::spirit::qi::rule<Iterator, std::string(), boost::spirit::ascii::space_type>> literal = {"literal"};
-    Rule<boost::spirit::qi::rule<Iterator, Attribute(), boost::spirit::ascii::space_type>> attribute = {"attribute"};
-//    DebugRule<boost::spirit::qi::rule<Iterator, std::string(), boost::spirit::ascii::space_type>> base_expression = {"base_expression"};
-    Rule<boost::spirit::qi::rule<Iterator, EqualityCondition(), boost::spirit::ascii::space_type>> implicit_equality = {"implicit equality"};
-    Rule<boost::spirit::qi::rule<Iterator, RangeCondition(), boost::spirit::ascii::space_type>> range_condition = {"range_condition"};
-    Rule<boost::spirit::qi::rule<Iterator, Bonded(), boost::spirit::ascii::space_type>> bonded = {"bonded"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> expression = {"expression"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> logical_expression = {"logical_expression"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> or_op = {"or_op"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> and_op = {"and_op"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> not_op = {"not_op"};
-    Rule<boost::spirit::qi::rule<Iterator, AnyNode(), boost::spirit::ascii::space_type>> start = {"start"};
+    Rule<qsboost::spirit::qi::rule<Iterator, std::string(), qsboost::spirit::ascii::space_type>> number_int = {"number_int"};
+    Rule<qsboost::spirit::qi::rule<Iterator, qsboost::spirit::ascii::space_type>> number_float = {"number_float"};
+    Rule<qsboost::spirit::qi::rule<Iterator, std::string(), qsboost::spirit::ascii::space_type>> identifier = {"identifier"};
+    Rule<qsboost::spirit::qi::rule<Iterator, std::string(), qsboost::spirit::ascii::space_type>> literal = {"literal"};
+    Rule<qsboost::spirit::qi::rule<Iterator, Attribute(), qsboost::spirit::ascii::space_type>> attribute = {"attribute"};
+//    DebugRule<qsboost::spirit::qi::rule<Iterator, std::string(), qsboost::spirit::ascii::space_type>> base_expression = {"base_expression"};
+    Rule<qsboost::spirit::qi::rule<Iterator, EqualityCondition(), qsboost::spirit::ascii::space_type>> implicit_equality = {"implicit equality"};
+    Rule<qsboost::spirit::qi::rule<Iterator, RangeCondition(), qsboost::spirit::ascii::space_type>> range_condition = {"range_condition"};
+    Rule<qsboost::spirit::qi::rule<Iterator, Bonded(), qsboost::spirit::ascii::space_type>> bonded = {"bonded"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> expression = {"expression"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> logical_expression = {"logical_expression"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> or_op = {"or_op"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> and_op = {"and_op"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> not_op = {"not_op"};
+    Rule<qsboost::spirit::qi::rule<Iterator, AnyNode(), qsboost::spirit::ascii::space_type>> start = {"start"};
 
-    boost::spirit::qi::symbols<char,std::string> field_keywords;
+    qsboost::spirit::qi::symbols<char,std::string> field_keywords;
 
     // Using the distinct technique directive produced a memory error - we therefore use the manual method below
-    // auto keyword(std::string keyword_string) -> decltype(boost::spirit::repository::distinct(boost::spirit::qi::char_("a-zA-Z_0-9"))[keyword_string]) {
-    //     return boost::spirit::repository::distinct(boost::spirit::qi::char_("a-zA-Z_0-9"))[keyword_string];
+    // auto keyword(std::string keyword_string) -> decltype(qsboost::spirit::repository::distinct(qsboost::spirit::qi::char_("a-zA-Z_0-9"))[keyword_string]) {
+    //     return qsboost::spirit::repository::distinct(qsboost::spirit::qi::char_("a-zA-Z_0-9"))[keyword_string];
     // }
 
     ///** Helper function for constructing a keyword that is not a prefix of a label */
-    //auto keyword(std::string keyword_string) -> decltype(boost::spirit::qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !boost::spirit::qi::char_("a-zA-Z_0-9")]) {
-    //    namespace qi = boost::spirit::qi;
-    //    return qi::lexeme[boost::spirit::qi::lit(keyword_string) >> !qi::char_("a-zA-Z_0-9")];
+    //auto keyword(std::string keyword_string) -> decltype(qsboost::spirit::qi::lexeme[qsboost::spirit::qi::lit(keyword_string) >> !qsboost::spirit::qi::char_("a-zA-Z_0-9")]) {
+    //    namespace qi = qsboost::spirit::qi;
+    //    return qi::lexeme[qsboost::spirit::qi::lit(keyword_string) >> !qi::char_("a-zA-Z_0-9")];
     //}
 
 
     Grammar(): Grammar::base_type(start) {
 
-        using boost::spirit::qi::lit;
-        using namespace boost::spirit::qi::labels;
-        namespace qi = boost::spirit::qi;
-        namespace ascii = boost::spirit::ascii;
-        namespace lambda = boost::lambda;
-        namespace phx = boost::phoenix;
+        using qsboost::spirit::qi::lit;
+        using namespace qsboost::spirit::qi::labels;
+        namespace qi = qsboost::spirit::qi;
+        namespace ascii = qsboost::spirit::ascii;
+        //namespace lambda = qsboost::lambda;
+        namespace phx = qsboost::phoenix;
 
         // Import attribute field names as keywords.
         for (const auto &field: Attribute::fields)
@@ -535,7 +535,7 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
                 ( attribute >> -lit("==") >> literal ) [_val = _0];
 
         range_condition =
-                (attribute >> literal >> qi::lexeme[boost::spirit::qi::lit("to") >> !qi::char_("a-zA-Z_0-9")] >> literal) [_val = _0];
+                (attribute >> literal >> qi::lexeme[qsboost::spirit::qi::lit("to") >> !qi::char_("a-zA-Z_0-9")] >> literal) [_val = _0];
 
         bonded = ( lit("bonded") >> attribute >> -lit("==") >> literal >> *(lit("-") >> literal) ) [_val = _0];
 
@@ -558,8 +558,8 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
         start = logical_expression ;
 
 
-        using boost::phoenix::construct;
-        using boost::phoenix::val;
+        using qsboost::phoenix::construct;
+        using qsboost::phoenix::val;
         qi::on_error<qi::fail>
                 (
                         start
@@ -578,8 +578,8 @@ struct Grammar: boost::spirit::qi::grammar<Iterator, AnyNode(), boost::spirit::a
 
 Selection Selection::parse(Topology &topology, const std::string &selection_string) {
 
-    namespace qi = boost::spirit::qi;
-    namespace ascii = boost::spirit::ascii;
+    namespace qi = qsboost::spirit::qi;
+    namespace ascii = qsboost::spirit::ascii;
 
     using qi::double_;
     using qi::phrase_parse;

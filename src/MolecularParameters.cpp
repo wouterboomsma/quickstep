@@ -1,23 +1,23 @@
 #include "quickstep/MolecularParameters.h"
 #include "quickstep/Topology.h"
 #include "quickstep/Element.h"
-#include <boost/filesystem/fstream.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/range/adaptor/transformed.hpp>
+//#include <boost/filesystem/fstream.hpp>
+#include <qsboost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/xml_parser.hpp>
+#include <qsboost/range/adaptor/transformed.hpp>
 
 namespace quickstep {
 
 
 
 void MolecularParameters::parse_from_XML(const std::string &filename) {
-    boost::filesystem::ifstream ifs(filename);
-    boost::property_tree::ptree parameter_input;
-    boost::property_tree::read_xml(ifs, parameter_input, boost::property_tree::xml_parser::trim_whitespace);
+    std::ifstream ifs(filename);
+    qsboost::property_tree::ptree parameter_input;
+    qsboost::property_tree::read_xml(ifs, parameter_input, qsboost::property_tree::xml_parser::trim_whitespace);
     parse_from_XML(parameter_input);
 }
 
-void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &parameter_input) {
+void MolecularParameters::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
 
     const auto atom_type_nodes = parameter_input.begin()->second.get_child_optional("AtomTypes");
     if (atom_type_nodes) {
@@ -30,12 +30,12 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
                 double mass_attr = node_value.get<double>("<xmlattr>.mass");
 
                 Element element = Element::UNKNOWN;
-                boost::optional<std::string> element_attr = node_value.get_optional<std::string>("<xmlattr>.element");
+                qsboost::optional<std::string> element_attr = node_value.get_optional<std::string>("<xmlattr>.element");
                 if (element_attr)
                     element = Element::get_by_symbol(*element_attr);
 
                 if (atom_types.count(name_attr)) {
-                    BOOST_THROW_EXCEPTION(FatalError() <<
+                    QSBOOST_THROW_EXCEPTION(FatalError() <<
                                           "Multiple definitions of atom type: " << name_attr);
                 }
                 atom_types.insert(std::make_pair(name_attr,
@@ -45,7 +45,7 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
             } else if (atom_type_node.first == "<xmlcomment>") {
                 continue;
             } else if (atom_type_node.first != "<xmlattr>") {
-                BOOST_THROW_EXCEPTION(FatalError() <<
+                QSBOOST_THROW_EXCEPTION(FatalError() <<
                                       "Unknown node attribute in AtomTypes entry: " << atom_type_node.first);
             }
         }
@@ -57,14 +57,14 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
     		continue;
 
     	if (residues_node.first!="Residue"){
-    	    BOOST_THROW_EXCEPTION(FatalError() <<
+    	    QSBOOST_THROW_EXCEPTION(FatalError() <<
     	    		"Only <Residue name=\"...\"> entries allowed in Residues section: " << residues_node.first << ".");
     	}
 
         std::string residue_name = residues_node.second.get<std::string>("<xmlattr>.name");
 
         if (templates.count(residue_name)) {
-            BOOST_THROW_EXCEPTION(FatalError() <<
+            QSBOOST_THROW_EXCEPTION(FatalError() <<
                                   "Multiple <Residue> entries for " << residue_name << ".");
         }
 
@@ -81,13 +81,13 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
                 residue_template.atom_name_lookup.insert(std::make_pair(atom_name, residue_template.atoms.size()-1));
 
                 // Check if atom information is given through atom type
-                boost::optional<std::string> atom_type = residue_node.second.get_optional<std::string>("<xmlattr>.type");
+                qsboost::optional<std::string> atom_type = residue_node.second.get_optional<std::string>("<xmlattr>.type");
                 if (atom_type)
                     residue_template.atoms.back().element = atom_types.at(*atom_type).element;
                 else {
 
                     Element element = Element::UNKNOWN;
-                    boost::optional<std::string> element_attr = residue_node.second.get_optional<std::string>("<xmlattr>.element");
+                    qsboost::optional<std::string> element_attr = residue_node.second.get_optional<std::string>("<xmlattr>.element");
                     if (element_attr)
                         element = Element::get_by_symbol(*element_attr);
                     residue_template.atoms.back().element = element;
@@ -144,7 +144,7 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
                              residue_node.second.get<double>("<xmlattr>.p2"),
                              residue_node.second.get<double>("<xmlattr>.p3")};
                 } else {
-                    BOOST_THROW_EXCEPTION(FatalError() <<
+                    QSBOOST_THROW_EXCEPTION(FatalError() <<
                                           "Unknown virtual site type: " << type);
                 }
 
@@ -166,7 +166,7 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
                 residue_template.external_bonds.push_back(atom_from);
                 residue_template.atoms[atom_from].external_bonds += 1;
             } else if (residue_node.first != "<xmlattr>") {
-                BOOST_THROW_EXCEPTION(FatalError() <<
+                QSBOOST_THROW_EXCEPTION(FatalError() <<
                                       "Unknown node attribute in Residues entry: " << residue_node.first);
             }
         }
@@ -178,9 +178,9 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
                 std::string signature =
                         Element::create_bonded_signature(
                                 // Create vector of elements from atom vector
-                                boost::copy_range<std::vector<Element> >(
+                                qsboost::copy_range<std::vector<Element> >(
                                         template_data.atoms |
-                                        boost::adaptors::transformed(
+                                        qsboost::adaptors::transformed(
                                                 [](const TemplateAtomData &atom) {
                                                     return atom.element;
                                                 })),
@@ -188,9 +188,9 @@ void MolecularParameters::parse_from_XML(const boost::property_tree::ptree &para
 //        std::string signature =
 //                Element::create_signature(
 //                        // Create vector of elements from atom vector
-//                        boost::copy_range<std::vector<Element> >(
+//                        qsboost::copy_range<std::vector<Element> >(
 //                                template_data.atoms |
-//                                boost::adaptors::transformed(
+//                                qsboost::adaptors::transformed(
 //                                        [](const TemplateAtomData &atom) {
 //                                            return atom.element;
 //                                        })));

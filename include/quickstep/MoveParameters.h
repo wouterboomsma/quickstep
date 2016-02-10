@@ -3,14 +3,14 @@
 
 #include <string>
 #include "quickstep/MolecularParameters.h"
-#include <boost/property_tree/ptree_fwd.hpp>
+#include <qsboost/property_tree/ptree_fwd.hpp>
 
 namespace quickstep {
 
 class MoveParameters: public MolecularParameters {
 private:
 
-    void parse_dofs(const boost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {});
+    void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {});
 
 public:
 
@@ -29,7 +29,7 @@ public:
         }
     };
 
-    virtual void parse_from_XML(const boost::property_tree::ptree &parameter_input);
+    virtual void parse_from_XML(const qsboost::property_tree::ptree &parameter_input);
 
     std::map<std::string, MoveParameters::DofData> dof_data;
 

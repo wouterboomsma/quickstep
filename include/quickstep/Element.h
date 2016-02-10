@@ -3,7 +3,6 @@
 
 #include <map>
 #include <vector>
-#include <boost/algorithm/string.hpp>
 #include "quickstep/units.h"
 
 namespace quickstep {

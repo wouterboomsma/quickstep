@@ -79,7 +79,7 @@ public:
      *  @param other Other selection operand. */
     Selection operator~() const {
         if (active_bonds.size() > 0) {
-            BOOST_THROW_EXCEPTION(FatalError() <<
+            QSBOOST_THROW_EXCEPTION(FatalError() <<
                                   "! operator not defined for bond selections.");
         }
         return Selection(topology,
@@ -121,7 +121,7 @@ template <typename TYPE>
 std::vector<TYPE> filter(const Selection &selection, const std::vector<TYPE> &source) {
     std::vector<TYPE> output;
     if (source.size() != selection.get_active_atom_map().size())
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "Mismatch between filter and target sequence size.");
     for (unsigned int i = 0; i < source.size(); ++i) {
         if (selection.get_active_atom_map()[i])
@@ -137,7 +137,7 @@ std::vector<TYPE> filter(const Selection &selection, const std::vector<TYPE> &so
 template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYPE, int DIM1, int _Options, int _MaxRows, int _MaxCols>
 const EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> filter(const Selection &selection, const Eigen::ArrayBase<EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>> &source) {
     if (source.cols() != selection.get_active_atom_map().size())
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "Mismatch between filter and target sequence size.");
 
     int entries = selection.get_active_atom_map().count();
@@ -183,7 +183,7 @@ const EIGEN_TYPE<TYPE, DIM1, Eigen::Dynamic, _Options, _MaxRows, _MaxCols> filte
 template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYPE, int DIM2, int _Options, int _MaxRows, int _MaxCols>
 const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> filter(const Selection &selection, const Eigen::ArrayBase<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>> &source) {
     if (source.rows() != selection.get_active_atom_map().size())
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "Mismatch between filter and target sequence size.");
 
     int entries = selection.get_active_atom_map().count();
@@ -206,7 +206,7 @@ template <typename TYPE, template <typename,int,int,int,int,int> class EIGEN_TYP
 //const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> filter(const Selection &selection, const Eigen::Quantity<EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols>, Unit> &source) {
 const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> filter(const Selection &selection, const EIGEN_TYPE<TYPE, Eigen::Dynamic, DIM2, _Options, _MaxRows, _MaxCols> &source) {
     if (source.rows() != selection.get_active_atom_map().size())
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "Mismatch between filter and target sequence size.");
 
     int entries = selection.get_active_atom_map().count();

@@ -9,7 +9,7 @@
 #include <quickstep/FatalError.h>
 
 #include <vector>
-#include <boost/algorithm/string.hpp>
+#include <qsboost/algorithm/string.hpp>
 #include <quickstep/dofs/Dof.h>
 #include "quickstep/utils.h"
 
@@ -27,11 +27,11 @@ StdDoFMove::StdDoFMove(std::string dofs, double std):
 MoveInfo StdDoFMove::propose(KinematicForest& kf) {
     if (!dof_controller || dof_controller->kinematic_forest != &kf) {
         std::vector<std::string> dof_tokens;
-        boost::split(dof_tokens, dofs, boost::is_any_of(","));
+        qsboost::split(dof_tokens, dofs, qsboost::is_any_of(","));
         dof_controller = std::make_unique<StdDoFController>(kf, dof_tokens);
         if (dof_controller->numberOfDoFs() == 0) {
-            BOOST_THROW_EXCEPTION(FatalError() <<
-                                  "DOF specification (" << dofs << ") resulted in 0 actual DOFs");
+            QSBOOST_THROW_EXCEPTION(FatalError() <<
+                                    "DOF specification (" << dofs << ") resulted in 0 actual DOFs");
         }
     }
 

@@ -1,0 +1,44 @@
+/*
+Copyright Rene Rivera 2008-2015
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+#ifndef QSBOOST_PREDEF_LIBRARY_STD_VACPP_H
+#define QSBOOST_PREDEF_LIBRARY_STD_VACPP_H
+
+#include <qsboost/predef/library/std/_prefix.h>
+
+#include <qsboost/predef/version_number.h>
+#include <qsboost/predef/make.h>
+
+/*`
+[heading `BOOST_LIB_STD_IBM`]
+
+[@http://www.ibm.com/software/awdtools/xlcpp/ IBM VACPP Standard C++] library.
+
+[table
+    [[__predef_symbol__] [__predef_version__]]
+
+    [[`__IBMCPP__`] [__predef_detection__]]
+    ]
+ */
+
+#define QSBOOST_LIB_STD_IBM QSBOOST_VERSION_NUMBER_NOT_AVAILABLE
+
+#if defined(__IBMCPP__)
+#   undef QSBOOST_LIB_STD_IBM
+#   define QSBOOST_LIB_STD_IBM QSBOOST_VERSION_NUMBER_AVAILABLE
+#endif
+
+#if QSBOOST_LIB_STD_IBM
+#   define QSBOOST_LIB_STD_IBM_AVAILABLE
+#endif
+
+#define QSBOOST_LIB_STD_IBM_NAME "IBM VACPP"
+
+#endif
+
+#include <qsboost/predef/detail/test.h>
+QSBOOST_PREDEF_DECLARE_TEST(QSBOOST_LIB_STD_IBM,QSBOOST_LIB_STD_IBM_NAME)

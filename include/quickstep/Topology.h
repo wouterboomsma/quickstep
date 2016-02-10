@@ -5,9 +5,11 @@
 #include <vector>
 #include <set>
 #include <array>
+#include <list>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/optional.hpp>
+//#include <boost/filesystem/path.hpp>
+#include <qsboost/optional/optional.hpp>
+//#include <optional.hpp>
 #include "prettyprint.hpp"
 
 #include "quickstep/Element.h"
@@ -172,7 +174,7 @@ public:
         return bonds;
     }
 
-    const boost::optional<Array3d> &get_unit_cell_dimensions() const {
+    const qsboost::optional<Array3d> &get_unit_cell_dimensions() const {
         return unit_cell_dimensions;
     }
 
@@ -202,7 +204,7 @@ public:
 
 private:
 
-    static void load_bond_definitions(const boost::filesystem::path &filename);
+    static void load_bond_definitions(const std::string &filename);
 
     static std::map<std::string, std::vector<std::pair<std::string, std::string> > > standard_bond_definitions;
 
@@ -210,7 +212,7 @@ private:
     //std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
     std::vector<std::set<int>> bond_adjacency_list;
 
-    boost::optional<Array3d> unit_cell_dimensions;
+    qsboost::optional<Array3d> unit_cell_dimensions;
 
     // Prevent copying
     Topology(const Topology &other) = delete;

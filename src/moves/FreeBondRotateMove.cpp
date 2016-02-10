@@ -134,7 +134,7 @@ void FreeBondRotateMove::prepareRotatableBonds(KinematicForest& kf)
 	}
 
 	if(rotatable_bonds.size()==0){
-		BOOST_THROW_EXCEPTION(FatalError() <<
+		QSBOOST_THROW_EXCEPTION(FatalError() <<
 				"FreeBondRotateMove: No rotatable bonds identified");
 	}
 

@@ -8,10 +8,14 @@ find_package(Eigen3 REQUIRED)
 message(STATUS "Found Eigen ${EIGEN3_VERSION} in ${EIGEN3_INCLUDE_DIR}")
 list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 
+## Optional
+#list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/optional")
+
 # Boost
-find_package(Boost COMPONENTS system filesystem REQUIRED)
-list(APPEND quickstep_EXTERNAL_LIBRARIES ${Boost_LIBRARIES})
-list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${Boost_INCLUDE_DIR})
+list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/boost_1_60_0")
+#find_package(Boost COMPONENTS system filesystem REQUIRED)
+#list(APPEND quickstep_EXTERNAL_LIBRARIES ${Boost_LIBRARIES})
+#list(APPEND quickstep_EXTERNAL_INCLUDE_DIRS ${Boost_INCLUDE_DIR})
 
 
 # Communicate variables to parent scope

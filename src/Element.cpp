@@ -1,6 +1,7 @@
 #include "quickstep/Element.h"
 #include <string>
 #include <algorithm>
+#include <qsboost/algorithm/string.hpp>
 #include "prettyprint.hpp"
 
 namespace quickstep {
@@ -10,7 +11,7 @@ using namespace units;
 Element::Element(unsigned int number, std::string name, std::string symbol, units::Mass_Da mass)
      : number(number), name(name), symbol(symbol), mass(mass) {
           
-     std::string symbol_upper = boost::to_upper_copy(boost::trim_copy(symbol));
+     std::string symbol_upper = qsboost::to_upper_copy(qsboost::trim_copy(symbol));
 
      // Make sure symbol is not already present
      assert(elements_by_symbol.count(symbol) == 0);
@@ -29,7 +30,7 @@ Element::Element(unsigned int number, std::string name, std::string symbol, unit
 
 
 const Element &Element::get_by_symbol(std::string symbol) {
-     std::string symbol_upper = boost::to_upper_copy(boost::trim_copy(symbol));
+     std::string symbol_upper = qsboost::to_upper_copy(qsboost::trim_copy(symbol));
      if (elements_by_symbol.count(symbol_upper))
           return elements_by_symbol.at(symbol_upper);
      else 

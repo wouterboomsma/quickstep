@@ -1,8 +1,8 @@
 #ifndef QUICKSTEP_FATALERROR_H_
 #define QUICKSTEP_FATALERROR_H_
 
-#include <boost/exception/exception.hpp>
-#include <boost/exception/info.hpp>
+#include <qsboost/exception/exception.hpp>
+#include <qsboost/exception/info.hpp>
 
 namespace quickstep {
 
@@ -10,14 +10,14 @@ namespace quickstep {
 //! Usage:
 //!     BOOST_THROW_EXCEPTION(value_error() << "message");
 //! It is also possible to add any additional information,
-//! using boost::error_info:
-//!     BOOST_THROW_EXCEPTION(value_error() << "message" << boost::errinfo_file_name("data.txt"));
-class FatalError: public virtual std::exception, public virtual boost::exception {
+//! using qsboost::error_info:
+//!     BOOST_THROW_EXCEPTION(value_error() << "message" << qsboost::errinfo_file_name("data.txt"));
+class FatalError: public virtual std::exception, public virtual qsboost::exception {
 public:
-     typedef boost::error_info<struct message, std::string> message_info;
+     typedef qsboost::error_info<struct message, std::string> message_info;
 
      virtual const char* what() const throw()  {
-          // if (std::string const * mi=boost::get_error_info<fatal_error::message_info>(*this) ) {
+          // if (std::string const * mi=qsboost::get_error_info<fatal_error::message_info>(*this) ) {
           //      return mi->c_str();
           // }
           // return "";
@@ -34,7 +34,7 @@ public:
 
      FatalError(const FatalError &other)
           : std::exception(other),
-            boost::exception(other),
+            qsboost::exception(other),
             message_stream(other.message_stream.str()),
             prefix(other.prefix),
             suffix(other.suffix) {

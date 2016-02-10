@@ -3,33 +3,38 @@
 #include <fstream>
 #include <vector>
 #include <array>
-#include <boost/units/cmath.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+//#include <boost/units/cmath.hpp>
+//#include <boost/filesystem/path.hpp>
+#include <qsboost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/xml_parser.hpp>
 #include <quickstep_config.h>
 #include "quickstep/FatalError.h"
 #include "quickstep/Selection.h"
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/operations.hpp>
+//#include <boost/filesystem/fstream.hpp>
+//#include <boost/filesystem/operations.hpp>
 #include "prettyprint.hpp"
-#include <boost/range/adaptor/transformed.hpp>
+#include <qsboost/range/adaptor/transformed.hpp>
 
 namespace quickstep {
 
 std::map<std::string, std::vector<std::pair<std::string, std::string> > > Topology::standard_bond_definitions = std::map<std::string, std::vector<std::pair<std::string, std::string> > >();
 
-void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
+void Topology::load_bond_definitions(const std::string &filename) {
 
-    if (!boost::filesystem::exists(filename)) {
+    //if (!qsboost::filesystem::exists(filename)) {
+    //    //    	throw "File not found";
+    //    BOOST_THROW_EXCEPTION(FatalError() <<
+    //                          "File not found: " << filename.string());
+    //}
+    if (!std::ifstream(filename).good()) {
         //    	throw "File not found";
-        BOOST_THROW_EXCEPTION(FatalError() <<
-                              "File not found: " << filename.string());
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
+                              "File not found: " << filename);
     }
 
-    boost::property_tree::ptree ptree;
-    std::ifstream ifs(filename.string());
-    boost::property_tree::read_xml(ifs, ptree);
+    qsboost::property_tree::ptree ptree;
+    std::ifstream ifs(filename);
+    qsboost::property_tree::read_xml(ifs, ptree);
 
     // First parse general entries
     for (auto res_node: ptree.get_child("Residues")) {
@@ -49,7 +54,7 @@ void Topology::load_bond_definitions(const boost::filesystem::path &filename) {
 
 void Topology::create_standard_bonds() {
     if (Topology::standard_bond_definitions.empty()) {
-        load_bond_definitions(boost::filesystem::path(QUICKSTEP_DATA_DIR) / "openmm" / "residues.xml");
+        load_bond_definitions(std::string(QUICKSTEP_DATA_DIR) + "/" + "openmm" + "/" + "residues.xml");
     }
 
     for (Chain &chain:chains) {
@@ -160,9 +165,9 @@ void Topology::create_disulfide_bonds(const Coordinates &positions) {
         for (int j = 0; j < i; ++j) {
             const Atom &sg2 = cyx_atoms_by_name[j].at("SG");
             auto &pos2 = positions.col(sg2.index);
-            //units::Length distance = boost::units::root<2>(boost::units::pow<2>(pos2[0] - pos1[0]) +
-            //                                               boost::units::pow<2>(pos2[1] - pos1[1]) +
-            //                                               boost::units::pow<2>(pos2[2] - pos1[2]));
+            //units::Length distance = qsboost::units::root<2>(qsboost::units::pow<2>(pos2[0] - pos1[0]) +
+            //                                               qsboost::units::pow<2>(pos2[1] - pos1[1]) +
+            //                                               qsboost::units::pow<2>(pos2[2] - pos1[2]));
             units::Length distance = (pos2-pos1).matrix().norm() * units::nm;
             if (distance < 0.3 * units::nm) {
                 this->add_bond(sg1, sg2);
@@ -197,9 +202,9 @@ const std::vector<std::reference_wrapper<const Topology::Residue>> &Topology::ge
                 std::string signature =
                         Element::create_bonded_signature(
                                 // Create vector of elements from atom vector
-                                boost::copy_range<std::vector<Element> >(
+                                qsboost::copy_range<std::vector<Element> >(
                                         residue.atom_indices |
-                                        boost::adaptors::transformed(
+                                        qsboost::adaptors::transformed(
                                                 [&](unsigned int atom_index) {
                                                     return get_atoms()[atom_index].element;
                                                 }
@@ -244,9 +249,9 @@ Selection Topology::select(const std::string &selection_string) {
 Topology filter(const Selection &selection, const Topology &source) {
     Topology new_topology;
     for (const Topology::Chain &chain: source.chains) {
-        boost::optional<Topology::Chain &> new_chain;
+        qsboost::optional<Topology::Chain &> new_chain;
         for (const Topology::Residue &residue: chain.residues) {
-            boost::optional<Topology::Residue &> new_residue;
+            qsboost::optional<Topology::Residue &> new_residue;
             for (const int atom_index: residue.atom_indices) {
                 const Topology::Atom &atom = source.atoms[atom_index];
                 if (selection.get_active_atom_map()[atom_index]) {

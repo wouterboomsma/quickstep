@@ -1,19 +1,19 @@
 #include "quickstep/moves/Move.h"
 #include "quickstep/MoveFactory.h"
 #include "quickstep/MoveParameters.h"
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/operations.hpp>
+//#include <boost/filesystem/fstream.hpp>
+//#include <boost/filesystem/operations.hpp>
 #include <quickstep/FatalError.h>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/range/adaptor/transformed.hpp>
+#include <qsboost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/xml_parser.hpp>
+#include <qsboost/range/adaptor/transformed.hpp>
 #include <quickstep/moves/CompositeMove.h>
 #include "quickstep_config.h"
 
 namespace quickstep {
 
 
-void parse_dofs(const boost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {}) {
+void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {}) {
     std::map<std::string, std::vector<MoveParameters::DofData>> dof_data;
     for (const auto &dofs_node: parameter_input) {
 
@@ -26,10 +26,10 @@ void parse_dofs(const boost::property_tree::ptree &parameter_input, std::vector<
         } else if (dofs_node.first == "Dihedral") {
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
-            boost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
-            boost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
-            boost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
-            boost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
+            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
+            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
+            qsboost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
+            qsboost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
 
             if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
                 if (dof_data.count(name) == 0)
@@ -78,16 +78,16 @@ void parse_dofs(const boost::property_tree::ptree &parameter_input, std::vector<
 
 std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::shared_ptr<Topology> &topology) {
 
-    auto filename = boost::filesystem::path(QUICKSTEP_DATA_DIR) / xml_filename;
+    std::string filename = std::string(QUICKSTEP_DATA_DIR) + "/" + xml_filename;
 
-    if (!boost::filesystem::exists(filename)) {
-        BOOST_THROW_EXCEPTION(FatalError() <<
-                              "File not found: " << filename.string());
+    if (!std::ifstream(filename).good()) {
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
+                              "File not found: " << filename);
     }
 
-    boost::filesystem::ifstream ifs(filename);
-    boost::property_tree::ptree parameter_input;
-    boost::property_tree::read_xml(ifs, parameter_input, boost::property_tree::xml_parser::trim_whitespace);
+    std::ifstream ifs(filename);
+    qsboost::property_tree::ptree parameter_input;
+    qsboost::property_tree::read_xml(ifs, parameter_input, qsboost::property_tree::xml_parser::trim_whitespace);
 
     MoveParameters parameters;
     parameters.parse_from_XML(parameter_input);
@@ -120,7 +120,7 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 //            double mass_attr = node_value.get<double>("<xmlattr>.mass");
 //
 //            Element element = Element::UNKNOWN;
-//            boost::optional<std::string> element_attr = node_value.get_optional<std::string>("<xmlattr>.element");
+//            qsboost::optional<std::string> element_attr = node_value.get_optional<std::string>("<xmlattr>.element");
 //            if (element_attr)
 //                element = Element::get_by_symbol(*element_attr);
 //
@@ -158,13 +158,13 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 //                residue_template.atoms.back().name = atom_name;
 //
 //                // Check if atom information is given through atom type
-//                boost::optional<std::string> atom_type = residue_node.second.get_optional<std::string>("<xmlattr>.type");
+//                qsboost::optional<std::string> atom_type = residue_node.second.get_optional<std::string>("<xmlattr>.type");
 //                if (atom_type)
 //                    residue_template.atoms.back().element = atom_types.at(*atom_type).element;
 //                else {
 //
 //                    Element element = Element::UNKNOWN;
-//                    boost::optional<std::string> element_attr = residue_node.second.get_optional<std::string>("<xmlattr>.element");
+//                    qsboost::optional<std::string> element_attr = residue_node.second.get_optional<std::string>("<xmlattr>.element");
 //                    if (element_attr)
 //                        element = Element::get_by_symbol(*element_attr);
 //                    residue_template.atoms.back().element = element;
@@ -194,9 +194,9 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 ////        std::string signature =
 ////                Element::create_bonded_signature(
 ////                        // Create vector of elements from atom vector
-////                        boost::copy_range<std::vector<Element> >(
+////                        qsboost::copy_range<std::vector<Element> >(
 ////                                template_data.atoms |
-////                                boost::adaptors::transformed(
+////                                qsboost::adaptors::transformed(
 ////                                        [](const TemplateAtomData &atom) {
 ////                                            return atom.element;
 ////                                        })),
@@ -204,9 +204,9 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
 //        std::string signature =
 //                Element::create_signature(
 //                        // Create vector of elements from atom vector
-//                        boost::copy_range<std::vector<Element> >(
+//                        qsboost::copy_range<std::vector<Element> >(
 //                                template_data.atoms |
-//                                boost::adaptors::transformed(
+//                                qsboost::adaptors::transformed(
 //                                        [](const TemplateAtomData &atom) {
 //                                            return atom.element;
 //                                        })));
@@ -233,7 +233,7 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
             return std::move(composite);
         }
     } else {
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "No MoveGenerator found for : " << node_name);
     }
 

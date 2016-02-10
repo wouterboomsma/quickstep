@@ -42,6 +42,12 @@ include_directories(${quickstep_INCLUDE_DIRS})
 # Traverse project sources
 add_subdirectory(src)
 
+# Update phaistos_LIBRARIES with phaistos library
+set(quickstep_LIBRARIES ${quickstep_LIBRARIES} quickstep)
+
+# Add test sources
+add_subdirectory(test)
+
 # Create the Config and Version files (in order to support find_package(quickstep)
 set(CONF_INCLUDE_DIRS ${quickstep_INCLUDE_DIRS})
 configure_file("${PROJECT_SOURCE_DIR}/cmake/quickstepConfig.cmake.in"

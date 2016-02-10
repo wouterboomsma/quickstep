@@ -1,7 +1,7 @@
 #include "quickstep/moves/GaussianMove.h"
 #include "quickstep/MoveParameters.h"
 #include "quickstep/FatalError.h"
-#include <boost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/ptree.hpp>
 #include <quickstep/random.h>
 #include <quickstep/dofs/DihedralDof.h>
 
@@ -11,7 +11,7 @@ namespace quickstep {
 // Register move generator with factory
 const GaussianMove::MoveGenerator::Registrator GaussianMove::MoveGenerator::registrator;
 
-std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const boost::property_tree::ptree &parameter_input,
+std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
                                                               const MoveParameters &move_parameters) {
     auto root_node = parameter_input.begin();
@@ -25,7 +25,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::string> dofs(dimension);
 
     double conversion_factor = 1.;
-    boost::optional<std::string> unit = root_node->second.get_optional<std::string>("unit");
+    qsboost::optional<std::string> unit = root_node->second.get_optional<std::string>("unit");
     if (unit) {
         // TODO: General strategy for units in parameters files
         if (*unit == "degr")
@@ -39,17 +39,17 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
         std::string mean_label_suffixed = mean_label + std::to_string(i+1);
         std::string dof_label_suffixed = dof_label + std::to_string(i+1);
 
-        boost::optional<double> mean_val;
+        qsboost::optional<double> mean_val;
         if ((        (mean_val = root_node->second.get_optional<double>(mean_label_suffixed))) ||
             (i==0 && (mean_val = root_node->second.get_optional<double>(mean_label)))) {
             mean(i) = *mean_val * conversion_factor;
         }
 
-        boost::optional<std::string> dof_val;
+        qsboost::optional<std::string> dof_val;
         if ((        (dof_val = root_node->second.get_optional<std::string>(dof_label_suffixed))) ||
             (i==0 && (dof_val = root_node->second.get_optional<std::string>(dof_label)))) {
         	if(*dof_val=="")
-        		BOOST_THROW_EXCEPTION(FatalError() << "Empty DOF while reading XML: "<<node_name);
+        		QSBOOST_THROW_EXCEPTION(FatalError() << "Empty DOF while reading XML: "<<node_name);
             dofs[i] = *dof_val;
         }
 
@@ -57,7 +57,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
             std::string stddev_label_suffixed1 = stddev_label + std::to_string(i + 1) + std::to_string(j + 1);
             std::string stddev_label_suffixed2 = stddev_label + std::to_string(j + 1) + std::to_string(i + 1);
 
-            boost::optional<double> sigma_val;
+            qsboost::optional<double> sigma_val;
             if ((          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed1))) ||
                 (          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed2))) ||
                 (i == 0 && (sigma_val = root_node->second.get_optional<double>(stddev_label)))) {
@@ -88,7 +88,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
                 std::vector<int> matches = move_parameters.match_residue_atoms(residue, topology.get_atoms(), template_data,
                                                                                topology.get_bond_adjacency_list());
                 if (matches.empty()) {
-                    BOOST_THROW_EXCEPTION(FatalError() <<
+                    QSBOOST_THROW_EXCEPTION(FatalError() <<
                                           "No residue template found for residue: "
                                           << std::to_string(residue.get().index + 1) << " ("
                                           << residue.get().name << "). "
@@ -103,7 +103,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
                         }
                     } else {
                         if (dof_atoms.size() != residue_matches.size()) {
-                            BOOST_THROW_EXCEPTION(FatalError() <<
+                            QSBOOST_THROW_EXCEPTION(FatalError() <<
                                                   "Different number of DOF matches for different dimensions in Gaussian: "
                                                   << dof << " (" << residue_matches.size() << ") vs "
                                                   << dofs[0]<< " (" << dof_atoms.size() << ")");

@@ -5,7 +5,7 @@ namespace quickstep {
 // Register move generator with factory
 const MixtureMove::MoveGenerator::Registrator MixtureMove::MoveGenerator::registrator;
 
-std::vector<std::unique_ptr<Move>> MixtureMove::MoveGenerator::operator()(const boost::property_tree::ptree &parameter_input,
+std::vector<std::unique_ptr<Move>> MixtureMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
 																		  Topology &topology,
 																		  const MoveParameters &move_parameters) {
     auto return_value = CompositeMove::MoveGenerator::operator()(parameter_input,

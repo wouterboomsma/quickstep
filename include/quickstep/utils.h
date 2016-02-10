@@ -1,8 +1,8 @@
 #ifndef QUICKSTEP_UTILS_H_
 #define QUICKSTEP_UTILS_H_
 
-#include <boost/exception/exception.hpp>
-#include <boost/exception/info.hpp>
+#include <qsboost/exception/exception.hpp>
+#include <qsboost/exception/info.hpp>
 #include <Eigen/Dense>
 
 namespace quickstep {

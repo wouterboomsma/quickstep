@@ -1,16 +1,17 @@
 #include "quickstep/MoveParameters.h"
+#include <qsboost/algorithm/string.hpp>
 //#include "quickstep/Topology.h"
 //#include "quickstep/Element.h"
 #include "quickstep/FatalError.h"
 //#include <boost/filesystem/fstream.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/ptree.hpp>
 //#include <boost/property_tree/xml_parser.hpp>
 //#include <boost/range/adaptor/transformed.hpp>
 
 namespace quickstep {
 
 
-void MoveParameters::parse_dofs(const boost::property_tree::ptree &parameter_input, std::vector<std::string> group_names) {
+void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names) {
     for (const auto &dofs_node: parameter_input) {
 
 //        std::cout << "DOF: " << dofs_node.first << " " << group_names << "\n";
@@ -26,7 +27,7 @@ void MoveParameters::parse_dofs(const boost::property_tree::ptree &parameter_inp
             MoveParameters::DofData data;
 
             std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
-            boost::split(data.residue_names, residue, boost::is_any_of("|"));
+            qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
 
             std::string atom1 = dofs_node.second.get<std::string>("<xmlattr>.atom1");
             std::string atom2 = dofs_node.second.get<std::string>("<xmlattr>.atom2");
@@ -35,7 +36,7 @@ void MoveParameters::parse_dofs(const boost::property_tree::ptree &parameter_inp
             data.atom_names = {atom1, atom2, atom3, atom4};
 
             if (dof_data.count(name) > 0) {
-                BOOST_THROW_EXCEPTION(FatalError() <<
+                QSBOOST_THROW_EXCEPTION(FatalError() <<
                                       "Multiple definitions of dof: " << name);
             }
             dof_data[name] = data;
@@ -57,15 +58,15 @@ void MoveParameters::parse_dofs(const boost::property_tree::ptree &parameter_inp
 //            }
         }
 
-//            boost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
-//            boost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
-//            boost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
-//            boost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
+//            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
+//            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
+//            qsboost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
+//            qsboost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
 //
-//            boost::optional<std::string> atom1 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom1");
-//            boost::optional<std::string> atom2 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom2");
-//            boost::optional<std::string> atom3 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom3");
-//            boost::optional<std::string> atom4 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom4");
+//            qsboost::optional<std::string> atom1 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom1");
+//            qsboost::optional<std::string> atom2 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom2");
+//            qsboost::optional<std::string> atom3 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom3");
+//            qsboost::optional<std::string> atom4 = dofs_node.second.get_optional<std::string>("<xmlattr>.atom4");
 //
 //            if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
 //                if (dof_data.count(name) == 0)
@@ -113,7 +114,7 @@ void MoveParameters::parse_dofs(const boost::property_tree::ptree &parameter_inp
 
 }
 
-void MoveParameters::parse_from_XML(const boost::property_tree::ptree &parameter_input) {
+void MoveParameters::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
     MolecularParameters::parse_from_XML(parameter_input);
 
     // dofs

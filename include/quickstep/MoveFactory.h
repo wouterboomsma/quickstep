@@ -1,7 +1,7 @@
 #ifndef QUICKSTEP_MOVEFACTORY_H
 #define QUICKSTEP_MOVEFACTORY_H
 
-#include <boost/property_tree/ptree_fwd.hpp>
+#include <qsboost/property_tree/ptree_fwd.hpp>
 #include <vector>
 #include "quickstep/utils.h"
 
@@ -16,7 +16,7 @@ public:
 
     class MoveGenerator {
     public:
-        virtual std::vector<std::unique_ptr<Move>> operator()(const boost::property_tree::ptree &parameter_input,
+        virtual std::vector<std::unique_ptr<Move>> operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
                                                               const MoveParameters &move_parameters) = 0;
     };

@@ -13,7 +13,7 @@
 #include <quickstep/moves/FreeBondRotateMove.h>
 #include <quickstep/MoveFactory.h>
 #include <quickstep/MoveParameters.h>
-#include <boost/property_tree/ptree.hpp>
+#include <qsboost/property_tree/ptree.hpp>
 
 namespace quickstep {
 
@@ -71,7 +71,7 @@ std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_
 // Register move generator with factory
 const CompositeMove::MoveGenerator::Registrator CompositeMove::MoveGenerator::registrator;
 
-std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(const boost::property_tree::ptree &parameter_input,
+std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
 															   Topology &topology,
 															   const MoveParameters &move_parameters) {
 	auto root_node = parameter_input.begin();
@@ -90,7 +90,7 @@ std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(cons
 		const std::string &node_name = child_node.first;
 		// std::cout << "Considering: " << node_name << "\n";
 		if (MoveFactory::get().has_generator(node_name)) {
-			boost::optional<double> child_total_weight_attr = child_node.second.begin()->second.get_optional<double>("weight");
+			qsboost::optional<double> child_total_weight_attr = child_node.second.begin()->second.get_optional<double>("weight");
 			double child_weight = 1.0;
 			if (child_total_weight_attr)
 				child_weight = *child_total_weight_attr;

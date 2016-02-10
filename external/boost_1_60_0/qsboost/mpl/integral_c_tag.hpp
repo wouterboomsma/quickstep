@@ -1,0 +1,26 @@
+
+#ifndef QSBOOST_MPL_INTEGRAL_C_TAG_HPP_INCLUDED
+#define QSBOOST_MPL_INTEGRAL_C_TAG_HPP_INCLUDED
+
+// Copyright Aleksey Gurtovoy 2004
+//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
+//
+// See http://www.boost.org/libs/mpl for documentation.
+
+// $Id$
+// $Date$
+// $Revision$
+
+
+#include <qsboost/mpl/aux_/adl_barrier.hpp>
+#include <qsboost/mpl/aux_/config/static_constant.hpp>
+
+QSBOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_OPEN
+struct integral_c_tag { QSBOOST_STATIC_CONSTANT(int, value = 0); };
+QSBOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_CLOSE
+QSBOOST_MPL_AUX_ADL_BARRIER_DECL(integral_c_tag)
+
+#endif // BOOST_MPL_INTEGRAL_C_TAG_HPP_INCLUDED

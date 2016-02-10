@@ -1,0 +1,80 @@
+// Copyright (C) 2005 Arkadiy Vertleyb
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef QSBOOST_TYPEOF_INTEGRAL_TEMPLATE_PARAM_HPP_INCLUDED
+#define QSBOOST_TYPEOF_INTEGRAL_TEMPLATE_PARAM_HPP_INCLUDED
+
+#define QSBOOST_TYPEOF_unsigned (unsigned)
+#define QSBOOST_TYPEOF_signed (signed)
+
+#define char_QSBOOST_TYPEOF (char)
+#define short_QSBOOST_TYPEOF (short)
+#define int_QSBOOST_TYPEOF (int)
+#define long_QSBOOST_TYPEOF (long)
+
+#define QSBOOST_TYPEOF_char_QSBOOST_TYPEOF (char)
+#define QSBOOST_TYPEOF_short_QSBOOST_TYPEOF (short)
+#define QSBOOST_TYPEOF_int_QSBOOST_TYPEOF (int)
+#define QSBOOST_TYPEOF_long_QSBOOST_TYPEOF (long)
+#define QSBOOST_TYPEOF_bool_QSBOOST_TYPEOF (bool)
+#define QSBOOST_TYPEOF_unsigned_QSBOOST_TYPEOF (unsigned)
+#define QSBOOST_TYPEOF_size_t_QSBOOST_TYPEOF (size_t)
+
+#define QSBOOST_TYPEOF_MAKE_OBJ_char          QSBOOST_TYPEOF_INTEGRAL_PARAM(char)
+#define QSBOOST_TYPEOF_MAKE_OBJ_short         QSBOOST_TYPEOF_INTEGRAL_PARAM(short)
+#define QSBOOST_TYPEOF_MAKE_OBJ_int           QSBOOST_TYPEOF_INTEGRAL_PARAM(int)
+#define QSBOOST_TYPEOF_MAKE_OBJ_long          QSBOOST_TYPEOF_INTEGRAL_PARAM(long)
+#define QSBOOST_TYPEOF_MAKE_OBJ_bool          QSBOOST_TYPEOF_INTEGRAL_PARAM(bool)
+#define QSBOOST_TYPEOF_MAKE_OBJ_unsigned      QSBOOST_TYPEOF_INTEGRAL_PARAM(unsigned)
+#define QSBOOST_TYPEOF_MAKE_OBJ_size_t        QSBOOST_TYPEOF_INTEGRAL_PARAM(size_t)
+#define QSBOOST_TYPEOF_MAKE_OBJ_unsignedchar  QSBOOST_TYPEOF_INTEGRAL_PARAM(unsigned char)
+#define QSBOOST_TYPEOF_MAKE_OBJ_unsignedshort QSBOOST_TYPEOF_INTEGRAL_PARAM(unsigned short)
+#define QSBOOST_TYPEOF_MAKE_OBJ_unsignedint   QSBOOST_TYPEOF_INTEGRAL_PARAM(unsigned int)
+#define QSBOOST_TYPEOF_MAKE_OBJ_unsignedlong  QSBOOST_TYPEOF_INTEGRAL_PARAM(unsigned long)
+#define QSBOOST_TYPEOF_MAKE_OBJ_signedchar    QSBOOST_TYPEOF_INTEGRAL_PARAM(signed char)
+#define QSBOOST_TYPEOF_MAKE_OBJ_signedshort   QSBOOST_TYPEOF_INTEGRAL_PARAM(signed short)
+#define QSBOOST_TYPEOF_MAKE_OBJ_signedint     QSBOOST_TYPEOF_INTEGRAL_PARAM(signed int)
+#define QSBOOST_TYPEOF_MAKE_OBJ_signedlong    QSBOOST_TYPEOF_INTEGRAL_PARAM(signed long)
+#define QSBOOST_TYPEOF_MAKE_OBJ_integral(x)   QSBOOST_TYPEOF_INTEGRAL_PARAM(x)
+
+#define QSBOOST_TYPEOF_INTEGRAL(X) integral(X) QSBOOST_TYPEOF_EAT
+#define QSBOOST_TYPEOF_EAT_QSBOOST_TYPEOF
+#define QSBOOST_TYPEOF_integral(X) (integral(X))
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM(Type)\
+    (INTEGRAL_PARAM)\
+    (Type)
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(Param)\
+    QSBOOST_PP_SEQ_ELEM(1, Param)
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_EXPANDTYPE(Param)\
+    QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(Param)
+
+// INTEGRAL_PARAM "virtual functions" implementation
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_ENCODE(This, n)\
+    typedef typename qsboost::type_of::encode_integral<\
+        QSBOOST_PP_CAT(V, n),\
+        QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(This),\
+        QSBOOST_PP_CAT(P, n)\
+    >::type QSBOOST_PP_CAT(V, QSBOOST_PP_INC(n)); 
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_DECODE(This, n)\
+    typedef qsboost::type_of::decode_integral<QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(This), QSBOOST_PP_CAT(iter, n)> QSBOOST_PP_CAT(d, n);\
+    static const QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(This) QSBOOST_PP_CAT(P, n) = QSBOOST_PP_CAT(d, n)::value;\
+    typedef typename QSBOOST_PP_CAT(d, n)::iter QSBOOST_PP_CAT(iter, QSBOOST_PP_INC(n));
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_PLACEHOLDER(Param)\
+    (QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(Param))0
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_DECLARATION_TYPE(Param)\
+    QSBOOST_TYPEOF_INTEGRAL_PARAM_GETTYPE(Param)
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_PLACEHOLDER_TYPES(Param, n)\
+    QSBOOST_PP_CAT(T,n)
+
+#define QSBOOST_TYPEOF_INTEGRAL_PARAM_ISTEMPLATE 0
+
+#endif//BOOST_TYPEOF_INTEGRAL_TEMPLATE_PARAM_HPP_INCLUDED

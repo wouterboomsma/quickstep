@@ -3,7 +3,7 @@
 
 #include "quickstep/moves/Move.h"
 #include "quickstep/MoveFactory.h"
-#include <boost/property_tree/ptree_fwd.hpp>
+#include <qsboost/property_tree/ptree_fwd.hpp>
 #include <quickstep/dofs/Dof.h>
 
 namespace quickstep {
@@ -15,7 +15,7 @@ public:
 
     class MoveGenerator: public MoveFactory::MoveGenerator {
     public:
-        virtual std::vector<std::unique_ptr<Move>> operator()(const boost::property_tree::ptree &parameter_input,
+        virtual std::vector<std::unique_ptr<Move>> operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
                                                               const MoveParameters &move_parameters);
 

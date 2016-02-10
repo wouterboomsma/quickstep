@@ -1,0 +1,33 @@
+
+//  (C) Copyright Dave Abrahams, Steve Cleary, Beman Dawes, Howard
+//  Hinnant & John Maddock 2000.  
+//  Use, modification and distribution are subject to the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt).
+//
+//  See http://www.boost.org/libs/type_traits for most recent version including documentation.
+
+
+#ifndef QSBOOST_TT_REMOVE_CONST_HPP_INCLUDED
+#define QSBOOST_TT_REMOVE_CONST_HPP_INCLUDED
+
+#include <qsboost/config.hpp>
+#include <cstddef>
+#include <qsboost/detail/workaround.hpp>
+
+namespace qsboost {
+
+   //  convert a type T to a non-cv-qualified type - remove_const<T>
+   template <class T> struct remove_const{ typedef T type; };
+   template <class T> struct remove_const<T const>{ typedef T type; };
+
+#if !defined(QSBOOST_NO_ARRAY_TYPE_SPECIALIZATIONS)
+   template <class T, std::size_t N> struct remove_const<T const[N]>{ typedef T type[N]; };
+#if !QSBOOST_WORKAROUND(__BORLANDC__, < 0x600) && !defined(__IBMCPP__) &&  !QSBOOST_WORKAROUND(__DMC__, QSBOOST_TESTED_AT(0x840))
+   template <class T> struct remove_const<T const[]>{ typedef T type[]; };
+#endif
+#endif
+
+} // namespace boost
+
+#endif // BOOST_TT_REMOVE_CONST_HPP_INCLUDED

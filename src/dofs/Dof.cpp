@@ -11,7 +11,7 @@ std::unique_ptr<Dof> Dof::construct(KinematicForest &forest,
                                     const std::vector<std::string> &atom_names) {
 
     if (!atom_names.empty() && !forest.atom_matches_names(atom_indices.back(), atom_names)) {
-        BOOST_THROW_EXCEPTION(FatalError() <<
+        QSBOOST_THROW_EXCEPTION(FatalError() <<
                               "Dof (" << atom_names << ") is not found in KinematicForest.");
     }
 
@@ -30,7 +30,7 @@ std::unique_ptr<Dof> Dof::construct(KinematicForest &forest,
                                                  ((forest.get_parent(atom_indices[0]) == atom_indices[1]) ?
                                                   atom_indices[0] : atom_indices[3]));
         default:
-            BOOST_THROW_EXCEPTION(FatalError() <<
+            QSBOOST_THROW_EXCEPTION(FatalError() <<
                                   "Unexpected number of atoms specified for DoF (" << atom_indices.size() << ")");
     }
 }
