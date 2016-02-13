@@ -44,7 +44,7 @@ struct Node {
  *
  *  The class is constructed with one of the derived
  *  nodes, which is stored internally using a inner Base class.
- *  This means nodes can be passe by value while retaining
+ *  This means nodes can be passed by value while retaining
  *  their polymorphic properties.
  *
  *  */
@@ -446,14 +446,14 @@ struct Grammar: qsboost::spirit::qi::grammar<Iterator, AnyNode(), qsboost::spiri
                 qsboost::spirit::qi::debug(*this);
             return *this;
         }
-        template <typename Expr>
-        Rule & operator%=(Expr const& expr)
-        {
-            static_cast<RuleType&>(*this)%=expr;
-            if (debug)
-                qsboost::spirit::qi::debug(*this);
-            return *this;
-        }
+        //template <typename Expr>
+        //Rule & operator%=(Expr const& expr)
+        //{
+        //    static_cast<RuleType&>(*this)%=expr;
+        //    if (debug)
+        //        qsboost::spirit::qi::debug(*this);
+        //    return *this;
+        //}
         template <typename Expr>
         Rule & operator%=(Expr && expr)
         {
@@ -543,15 +543,18 @@ struct Grammar: qsboost::spirit::qi::grammar<Iterator, AnyNode(), qsboost::spiri
                   range_condition | implicit_equality | bonded;
 
         // Precedence: not, and, or
-        or_op = ( and_op >> (ascii::string("or") |
-                             ascii::string("||")) >> and_op)   [_val = phx::construct<BinaryOp>(_0)]
-                | and_op                                       [_val = qi::labels::_1] ;
-        and_op = ( not_op >> (ascii::string("and") |
-                              ascii::string("||")) >> not_op)  [_val = phx::construct<BinaryOp>(_0)]
-                 | expression                                  [_val = qi::labels::_1] ;
-        not_op = ( (ascii::string("not") |
-                    ascii::string("!"))  > expression)         [_val = phx::construct<UnaryOp>(_0)]
-                 | expression                                  [_val = qi::labels::_1] ;
+        or_op =  and_op                                       [_val = qi::labels::_1]
+                 | ( and_op > (ascii::string("or") |
+                               ascii::string("||")) > and_op) [_val = phx::construct<BinaryOp>(_0)];
+
+        and_op = not_op                                       [_val = qi::labels::_1]
+                 | ( not_op > (ascii::string("and") |
+                              ascii::string("&&")) > not_op)  [_val = phx::construct<BinaryOp>(_0)];
+
+        not_op = expression                                   [_val = qi::labels::_1]
+                 | ( (ascii::string("not") |
+                      ascii::string("!"))  > expression)      [_val = phx::construct<UnaryOp>(_0)];
+
 
         logical_expression = or_op.alias();
 

@@ -388,7 +388,7 @@ std::string MolecularParameters::find_match_errors(const Topology::Residue &resi
         num_best_match_missing_heavy_atoms = num_missing_heavy_atoms;
         num_best_match_extra_atoms = (int) std::count_if(residue_template.atoms.begin(),
                                                          residue_template.atoms.end(),
-                                                         [](const decltype(*residue_template.atoms.begin()) &atom){return atom.element == Element::UNKNOWN;});
+                                                         [](const auto &atom){return atom.element == Element::UNKNOWN;});
     }
 
     if (num_best_match_missing_atoms == 0) {
