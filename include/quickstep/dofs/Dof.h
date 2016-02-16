@@ -2,6 +2,7 @@
 #define QUICKSTEP_DOF_H
 
 #include <vector>
+#include <memory>
 
 namespace quickstep {
 
