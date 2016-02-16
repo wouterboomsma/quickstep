@@ -22,7 +22,7 @@ static inline void check_DenseIndex_is_signed() {
 }
 
 } // end namespace internal
-  
+
 /** \class DenseBase
   * \ingroup Core_Module
   *
