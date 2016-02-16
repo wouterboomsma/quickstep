@@ -446,21 +446,21 @@ struct Grammar: qsboost::spirit::qi::grammar<Iterator, AnyNode(), qsboost::spiri
                 qsboost::spirit::qi::debug(*this);
             return *this;
         }
-        //template <typename Expr>
-        //Rule & operator%=(Expr const& expr)
-        //{
-        //    static_cast<RuleType&>(*this)%=expr;
-        //    if (debug)
-        //        qsboost::spirit::qi::debug(*this);
-        //    return *this;
-        //}
+        // template <typename Expr>
+        // Rule & operator%=(const Expr &expr)
+        // {
+        //     static_cast<RuleType&>(*this)%=expr;
+        //     if (debug)
+        //         qsboost::spirit::qi::debug(*this);
+        //     return *this;
+        // }
         template <typename Expr>
-        Rule & operator%=(Expr && expr)
+        friend Rule & operator%=(Rule &r, Expr && expr)
         {
-            static_cast<RuleType&>(*this) %= std::move(expr);
+            static_cast<RuleType&>(r) %= std::move(expr);
             if (debug)
-                qsboost::spirit::qi::debug(*this);
-            return *this;
+                qsboost::spirit::qi::debug(r);
+            return r;
         }
     private:
         static constexpr bool debug = false;
