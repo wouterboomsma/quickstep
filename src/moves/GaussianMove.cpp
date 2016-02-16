@@ -115,7 +115,6 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
                 for (unsigned int i = 0; i < matches.size(); ++i) {
                     match_atoms.insert(std::make_pair(matches[i], std::ref(topology.get_atoms()[residue.get().atom_indices[i]])));
                 }
-                // std::vector<const std::reference_wrapper<const Topology::Atom>> atoms;
                 for (unsigned int d=0; d<dof_data.atom_names.size(); ++d) {
                     dof_atoms[i][dof_index][d] = match_atoms.at(template_data.atom_name_lookup.at(dof_data.atom_names[d])).get().index;
                 }
