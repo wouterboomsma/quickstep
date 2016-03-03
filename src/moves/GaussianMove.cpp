@@ -2,7 +2,7 @@
 #include "quickstep/MoveParameters.h"
 #include "quickstep/FatalError.h"
 #include <qsboost/property_tree/ptree.hpp>
-#include <quickstep/random.h>
+#include "quickstep/random.h"
 #include <quickstep/dofs/DihedralDof.h>
 
 namespace quickstep {
