@@ -34,13 +34,14 @@ public:
 
 	virtual Eigen::Array<double, 2, 1> calc_log_bias_impl(const MoveInfo &move_info) const;
 
-	void set_log_bias_delegate(Move *move);
+	virtual void set_log_bias_delegate(Move *move);
 
 protected:
 
     // In certain cases, a move cannot determine its own bias, and needs to consult its parent.
     // In cases where this is true (e.g. MixtureMove), this variable points to the relevant parent.
     Move *log_bias_delegate;
+
 };
 
 } /* namespace quickstep */

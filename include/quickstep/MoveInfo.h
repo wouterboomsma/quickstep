@@ -57,7 +57,6 @@ public:
 //	std::list<SubTree> affected_atoms;
 //    std::list< std::pair<DOFIndex, double> > dof_deltas;
 
-    // TODO: find a compromise between dof_deltas and dof_deltas2
     //std::vector<std::list<std::pair<double, std::vector<int> > > > dof_deltas2;
     std::vector<std::pair<std::shared_ptr<Dof>, double> > dof_deltas;
     //std::reference_wrapper<const KinematicForest> forest;  // Ended up including forest here, to make information retrieval possible in calc_log_bias
