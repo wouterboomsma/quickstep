@@ -29,7 +29,8 @@ public:
 
     GaussianMove(const Eigen::VectorXd &mu, const Eigen::MatrixXd &cov,
                  std::vector<std::vector<int>> &dof_atoms,
-                 std::vector<std::vector<std::string>> &dof_atom_names);
+                 std::vector<std::vector<std::string>> &dof_atom_names,
+                 bool position_absolute=false);
 
 
     virtual MoveInfo propose(KinematicForest &forest);
@@ -52,6 +53,9 @@ private:
     std::vector<std::vector<int>> dof_atoms;
     std::vector<std::vector<std::string>> dof_atom_names;
     std::vector<std::unique_ptr<Dof>> dofs;
+
+    // Whether positioning should be done absolutely, or relative to the current position
+    bool position_absolute;
     //KinematicForest& last_used_forest;
 };
 

@@ -22,6 +22,8 @@ public:
 	MoveInfo propose(KinematicForest&);
 //	void step_fractional(KinematicForest&, MoveInfo&, double fraction);
 
+	MoveInfo *get_current_move_info();
+
 private:
 	std::unique_ptr<MoveInfo> current_move_info;
 

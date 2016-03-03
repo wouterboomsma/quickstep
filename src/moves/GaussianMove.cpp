@@ -32,6 +32,13 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
             conversion_factor = M_PI/180.;
     }
 
+    bool position_absolute = false;
+    qsboost::optional<std::string> position = root_node->second.get_optional<std::string>("position");
+    if (position) {
+        if (*position == "absolute")
+            position_absolute = true;
+    }
+
     std::string mean_label = "mean";
     std::string dof_label = "dof";
     std::string stddev_label = "stddev";
@@ -126,7 +133,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
         // std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
-        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names)));
+        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names, position_absolute)));
     }
 
     return std::move(return_value);
@@ -164,14 +171,18 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         sample[d] = std::fmod(std::fmod(sample[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
         //std::cout << "New torsion: " << sample[d] << "(" << mean << ")    previous: " << dofs[d]->get_value() << "\n";
         //std::cout << "New torsion: " << new_value[d];
-        double value = sample[d] - dofs[d]->get_value();
-        //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
-        //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
-        value += (value>M_PI) ? -2*M_PI : (value<-M_PI) ? 2*M_PI : 0; // Might not strictly be necessary
-//        delta_vals[d] = a;
-//        dofs[d]->add_value(a);
-        //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
-        //DOFIndex di = dofs[d]->get_dofindex();
+
+        double value = sample[d];
+        if (this->position_absolute) {
+            value = sample[d] - dofs[d]->get_value();
+            //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
+            //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
+            value += (value > M_PI) ? -2 * M_PI : (value < -M_PI) ? 2 * M_PI : 0; // Might not strictly be necessary
+            //        delta_vals[d] = a;
+            //        dofs[d]->add_value(a);
+            //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
+            //DOFIndex di = dofs[d]->get_dofindex();
+        }
         int dof_atom_index = dofs[d]->get_atom_index();
         //ret.dof_deltas.push_back( std::make_pair( di, a ) );
 
@@ -233,13 +244,15 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
 GaussianMove::GaussianMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &cov,
                            std::vector<std::vector<int>> &dof_atoms,
-                           std::vector<std::vector<std::string>> &dof_atom_names)
+                           std::vector<std::vector<std::string>> &dof_atom_names,
+                           bool position_absolute)
         : mean(mean),
           inverse_cov(cov.inverse()),
           //old_value(mean.rows()),
           //new_value(mean.rows()),
           dof_atoms(dof_atoms),
-          dof_atom_names(dof_atom_names) {
+          dof_atom_names(dof_atom_names),
+          position_absolute(position_absolute){
 
 
 //    std::cout << "covariance: " << cov << "\n";
@@ -263,8 +276,6 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
 
     //std::cout << "mean: " << mean << "   cov: " << inverse_cov.inverse()<< "\n";
 
-
-    int k = mean.rows();
     //Eigen::VectorXd x_new = new_value - mean;
     //x_new = x_new.array().min(2*M_PI-x_new.array());
     //Eigen::VectorXd x_old = old_value - mean;
@@ -276,31 +287,33 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
     //std::cout << "Old value likelihood: " << old_value << " " << mean << " " << inverse_cov.inverse() << " " << inverse_cov << " " << log_likelihood_old << "\n";
     //std::cout << "New value likelihood: " << new_value << " " << mean << " " << inverse_cov.inverse() << " " << inverse_cov << " " << log_likelihood_new << "\n";
 
-    Eigen::VectorXd new_value(move_info.dof_deltas.size());
-    Eigen::VectorXd old_value(move_info.dof_deltas.size());
-    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
-        new_value[d] = move_info.dof_deltas[d].first->get_value();
-        //new_value[d] = move_info.forest.get().get_torsion(move_info.dof_deltas[d].front().second[0]).value();
-    }
-
     Eigen::VectorXd delta(move_info.dof_deltas.size());
     for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
         delta[d] = move_info.dof_deltas[d].second;
     }
-    old_value = new_value - delta;
-    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
-        //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
-        old_value[d] = std::fmod(std::fmod(old_value[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
+
+    Eigen::VectorXd new_value = delta;
+    Eigen::VectorXd old_value = -delta;
+    if (position_absolute) {
+        for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+            new_value[d] = move_info.dof_deltas[d].first->get_value();
+        }
+
+        old_value = new_value - delta;
+        for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+            //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
+            old_value[d] = std::fmod(std::fmod(old_value[d] + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
+        }
     }
 
     //std::cout << "1: " << new_value << " 2: " << mean << " !!" << std::endl;
 
     //{
-        Eigen::VectorXd x_new = new_value - mean;
+    Eigen::VectorXd x_new = new_value - mean;
     //std::cout << "x_new: " << x_new << "\n";
         //x_new = x_new.array().min(2 * M_PI - x_new.array());
         //x_new += ((x_new.array()>M_PI).select(-2*M_PI, 0.) + (x_new.array()<-M_PI).select(+2*M_PI, 0.))
-        Eigen::VectorXd x_old = old_value - mean;
+    Eigen::VectorXd x_old = old_value - mean;
     for (unsigned int d=0; d<x_new.size(); ++d) {
         x_new[d] += (x_new[d]>M_PI) ? -2*M_PI : (x_new[d]<-M_PI) ? 2*M_PI : 0;
         x_old[d] += (x_old[d]>M_PI) ? -2*M_PI : (x_old[d]<-M_PI) ? 2*M_PI : 0;
@@ -310,10 +323,11 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
 
             //x_old = x_old.array().min(2 * M_PI - x_old.array());
         //x_old += ((x_old>M_PI).select(-2*M_PI, 0.) + (x_old<-M_PI).select(+2*M_PI, 0.))
+    int k = mean.rows();
     double log_likelihood_new = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
                               -0.5 * (x_new).dot(inverse_cov * (x_new)));
-        double log_likelihood_old = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
-                              -0.5 * (x_old).dot(inverse_cov * (x_old)));
+    double log_likelihood_old = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
+                                 -0.5 * (x_old).dot(inverse_cov * (x_old)));
         //std::cout << "*Old value likelihood: " << old_value.transpose() << " " << mean.transpose() << " " << log_likelihood_old << "\n";
         //std::cout << "*New value likelihood: " << new_value.transpose() << " " << mean.transpose() << " " << log_likelihood_new << "\n";
     return Eigen::Array<double, 2, 1>(log_likelihood_old, log_likelihood_new);

@@ -50,12 +50,13 @@ MoveInfo CompositeMove::propose(KinematicForest& kf)
 //}
 
 //void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
-void CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
+Move *CompositeMove::add_move(std::unique_ptr<Move> m, double weight)
 {
 	moves.push_back( std::move(m) );
 
 	double weightSum = accum_weights.empty()?0.0:accum_weights[accum_weights.size()-1];
 	accum_weights.push_back(weightSum+weight);
+	return moves.back().get();
 }
 
 std::unique_ptr<CompositeMove> CompositeMove::create_standard_move(std::default_random_engine &rand_eng)
@@ -88,8 +89,9 @@ std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(cons
 
 	for (const auto &child_node: parameter_input) {
 		const std::string &node_name = child_node.first;
-		// std::cout << "Considering: " << node_name << "\n";
-		if (MoveFactory::get().has_generator(node_name)) {
+		if (node_name == "<xmlattr>" || node_name == "<xmlcomment>" || node_name == "Residues" || node_name == "Dofs") {
+			continue;
+		} else if (MoveFactory::get().has_generator(node_name)) {
 			qsboost::optional<double> child_total_weight_attr = child_node.second.begin()->second.get_optional<double>("weight");
 			double child_weight = 1.0;
 			if (child_total_weight_attr)
@@ -102,6 +104,9 @@ std::vector<std::unique_ptr<Move>> CompositeMove::MoveGenerator::operator()(cons
 				move->add_move(std::move(child_move), child_weight);
 				// std::cout << "Added move with weight " << child_weight << " " << (child_total_weight_attr?*child_total_weight_attr:-1.) << " " << child_moves.size() << "\n";
 			}
+		} else {
+			QSBOOST_THROW_EXCEPTION(FatalError() <<
+									"No MoveGenerator found for : " << node_name);
 		}
 	}
 	std::vector<std::unique_ptr<Move>> return_value;

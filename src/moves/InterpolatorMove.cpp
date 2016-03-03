@@ -28,10 +28,12 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 	if(current_step==0){
 		current_move_info = std::make_unique<MoveInfo>( std::move(child_move->propose(kf)) );
 
-		//Scale each dof-change by a facter 1/interpolation_steps
-		for( auto &dd: current_move_info->dof_deltas){
-		    dd.second/=interpolation_steps;
-		}
+	}
+
+	//Scale each dof-change by a facter 1/interpolation_steps
+	MoveInfo move_info(*current_move_info.get());
+	for( auto &dd: move_info.dof_deltas){
+		dd.second/=interpolation_steps;
 	}
 
 //	child_move->step_fractional(kf, *(current_move_info.get()), 1.0/interpolation_steps);
@@ -41,7 +43,7 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 
 	current_step++;
 
-	return *(current_move_info.get());
+	return move_info;
 }
 
 //void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
@@ -50,4 +52,7 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 //	//TODO: Throw proper exception
 //}
 
+MoveInfo *InterpolatorMove::get_current_move_info() {
+	return current_move_info.get();
+}
 } /* namespace quickstep */

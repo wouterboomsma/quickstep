@@ -48,7 +48,7 @@ public:
 //
 //	void step_fractional(KinematicForest&, MoveInfo&, double);
 
-	void add_move(std::unique_ptr<Move> c, double weight=1.);
+	Move *add_move(std::unique_ptr<Move> c, double weight=1.);
 
 	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 

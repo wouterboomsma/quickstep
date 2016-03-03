@@ -18,6 +18,7 @@ add_library(quickstep
     moves/StdDoFMove.cpp
     moves/FreeBondRotateMove.cpp
     moves/InterpolatorMove.cpp
+    moves/SymmetrizedMove.cpp
     moves/GaussianMove.cpp
     moves/Move.cpp
     MolecularParameters.cpp
