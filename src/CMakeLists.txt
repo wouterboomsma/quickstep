@@ -29,6 +29,7 @@ add_library(quickstep
     dofs/LengthDof.cpp
     dofs/AngleDof.cpp
     dofs/DihedralDof.cpp
+    random.cpp
 
     ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/DisjointSet.h
