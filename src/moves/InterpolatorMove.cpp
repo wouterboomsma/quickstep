@@ -27,7 +27,6 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 
 	if(current_step==0){
 		current_move_info = std::make_unique<MoveInfo>( std::move(child_move->propose(kf)) );
-		std::cerr << "proposed jump in dof: " << current_move_info->dof_deltas[0].second << " with " << interpolation_steps <<" NCMC steps \n";
 
 	}
 
