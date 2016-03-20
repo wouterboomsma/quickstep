@@ -85,6 +85,7 @@ typedef qsboost::units::scaled_base_unit<
 typedef PicosecondBaseUnit::unit_type PicosecondUnit;
 QSBOOST_UNITS_STATIC_CONSTANT(picosecond, PicosecondUnit);
 QSBOOST_UNITS_STATIC_CONSTANT(picoseconds, PicosecondUnit);
+QSBOOST_UNITS_STATIC_CONSTANT(ps, PicosecondUnit);
 typedef qsboost::units::quantity<PicosecondUnit> Time_ps;
 
 // Femtosecond
@@ -94,6 +95,7 @@ typedef qsboost::units::scaled_base_unit<
 typedef FemtosecondBaseUnit::unit_type FemtosecondUnit;
 QSBOOST_UNITS_STATIC_CONSTANT(femtosecond, FemtosecondUnit);
 QSBOOST_UNITS_STATIC_CONSTANT(femtoseconds, FemtosecondUnit);
+QSBOOST_UNITS_STATIC_CONSTANT(fs, FemtosecondUnit);
 typedef qsboost::units::quantity<FemtosecondUnit> Time_fs;
 
 
