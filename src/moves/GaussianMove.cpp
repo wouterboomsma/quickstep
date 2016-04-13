@@ -193,7 +193,8 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
         // The primary dof always appears first
         //ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{dof_atom_index, parent_index, atom_index3, atom_index4}));
-        ret.dof_deltas.push_back(std::make_pair(std::make_unique<DihedralDof>(forest, dof_atom_index), value));
+        //ret.dof_deltas.push_back(std::make_pair(std::make_unique<DihedralDof>(forest, dof_atom_index), value));
+        ret.dof_deltas.push_back(std::make_pair(dofs[d], value));
         //ret.atoms.push_back({(int)di.atom_index, parent_index, atom_index3, atom_index4});
 
 

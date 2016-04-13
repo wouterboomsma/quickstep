@@ -52,7 +52,7 @@ private:
 
     std::vector<std::vector<int>> dof_atoms;
     std::vector<std::vector<std::string>> dof_atom_names;
-    std::vector<std::unique_ptr<Dof>> dofs;
+    std::vector<std::shared_ptr<Dof>> dofs;
 
     // Whether positioning should be done absolutely, or relative to the current position
     bool position_absolute;

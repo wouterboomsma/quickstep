@@ -13,67 +13,108 @@
 namespace quickstep {
 
 
-void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {}) {
-    std::map<std::string, std::vector<MoveParameters::DofData>> dof_data;
-    for (const auto &dofs_node: parameter_input) {
-
-//        std::cout << "DOF: " << dofs_node.first << " " << group_names << "\n";
-        if (dofs_node.first == "Group") {
-            std::vector<std::string> group_names_local = group_names;
-            group_names_local.push_back(dofs_node.second.get<std::string>("<xmlattr>.name"));
-            parse_dofs(dofs_node.second, group_names_local);
-
-        } else if (dofs_node.first == "Dihedral") {
-
-            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
-            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
-            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
-            qsboost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
-            qsboost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
-
-            if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
-                if (dof_data.count(name) == 0)
-                    dof_data[name] = {};
-                MoveParameters::DofData data;
-                data.atom_types = {*atomtype1, *atomtype2, *atomtype3, *atomtype4};
-
-                dof_data.at(name).push_back(data);
-
-                for (const std::string &group_name: group_names) {
-                    if (dof_data.count(group_name) == 0)
-                        dof_data[group_name] = {};
-                    dof_data.at(group_name).push_back(data);
-                }
-            }
-        }
-//        TemplateData &residue_template =
-//                (templates.insert(std::make_pair(residue_name, TemplateData({residue_name})))).first->second;
+//void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {}) {
+//    std::map<std::string, std::vector<MoveParameters::DofData>> dof_data;
+//    for (const auto &dofs_node: parameter_input) {
 //
-//        for (const auto &residue_node: residues_node.second) {
+////        std::cout << "DOF: " << dofs_node.first << " " << group_names << "\n";
+//        if (dofs_node.first == "Group") {
+//            std::vector<std::string> group_names_local = group_names;
+//            group_names_local.push_back(dofs_node.second.get<std::string>("<xmlattr>.name"));
+//            parse_dofs(dofs_node.second, group_names_local);
 //
-//            if (residue_node.first == "Atom") {
-//                std::string atom_name = residue_node.second.get<std::string>("<xmlattr>.name");
-//                std::string atom_type = residue_node.second.get<std::string>("<xmlattr>.type");
-//                residue_template.atoms.push_back(TemplateAtomData());
-//                residue_template.atoms.back().name = atom_name;
-//                residue_template.atoms.back().type = atom_type;
-//                residue_template.atoms.back().element = atom_types.at(atom_type).element;
+//        } else if (dofs_node.first == "Dihedral") {
 //
-//            } else if (residue_node.first != "<xmlattr>") {
-//                BOOST_THROW_EXCEPTION(FatalError() <<
-//                                      "Unknown node attribute in Residues entry: " << residue_node.first);
+//            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
+//            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
+//            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
+//            qsboost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
+//            qsboost::optional<int> atomtype4 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype4");
+//
+//            if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
+//                if (dof_data.count(name) == 0)
+//                    dof_data[name] = {};
+//                MoveParameters::DofData data;
+//                data.atom_types = {*atomtype1, *atomtype2, *atomtype3, *atomtype4};
+//
+//                dof_data.at(name).push_back(data);
+//
+//                for (const std::string &group_name: group_names) {
+//                    if (dof_data.count(group_name) == 0)
+//                        dof_data[group_name] = {};
+//                    dof_data.at(group_name).push_back(data);
+//                }
+//            }
+//        } else if (dofs_node.first == "BondAngle") {
+//
+//            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
+//            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
+//            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
+//            qsboost::optional<int> atomtype3 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype3");
+//
+//            if (atomtype1 && atomtype2 && atomtype3) {
+//                if (dof_data.count(name) == 0)
+//                    dof_data[name] = {};
+//                MoveParameters::DofData data;
+//                data.atom_types = {*atomtype1, *atomtype2, *atomtype3};
+//
+//                dof_data.at(name).push_back(data);
+//
+//                for (const std::string &group_name: group_names) {
+//                    if (dof_data.count(group_name) == 0)
+//                        dof_data[group_name] = {};
+//                    dof_data.at(group_name).push_back(data);
+//                }
+//            }
+//        } else if (dofs_node.first == "BondLength") {
+//
+//            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
+//            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
+//            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
+//
+//            if (atomtype1 && atomtype2) {
+//                if (dof_data.count(name) == 0)
+//                    dof_data[name] = {};
+//                MoveParameters::DofData data;
+//                data.atom_types = {*atomtype1, *atomtype2};
+//
+//                dof_data.at(name).push_back(data);
+//
+//                for (const std::string &group_name: group_names) {
+//                    if (dof_data.count(group_name) == 0)
+//                        dof_data[group_name] = {};
+//                    dof_data.at(group_name).push_back(data);
+//                }
 //            }
 //        }
-    }
-
-//    for (const auto &val: dof_data) {
-//        std::cout << val.first << " ";
-//        for (const auto &val2: val.second) {
-//            std::cout << val2.atom_types  << "\n";
-//        }
+////        TemplateData &residue_template =
+////                (templates.insert(std::make_pair(residue_name, TemplateData({residue_name})))).first->second;
+////
+////        for (const auto &residue_node: residues_node.second) {
+////
+////            if (residue_node.first == "Atom") {
+////                std::string atom_name = residue_node.second.get<std::string>("<xmlattr>.name");
+////                std::string atom_type = residue_node.second.get<std::string>("<xmlattr>.type");
+////                residue_template.atoms.push_back(TemplateAtomData());
+////                residue_template.atoms.back().name = atom_name;
+////                residue_template.atoms.back().type = atom_type;
+////                residue_template.atoms.back().element = atom_types.at(atom_type).element;
+////
+////            } else if (residue_node.first != "<xmlattr>") {
+////                BOOST_THROW_EXCEPTION(FatalError() <<
+////                                      "Unknown node attribute in Residues entry: " << residue_node.first);
+////            }
+////        }
 //    }
-
-}
+//
+////    for (const auto &val: dof_data) {
+////        std::cout << val.first << " ";
+////        for (const auto &val2: val.second) {
+////            std::cout << val2.atom_types  << "\n";
+////        }
+////    }
+//
+//}
 
 
 std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::shared_ptr<Topology> &topology) {

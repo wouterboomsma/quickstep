@@ -40,7 +40,46 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
                                       "Multiple definitions of dof: " << name);
             }
             dof_data[name] = data;
+        } else if (dofs_node.first == "BondAngle") {
 
+            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
+
+            MoveParameters::DofData data;
+
+            std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
+            qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
+
+            std::string atom1 = dofs_node.second.get<std::string>("<xmlattr>.atom1");
+            std::string atom2 = dofs_node.second.get<std::string>("<xmlattr>.atom2");
+            std::string atom3 = dofs_node.second.get<std::string>("<xmlattr>.atom3");
+            data.atom_names = {atom1, atom2, atom3};
+
+            std::cout << data.atom_names << "\n";
+
+            if (dof_data.count(name) > 0) {
+                QSBOOST_THROW_EXCEPTION(FatalError() <<
+                                        "Multiple definitions of dof: " << name);
+            }
+            dof_data[name] = data;
+        } else if (dofs_node.first == "BondLength") {
+
+            std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
+
+            MoveParameters::DofData data;
+
+            std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
+            qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
+
+            std::string atom1 = dofs_node.second.get<std::string>("<xmlattr>.atom1");
+            std::string atom2 = dofs_node.second.get<std::string>("<xmlattr>.atom2");
+            data.atom_names = {atom1, atom2};
+
+            if (dof_data.count(name) > 0) {
+                QSBOOST_THROW_EXCEPTION(FatalError() <<
+                                        "Multiple definitions of dof: " << name);
+            }
+            dof_data[name] = data;
+        }
 
 //            if (atom1 && atom2 && atom3 && atom4) {
 //                for (std::string residue: residues) {
@@ -56,7 +95,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 //                    }
 //                }
 //            }
-        }
+//        }
 
 //            qsboost::optional<int> atomtype1 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype1");
 //            qsboost::optional<int> atomtype2 = dofs_node.second.get_optional<int>("<xmlattr>.atomtype2");
