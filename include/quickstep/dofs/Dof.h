@@ -28,6 +28,8 @@ public:
 
     const std::vector<std::vector<int>> get_atoms();
 
+    KinematicForest &get_forest();
+
 protected:
     Dof(KinematicForest &forest,
         int atom_index,

@@ -141,7 +141,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
 MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
-    if (dofs.empty()) {
+    if (dofs.empty() || &(dofs[0]->get_forest()) != &forest) {
         dofs.clear();
         for (unsigned int i=0; i<dof_atoms.size(); ++i) {
             dofs.push_back(Dof::construct(forest, dof_atoms[i], dof_atom_names[i])  );

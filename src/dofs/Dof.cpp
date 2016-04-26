@@ -49,3 +49,9 @@ const std::vector<std::vector<int>> Dof::get_atoms() {
 Dof::Type Dof::get_type() {
     return type;
 }
+
+KinematicForest &Dof::get_forest() {
+    return forest;
+}
+
+
