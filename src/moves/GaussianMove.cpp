@@ -289,12 +289,13 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
     //std::cout << "New value likelihood: " << new_value << " " << mean << " " << inverse_cov.inverse() << " " << inverse_cov << " " << log_likelihood_new << "\n";
 
     Eigen::VectorXd delta(move_info.dof_deltas.size());
-    for (unsigned int d=0; d<move_info.dof_deltas.size(); ++d) {
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
         delta[d] = move_info.dof_deltas[d].second;
     }
 
     Eigen::VectorXd new_value = delta;
-    Eigen::VectorXd old_value = -delta;
+    Eigen::VectorXd old_value = Eigen::VectorXd::Zero(delta.size());
+
     if (position_absolute) {
         for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
             new_value[d] = move_info.dof_deltas[d].first->get_value();
@@ -303,32 +304,49 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
         old_value = new_value - delta;
         for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
             //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
-            old_value[d] = std::fmod(std::fmod(old_value[d] + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
+            //old_value[d] = std::fmod(std::fmod(old_value[d] + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
+            old_value[d] = move_info.dof_deltas[d].first->wrap_to_domain(old_value[d]);
         }
     }
+
+    //Eigen::VectorXd new_value = delta;
+    //Eigen::VectorXd old_value = -delta;
+    //if (position_absolute) {
+    //    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+    //        new_value[d] = move_info.dof_deltas[d].first->get_value();
+    //    }
+    //
+    //    old_value = new_value - delta;
+    //    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+    //        //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
+    //        old_value[d] = std::fmod(std::fmod(old_value[d] + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
+    //    }
+    //}
 
     //std::cout << "1: " << new_value << " 2: " << mean << " !!" << std::endl;
 
     //{
     Eigen::VectorXd x_new = new_value - mean;
     //std::cout << "x_new: " << x_new << "\n";
-        //x_new = x_new.array().min(2 * M_PI - x_new.array());
-        //x_new += ((x_new.array()>M_PI).select(-2*M_PI, 0.) + (x_new.array()<-M_PI).select(+2*M_PI, 0.))
+    //x_new = x_new.array().min(2 * M_PI - x_new.array());
+    //x_new += ((x_new.array()>M_PI).select(-2*M_PI, 0.) + (x_new.array()<-M_PI).select(+2*M_PI, 0.))
     Eigen::VectorXd x_old = old_value - mean;
-    for (unsigned int d=0; d<x_new.size(); ++d) {
-        x_new[d] += (x_new[d]>M_PI) ? -2*M_PI : (x_new[d]<-M_PI) ? 2*M_PI : 0;
-        x_old[d] += (x_old[d]>M_PI) ? -2*M_PI : (x_old[d]<-M_PI) ? 2*M_PI : 0;
+    for (unsigned int d = 0; d < x_new.size(); ++d) {
+        //x_new[d] += (x_new[d] > M_PI) ? -2 * M_PI : (x_new[d] < -M_PI) ? 2 * M_PI : 0;
+        x_new[d] = move_info.dof_deltas[d].first->wrap_to_domain(x_new[d]);
+        //x_old[d] += (x_old[d] > M_PI) ? -2 * M_PI : (x_old[d] < -M_PI) ? 2 * M_PI : 0;
+        x_old[d] = move_info.dof_deltas[d].first->wrap_to_domain(x_old[d]);
     }
     //std::cout << "x_new*: " << x_new << "\n";
 
 
-            //x_old = x_old.array().min(2 * M_PI - x_old.array());
-        //x_old += ((x_old>M_PI).select(-2*M_PI, 0.) + (x_old<-M_PI).select(+2*M_PI, 0.))
+    //x_old = x_old.array().min(2 * M_PI - x_old.array());
+    //x_old += ((x_old>M_PI).select(-2*M_PI, 0.) + (x_old<-M_PI).select(+2*M_PI, 0.))
     int k = mean.rows();
     double log_likelihood_new = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
-                              -0.5 * (x_new).dot(inverse_cov * (x_new)));
+                                  -0.5 * (x_new).dot(inverse_cov * (x_new)));
     double log_likelihood_old = ((k / 2.) * -std::log(2 * M_PI) - std::log(sampling_transform.trace()) +
-                                 -0.5 * (x_old).dot(inverse_cov * (x_old)));
+                                  -0.5 * (x_old).dot(inverse_cov * (x_old)));
         //std::cout << "*Old value likelihood: " << old_value.transpose() << " " << mean.transpose() << " " << log_likelihood_old << "\n";
         //std::cout << "*New value likelihood: " << new_value.transpose() << " " << mean.transpose() << " " << log_likelihood_new << "\n";
     return Eigen::Array<double, 2, 1>(log_likelihood_old, log_likelihood_new);
@@ -337,4 +355,8 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
     //return -(log_likelihood_new - log_likelihood_old);
     //return 0.0;
 }
+
+
+
+
 }

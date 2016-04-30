@@ -30,6 +30,14 @@ double DihedralDof::get_value() {
 void DihedralDof::add_value(double delta_value) {
     for(int i: sibling_atom_indices)
         forest.change_torsion(i, units::Angle::from_value(delta_value));
+}
+
+double DihedralDof::log_jacobian(double value) {
+    return 0.;
+}
+
+double DihedralDof::wrap_to_domain(double value) {
+    return std::fmod(std::fmod(value + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
 };
 
 

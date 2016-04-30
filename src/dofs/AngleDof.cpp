@@ -22,6 +22,17 @@ double AngleDof::get_value() {
 
 void AngleDof::add_value(double delta_value) {
     forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
+}
+
+double AngleDof::log_jacobian(double value) {
+    return log(sin(value));
+}
+
+double AngleDof::wrap_to_domain(double value) {
+    // TODO: fix this
+    //return atan(sin(value-M_PI/2.)/abs(cos(value-M_PI/2.)))+M_PI/2.;
+    return value;
+
 };
 
 

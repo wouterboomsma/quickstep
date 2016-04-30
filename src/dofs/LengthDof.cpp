@@ -22,6 +22,14 @@ double LengthDof::get_value() {
 
 void LengthDof::add_value(double delta_value) {
     forest.change_length(this->atom_index, units::Length::from_value(delta_value));
+}
+
+double LengthDof::log_jacobian(double value) {
+    return 2.*std::log(value);
+}
+
+double LengthDof::wrap_to_domain(double value) {
+    return value;
 };
 
 

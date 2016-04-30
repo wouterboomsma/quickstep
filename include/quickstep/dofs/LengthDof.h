@@ -17,6 +17,11 @@ public:
     double get_value() override;
 
     void add_value(double delta_value) override;
+
+    double log_jacobian(double value) override;
+
+    virtual double wrap_to_domain(double value) override;
+
 };
 
 }

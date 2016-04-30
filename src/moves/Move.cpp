@@ -317,4 +317,32 @@ Eigen::Array<double, 2, 1> Move::calc_log_bias_impl(const MoveInfo &move_info) c
 void Move::set_log_bias_delegate(Move *move) {
     log_bias_delegate = move;
 }
+
+double Move::calc_jacobian(const MoveInfo &move_info) const {
+    double bias_new = 0.;
+    double bias_old = 0.;
+
+    Eigen::VectorXd delta(move_info.dof_deltas.size());
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        delta[d] = move_info.dof_deltas[d].second;
+    }
+
+    Eigen::VectorXd new_value(delta.size());
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        new_value[d] = move_info.dof_deltas[d].first->get_value();
+    }
+
+    Eigen::VectorXd old_value = new_value - delta;
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        old_value[d] = move_info.dof_deltas[d].first->wrap_to_domain(old_value[d]);
+    }
+
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        bias_new += move_info.dof_deltas[d].first->log_jacobian(new_value[d]);
+        bias_old += move_info.dof_deltas[d].first->log_jacobian(old_value[d]);
+    }
+    return -(bias_new - bias_old);
+}
+
+
 }

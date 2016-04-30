@@ -28,6 +28,10 @@ public:
 
     const std::vector<std::vector<int>> get_atoms();
 
+    virtual double log_jacobian(double value) = 0;
+
+    virtual double wrap_to_domain(double value) = 0;
+
     KinematicForest &get_forest();
 
 protected:

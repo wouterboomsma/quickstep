@@ -36,6 +36,8 @@ public:
 
 	virtual void set_log_bias_delegate(Move *move);
 
+    virtual double calc_jacobian(const MoveInfo &move_info) const;
+
 protected:
 
     // In certain cases, a move cannot determine its own bias, and needs to consult its parent.
