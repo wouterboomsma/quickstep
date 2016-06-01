@@ -12,7 +12,7 @@
 #include <quickstep/MoveInfo.h>
 #include <quickstep/MoveSettings.h>
 
-#include <boost/optional/optional.hpp>
+#include <qsboost/optional/optional.hpp>
 
 namespace quickstep {
 
@@ -61,14 +61,14 @@ public:
 	}
 
 	template <typename T>
-	static boost::optional<T> find_settings_optional(const std::vector<std::shared_ptr<MoveSettings> > &move_settings) {
+	static qsboost::optional<T> find_settings_optional(const std::vector<std::shared_ptr<MoveSettings> > &move_settings) {
 		for (const auto &settings_it: move_settings) {
 			auto *settings = dynamic_cast<T *>(settings_it.get());
 			if (settings) {
-				return boost::optional<T>(T(*settings));
+				return qsboost::optional<T>(T(*settings));
 			}
 		}
-		return boost::optional<T>();
+		return qsboost::optional<T>();
 	}
 
 protected:
