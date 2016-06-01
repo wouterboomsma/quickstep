@@ -1,5 +1,5 @@
-#ifndef QUICKSTEP_MOLECULAR_PARAMETERS_H
-#define QUICKSTEP_MOLECULAR_PARAMETERS_H
+#ifndef QUICKSTEP_MOLECULAR_COMMON_DEFINITIONS_H
+#define QUICKSTEP_MOLECULAR_COMMON_DEFINITIONS_H
 
 #include <string>
 #include "quickstep/Topology.h"
@@ -9,7 +9,7 @@
 namespace quickstep {
 
 // Parameter utilities for forcefield and move parameters
-class MolecularParameters {
+class MolecularCommonDefinitions {
 public:
 
     struct AtomTypeData {

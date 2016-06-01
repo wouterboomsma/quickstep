@@ -10,6 +10,9 @@
 
 #include "quickstep/KinematicForest.h"
 #include <quickstep/MoveInfo.h>
+#include <quickstep/MoveSettings.h>
+
+#include <boost/optional/optional.hpp>
 
 namespace quickstep {
 
@@ -18,10 +21,13 @@ namespace quickstep {
  */
 class Move {
 public:
+
 	Move()
             : log_bias_delegate(nullptr){};
 
-	static std::unique_ptr<Move> parse(const std::string &xml_filename, const std::shared_ptr<Topology> &topology);
+	static std::unique_ptr<Move> parse(const std::string &xml_filename,
+									   const std::shared_ptr<Topology> &topology,
+									   std::vector<std::shared_ptr<MoveSettings>> move_settings={});
 
 	virtual ~Move(){}
 
@@ -37,6 +43,33 @@ public:
 	virtual void set_log_bias_delegate(Move *move);
 
     virtual double calc_jacobian(const MoveInfo &move_info) const;
+
+	virtual void accept();
+
+	virtual void reject();
+
+
+	template <typename T>
+	static T find_settings(const std::vector<std::shared_ptr<MoveSettings> > &move_settings) {
+		for (const auto &settings_it: move_settings) {
+			auto *settings = dynamic_cast<T *>(settings_it.get());
+			if (settings) {
+				return T(*settings);
+			}
+		}
+		return T{};
+	}
+
+	template <typename T>
+	static boost::optional<T> find_settings_optional(const std::vector<std::shared_ptr<MoveSettings> > &move_settings) {
+		for (const auto &settings_it: move_settings) {
+			auto *settings = dynamic_cast<T *>(settings_it.get());
+			if (settings) {
+				return boost::optional<T>(T(*settings));
+			}
+		}
+		return boost::optional<T>();
+	}
 
 protected:
 

@@ -1,4 +1,4 @@
-#include "quickstep/MolecularParameters.h"
+#include "quickstep/MolecularCommonDefinitions.h"
 #include "quickstep/Topology.h"
 #include "quickstep/Element.h"
 //#include <boost/filesystem/fstream.hpp>
@@ -10,14 +10,14 @@ namespace quickstep {
 
 
 
-void MolecularParameters::parse_from_XML(const std::string &filename) {
+void MolecularCommonDefinitions::parse_from_XML(const std::string &filename) {
     std::ifstream ifs(filename);
     qsboost::property_tree::ptree parameter_input;
     qsboost::property_tree::read_xml(ifs, parameter_input, qsboost::property_tree::xml_parser::trim_whitespace);
     parse_from_XML(parameter_input);
 }
 
-void MolecularParameters::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
+void MolecularCommonDefinitions::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
 
     const auto atom_type_nodes = parameter_input.begin()->second.get_child_optional("AtomTypes");
     if (atom_type_nodes) {
@@ -201,7 +201,7 @@ void MolecularParameters::parse_from_XML(const qsboost::property_tree::ptree &pa
 }
 
 
-bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> residue_atom_indices,
+bool MolecularCommonDefinitions::find_atom_matches(const std::vector<unsigned int> residue_atom_indices,
                                             const std::vector<Topology::Atom> &atoms,
                                             const TemplateData &residue_template,
                                             const std::vector<std::vector<int> > &bonded_to,
@@ -252,7 +252,7 @@ bool MolecularParameters::find_atom_matches(const std::vector<unsigned int> resi
 }
 
 
-std::vector<int> MolecularParameters::match_residue_atoms(const Topology::Residue &residue,
+std::vector<int> MolecularCommonDefinitions::match_residue_atoms(const Topology::Residue &residue,
                                                           const std::vector<Topology::Atom> &atoms,
                                                           const TemplateData &residue_template,
                                                           const std::vector<std::set<int> > &bonded_to_atom) const {
@@ -309,7 +309,7 @@ std::vector<int> MolecularParameters::match_residue_atoms(const Topology::Residu
 }
 
 
-std::string MolecularParameters::find_match_errors(const Topology::Residue &residue,
+std::string MolecularCommonDefinitions::find_match_errors(const Topology::Residue &residue,
                                                    const std::vector<Topology::Atom> &atoms) const {
 
     std::vector<Element> residue_elements;

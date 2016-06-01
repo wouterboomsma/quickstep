@@ -16,7 +16,8 @@ public:
     public:
         virtual std::vector<std::unique_ptr<Move>> operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
-                                                              const MoveParameters &move_parameters);
+                                                              const MoveCommonDefinitions &move_common_defs,
+                                                              const std::vector<std::shared_ptr<MoveSettings>> &move_settings);
 
         // NOTE: the registrator variable must be explicitly defined in the .cpp file as well
         const static struct Registrator {

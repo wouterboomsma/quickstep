@@ -1,6 +1,6 @@
 #include "quickstep/moves/Move.h"
 #include "quickstep/MoveFactory.h"
-#include "quickstep/MoveParameters.h"
+#include "quickstep/MoveCommonDefinitions.h"
 //#include <boost/filesystem/fstream.hpp>
 //#include <boost/filesystem/operations.hpp>
 #include <quickstep/FatalError.h>
@@ -14,7 +14,7 @@ namespace quickstep {
 
 
 //void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {}) {
-//    std::map<std::string, std::vector<MoveParameters::DofData>> dof_data;
+//    std::map<std::string, std::vector<MoveCommonDefinitions::DofData>> dof_data;
 //    for (const auto &dofs_node: parameter_input) {
 //
 ////        std::cout << "DOF: " << dofs_node.first << " " << group_names << "\n";
@@ -34,7 +34,7 @@ namespace quickstep {
 //            if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
 //                if (dof_data.count(name) == 0)
 //                    dof_data[name] = {};
-//                MoveParameters::DofData data;
+//                MoveCommonDefinitions::DofData data;
 //                data.atom_types = {*atomtype1, *atomtype2, *atomtype3, *atomtype4};
 //
 //                dof_data.at(name).push_back(data);
@@ -55,7 +55,7 @@ namespace quickstep {
 //            if (atomtype1 && atomtype2 && atomtype3) {
 //                if (dof_data.count(name) == 0)
 //                    dof_data[name] = {};
-//                MoveParameters::DofData data;
+//                MoveCommonDefinitions::DofData data;
 //                data.atom_types = {*atomtype1, *atomtype2, *atomtype3};
 //
 //                dof_data.at(name).push_back(data);
@@ -75,7 +75,7 @@ namespace quickstep {
 //            if (atomtype1 && atomtype2) {
 //                if (dof_data.count(name) == 0)
 //                    dof_data[name] = {};
-//                MoveParameters::DofData data;
+//                MoveCommonDefinitions::DofData data;
 //                data.atom_types = {*atomtype1, *atomtype2};
 //
 //                dof_data.at(name).push_back(data);
@@ -117,7 +117,9 @@ namespace quickstep {
 //}
 
 
-std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::shared_ptr<Topology> &topology) {
+std::unique_ptr<Move> Move::parse(const std::string &xml_filename,
+                                  const std::shared_ptr<Topology> &topology,
+                                  std::vector<std::shared_ptr<MoveSettings>> move_settings) {
 
     std::string filename = std::string(QUICKSTEP_DATA_DIR) + "/" + xml_filename;
 
@@ -130,7 +132,7 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
     qsboost::property_tree::ptree parameter_input;
     qsboost::property_tree::read_xml(ifs, parameter_input, qsboost::property_tree::xml_parser::trim_whitespace);
 
-    MoveParameters parameters;
+    MoveCommonDefinitions parameters;
     parameters.parse_from_XML(parameter_input);
 
     for (const auto signature: parameters.get_residue_signatures()) {
@@ -263,7 +265,7 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename, const std::sh
     auto root_node = parameter_input.begin();
     const std::string &node_name = root_node->first;
     if (MoveFactory::get().has_generator(node_name)) {
-        auto &&moves = MoveFactory::get().at(node_name)(root_node->second, *topology.get(), parameters);
+        auto &&moves = MoveFactory::get().at(node_name)(root_node->second, *topology.get(), parameters, move_settings);
         if (moves.size() == 1)
             return std::move(moves[0]);
         else {
@@ -341,8 +343,14 @@ double Move::calc_jacobian(const MoveInfo &move_info) const {
         bias_new += move_info.dof_deltas[d].first->log_jacobian(new_value[d]);
         bias_old += move_info.dof_deltas[d].first->log_jacobian(old_value[d]);
     }
-    return -(bias_new - bias_old);
+    return bias_new - bias_old;
 }
 
+void Move::accept() {
+
+}
+
+void Move::reject() {
+}
 
 }

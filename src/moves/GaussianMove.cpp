@@ -1,5 +1,5 @@
 #include "quickstep/moves/GaussianMove.h"
-#include "quickstep/MoveParameters.h"
+#include "quickstep/MoveCommonDefinitions.h"
 #include "quickstep/FatalError.h"
 #include <qsboost/property_tree/ptree.hpp>
 #include "quickstep/random.h"
@@ -12,10 +12,13 @@ namespace quickstep {
 const GaussianMove::MoveGenerator::Registrator GaussianMove::MoveGenerator::registrator;
 
 std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
-                                                              Topology &topology,
-                                                              const MoveParameters &move_parameters) {
+                                                                           Topology &topology,
+                                                                           const MoveCommonDefinitions &move_common_defs,
+                                                                           const std::vector<std::shared_ptr<MoveSettings>> &move_settings) {
     auto root_node = parameter_input.begin();
     const std::string &node_name = root_node->first;
+
+    auto settings = Move::find_settings<GaussianMove::Settings>(move_settings);
 
     int dimension = root_node->second.get<int>("dim");
 
@@ -32,11 +35,15 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
             conversion_factor = M_PI/180.;
     }
 
-    bool position_absolute = false;
     qsboost::optional<std::string> position = root_node->second.get_optional<std::string>("position");
     if (position) {
         if (*position == "absolute")
-            position_absolute = true;
+            settings.position_absolute = true;
+    }
+
+    qsboost::optional<double> minimum_delta = root_node->second.get_optional<double>("minimum_delta");
+    if (minimum_delta) {
+        settings.minimum_delta = *minimum_delta;
     }
 
     std::string mean_label = "mean";
@@ -79,12 +86,12 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::vector<std::string>> dof_atom_names = std::vector<std::vector<std::string>>(dofs.size());
     for (unsigned int dof_index=0; dof_index<dofs.size(); ++dof_index) {
         const auto &dof = dofs[dof_index];
-        const auto &dof_data = move_parameters.dof_data.at(dof);
+        const auto &dof_data = move_common_defs.dof_data.at(dof);
         // std::cout << "dof: " << dof << " " << dof_data.atom_names << "\n";
         dof_atom_names[dof_index] = dof_data.atom_names;
         for (const auto &residue_name: dof_data.residue_names) {
-            auto template_data = move_parameters.get_residue_template(residue_name);
-            std::string signature = move_parameters.get_residue_signature(residue_name);
+            auto template_data = move_common_defs.get_residue_template(residue_name);
+            std::string signature = move_common_defs.get_residue_signature(residue_name);
             auto residue_matches = topology.get_residues_by_signature(signature);
 //            if (residue_matches.empty()) {
 //                std::cout << residue_name << " " << signature << "\n";
@@ -92,14 +99,14 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 //            }
             for (unsigned int i=0; i<residue_matches.size(); ++i) {
                 const auto residue = residue_matches[i];
-                std::vector<int> matches = move_parameters.match_residue_atoms(residue, topology.get_atoms(), template_data,
+                std::vector<int> matches = move_common_defs.match_residue_atoms(residue, topology.get_atoms(), template_data,
                                                                                topology.get_bond_adjacency_list());
                 if (matches.empty()) {
                     QSBOOST_THROW_EXCEPTION(FatalError() <<
                                           "No residue template found for residue: "
                                           << std::to_string(residue.get().index + 1) << " ("
                                           << residue.get().name << "). "
-                                          << move_parameters.find_match_errors(residue, topology.get_atoms()));
+                                          << move_common_defs.find_match_errors(residue, topology.get_atoms()));
                 } else {
                     if (dof_atoms.empty()) {
                         dof_atoms.resize(residue_matches.size());
@@ -133,7 +140,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
         // std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
-        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names, position_absolute)));
+        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names, settings)));
     }
 
     return std::move(return_value);
@@ -159,7 +166,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
     //}
 //    Eigen::VectorXd delta_vals(sample.rows(),1);
 
-    MoveInfo ret(*this, forest);
+    MoveInfo move_info(*this, forest);
 
     Eigen::VectorXd new_value(sample.rows());
     for (unsigned int d=0; d<sample.rows(); ++d) {
@@ -173,7 +180,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //std::cout << "New torsion: " << new_value[d];
 
         double value = sample[d];
-        if (this->position_absolute) {
+        if (settings.position_absolute) {
             value = sample[d] - dofs[d]->get_value();
             //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
             //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
@@ -194,10 +201,14 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         // The primary dof always appears first
         //ret.dof_deltas2.back().push_back(std::make_pair(a, std::vector<int>{dof_atom_index, parent_index, atom_index3, atom_index4}));
         //ret.dof_deltas.push_back(std::make_pair(std::make_unique<DihedralDof>(forest, dof_atom_index), value));
-        ret.dof_deltas.push_back(std::make_pair(dofs[d], value));
+        move_info.dof_deltas.push_back(std::make_pair(dofs[d], value));
         //ret.atoms.push_back({(int)di.atom_index, parent_index, atom_index3, atom_index4});
 
-
+        // Flag move for early rejection if proposed move is smaller than threshold
+        if (std::fabs(value) < settings.minimum_delta) {
+            std::cerr << "Flagging for early reject: " << value << " " << settings.minimum_delta << "\n";
+            move_info.early_reject = true;
+        }
 
         ////Add all children of parent
         //for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
@@ -218,6 +229,8 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
     }
 
+
+
     //Set up move info
 //    MoveInfo ret{ std::make_unique<GaussianMoveInfo>(delta_vals) };
 //    GaussianMoveInfo& info = *dynamic_cast<GaussianMoveInfo*>(ret.specific_info.get());
@@ -225,7 +238,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 //    SubTree affected_tree;
 //    affected_tree.root_atom = dofs[0]->get_atom_index();
 //    ret.affected_atoms.push_back(affected_tree);
-    return ret;
+    return move_info;
 }
 
 //void GaussianMove::step_fractional(KinematicForest &forest, MoveInfo &info, double fraction) {
@@ -246,14 +259,14 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 GaussianMove::GaussianMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &cov,
                            std::vector<std::vector<int>> &dof_atoms,
                            std::vector<std::vector<std::string>> &dof_atom_names,
-                           bool position_absolute)
+                           const Settings &settings)
         : mean(mean),
           inverse_cov(cov.inverse()),
           //old_value(mean.rows()),
           //new_value(mean.rows()),
           dof_atoms(dof_atoms),
           dof_atom_names(dof_atom_names),
-          position_absolute(position_absolute){
+          settings(settings) {
 
 
 //    std::cout << "covariance: " << cov << "\n";
@@ -293,10 +306,14 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
         delta[d] = move_info.dof_deltas[d].second;
     }
 
+    if (move_info.early_reject) {
+        return Eigen::Array<double, 2, 1>(0., std::numeric_limits<double>::infinity());
+    }
+
     Eigen::VectorXd new_value = delta;
     Eigen::VectorXd old_value = Eigen::VectorXd::Zero(delta.size());
 
-    if (position_absolute) {
+    if (settings.position_absolute) {
         for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
             new_value[d] = move_info.dof_deltas[d].first->get_value();
         }

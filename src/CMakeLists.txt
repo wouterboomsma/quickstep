@@ -21,8 +21,8 @@ add_library(quickstep
     moves/SymmetrizedMove.cpp
     moves/GaussianMove.cpp
     moves/Move.cpp
-    MolecularParameters.cpp
-    MoveParameters.cpp
+    MolecularCommonDefinitions.cpp
+    MoveCommonDefinitions.cpp
     MoveFactory.cpp
     dofControllers/StdDoFController.cpp
     dofs/Dof.cpp
@@ -45,8 +45,8 @@ add_library(quickstep
     ${PROJECT_SOURCE_DIR}/include/quickstep/moves/Move.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/Topology.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/Selection.h
-    ${PROJECT_SOURCE_DIR}/include/quickstep/MolecularParameters.h
-    ${PROJECT_SOURCE_DIR}/include/quickstep/MoveParameters.h
+    ${PROJECT_SOURCE_DIR}/include/quickstep/MolecularCommonDefinitions.h
+    ${PROJECT_SOURCE_DIR}/include/quickstep/MoveCommonDefinitions.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/MoveFactory.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/dofControllers/StdDoFController.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/dofs/Dof.h

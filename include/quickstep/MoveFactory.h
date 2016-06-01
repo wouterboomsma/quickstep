@@ -4,11 +4,12 @@
 #include <qsboost/property_tree/ptree_fwd.hpp>
 #include <vector>
 #include "quickstep/utils.h"
+#include "quickstep/MoveSettings.h"
 
 namespace quickstep {
 
 class Move;
-class MoveParameters;
+class MoveCommonDefinitions;
 class Topology;
 
 class MoveFactory {
@@ -18,7 +19,8 @@ public:
     public:
         virtual std::vector<std::unique_ptr<Move>> operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
-                                                              const MoveParameters &move_parameters) = 0;
+                                                              const MoveCommonDefinitions &move_common_defs,
+                                                              const std::vector<std::shared_ptr<MoveSettings>> &move_settings) = 0;
     };
 
     void register_generator(std::string name, std::unique_ptr<MoveGenerator> generator);

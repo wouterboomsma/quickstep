@@ -8,16 +8,33 @@
 
 namespace quickstep {
 
-class MoveParameters;
+class MoveCommonDefinitions;
 
 class GaussianMove: public Move {
 public:
+
+    // Base class for Settings in energy terms
+    const class Settings: public MoveSettings {
+    public:
+
+        // Whether positioning should be done absolutely, or relative to the current position
+        bool position_absolute;
+
+        // Minimum step size (sizes below this will have infinite bias)
+        double minimum_delta;
+
+        Settings(bool position_absolute=false,
+                 double minimum_delta = 0.)
+        : position_absolute(position_absolute),
+          minimum_delta(minimum_delta) {}
+    } settings;
 
     class MoveGenerator: public MoveFactory::MoveGenerator {
     public:
         virtual std::vector<std::unique_ptr<Move>> operator()(const qsboost::property_tree::ptree &parameter_input,
                                                               Topology &topology,
-                                                              const MoveParameters &move_parameters);
+                                                              const MoveCommonDefinitions &move_common_defs,
+                                                              const std::vector<std::shared_ptr<MoveSettings>> &move_settings);
 
         // NOTE: the registrator variable must be explicitly defined in the .cpp file as well
         const static struct Registrator {
@@ -30,7 +47,7 @@ public:
     GaussianMove(const Eigen::VectorXd &mu, const Eigen::MatrixXd &cov,
                  std::vector<std::vector<int>> &dof_atoms,
                  std::vector<std::vector<std::string>> &dof_atom_names,
-                 bool position_absolute=false);
+                 const Settings &settings = Settings());
 
 
     virtual MoveInfo propose(KinematicForest &forest);
@@ -54,8 +71,6 @@ private:
     std::vector<std::vector<std::string>> dof_atom_names;
     std::vector<std::shared_ptr<Dof>> dofs;
 
-    // Whether positioning should be done absolutely, or relative to the current position
-    bool position_absolute;
     //KinematicForest& last_used_forest;
 };
 

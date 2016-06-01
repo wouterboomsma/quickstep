@@ -7,10 +7,12 @@ const MixtureMove::MoveGenerator::Registrator MixtureMove::MoveGenerator::regist
 
 std::vector<std::unique_ptr<Move>> MixtureMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
 																		  Topology &topology,
-																		  const MoveParameters &move_parameters) {
+																		  const MoveCommonDefinitions &move_common_defs,
+                                                                          const std::vector<std::shared_ptr<MoveSettings>> &move_settings) {
     auto return_value = CompositeMove::MoveGenerator::operator()(parameter_input,
                                                                  topology,
-                                                                 move_parameters);
+                                                                 move_common_defs,
+                                                                 move_settings);
     if (return_value.empty())
         return std::move(return_value);
 

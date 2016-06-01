@@ -1,4 +1,4 @@
-#include "quickstep/MoveParameters.h"
+#include "quickstep/MoveCommonDefinitions.h"
 #include <qsboost/algorithm/string.hpp>
 //#include "quickstep/Topology.h"
 //#include "quickstep/Element.h"
@@ -11,7 +11,7 @@
 namespace quickstep {
 
 
-void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names) {
+void MoveCommonDefinitions::parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names) {
     for (const auto &dofs_node: parameter_input) {
 
 //        std::cout << "DOF: " << dofs_node.first << " " << group_names << "\n";
@@ -24,7 +24,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
 
-            MoveParameters::DofData data;
+            MoveCommonDefinitions::DofData data;
 
             std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
             qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
@@ -44,7 +44,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
 
-            MoveParameters::DofData data;
+            MoveCommonDefinitions::DofData data;
 
             std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
             qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
@@ -65,7 +65,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
 
-            MoveParameters::DofData data;
+            MoveCommonDefinitions::DofData data;
 
             std::string residue = dofs_node.second.get<std::string>("<xmlattr>.residue");
             qsboost::split(data.residue_names, residue, qsboost::is_any_of("|"));
@@ -83,7 +83,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 
 //            if (atom1 && atom2 && atom3 && atom4) {
 //                for (std::string residue: residues) {
-//                    MoveParameters::DofData data;
+//                    MoveCommonDefinitions::DofData data;
 //                    data.residue_name = residue;
 //                    data.atom_names = {*atom1, *atom2, *atom3, *atom4};
 //                    dof_data.at(name).push_back(data);
@@ -110,7 +110,7 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 //            if (atomtype1 && atomtype2 && atomtype3 && atomtype4) {
 //                if (dof_data.count(name) == 0)
 //                    dof_data[name] = {};
-//                MoveParameters::DofData data;
+//                MoveCommonDefinitions::DofData data;
 //                data.atom_types = {*atomtype1, *atomtype2, *atomtype3, *atomtype4};
 //
 //                dof_data.at(name).push_back(data);
@@ -153,8 +153,8 @@ void MoveParameters::parse_dofs(const qsboost::property_tree::ptree &parameter_i
 
 }
 
-void MoveParameters::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
-    MolecularParameters::parse_from_XML(parameter_input);
+void MoveCommonDefinitions::parse_from_XML(const qsboost::property_tree::ptree &parameter_input) {
+    MolecularCommonDefinitions::parse_from_XML(parameter_input);
 
     // dofs
     parse_dofs(parameter_input.begin()->second.get_child("Dofs"));

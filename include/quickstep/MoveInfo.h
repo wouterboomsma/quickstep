@@ -31,7 +31,8 @@ class Move;
 class MoveInfo {
 public:
     MoveInfo(const Move &move, const KinematicForest &forest)
-            : move(move) {} //, forest(forest) {}
+            : move(move),
+              early_reject(false){} //, forest(forest) {}
     //MoveInfo(MoveInfo &&other)
     //        //: dof_deltas(other.dof_deltas),
     //        : dof_deltas(std::move(other.dof_deltas)),
@@ -44,7 +45,8 @@ public:
     //          move(other.move){}
     MoveInfo(const MoveInfo &other):
             dof_deltas(other.dof_deltas),
-            move(other.move){}
+            move(other.move),
+            early_reject(other.early_reject) {}
     //operator=(const MoveInfo &other):
     //        dof_deltas(other.dof_deltas),
     //        move(other.move){}
@@ -59,6 +61,9 @@ public:
 
     //std::vector<std::list<std::pair<double, std::vector<int> > > > dof_deltas2;
     std::vector<std::pair<std::shared_ptr<Dof>, double> > dof_deltas;
+
+    // A move can decide that a move should be rejected by setting this flag
+    bool early_reject;
     //std::reference_wrapper<const KinematicForest> forest;  // Ended up including forest here, to make information retrieval possible in calc_log_bias
 private:
     std::reference_wrapper<const Move> move;

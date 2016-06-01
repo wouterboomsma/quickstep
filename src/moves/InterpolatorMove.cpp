@@ -13,8 +13,8 @@
 
 namespace quickstep {
 
-InterpolatorMove::InterpolatorMove(std::unique_ptr<Move> m, int interpolation_steps):
-		child_move(std::move(m)),
+InterpolatorMove::InterpolatorMove(std::shared_ptr<Move> move, int interpolation_steps):
+		child_move(move),
 		interpolation_steps(interpolation_steps),
 		current_step(0)
 {
@@ -55,4 +55,10 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 MoveInfo *InterpolatorMove::get_current_move_info() {
 	return current_move_info.get();
 }
+
+void InterpolatorMove::reject() {
+	current_step = interpolation_steps;
+}
+
 } /* namespace quickstep */
+

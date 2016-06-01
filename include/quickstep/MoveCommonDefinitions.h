@@ -1,13 +1,13 @@
-#ifndef QUICKSTEP_MOVE_PARAMETERS_H
-#define QUICKSTEP_MOVE_PARAMETERS_H
+#ifndef QUICKSTEP_MOVE_COMMON_DEFINITIONS_H
+#define QUICKSTEP_MOVE_COMMON_DEFINITIONS_H
 
 #include <string>
-#include "quickstep/MolecularParameters.h"
+#include "quickstep/MolecularCommonDefinitions.h"
 #include <qsboost/property_tree/ptree_fwd.hpp>
 
 namespace quickstep {
 
-class MoveParameters: public MolecularParameters {
+class MoveCommonDefinitions: public MolecularCommonDefinitions {
 private:
 
     void parse_dofs(const qsboost::property_tree::ptree &parameter_input, std::vector<std::string> group_names = {});
@@ -31,7 +31,7 @@ public:
 
     virtual void parse_from_XML(const qsboost::property_tree::ptree &parameter_input);
 
-    std::map<std::string, MoveParameters::DofData> dof_data;
+    std::map<std::string, MoveCommonDefinitions::DofData> dof_data;
 
 };
 
