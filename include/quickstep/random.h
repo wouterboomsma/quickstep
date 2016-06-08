@@ -2,6 +2,7 @@
 #define QUICKSTEP_RANDOM_H
 
 #include <random>
+#include <functional>
 
 namespace quickstep {
 
