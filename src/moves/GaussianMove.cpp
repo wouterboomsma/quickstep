@@ -177,7 +177,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //old_value[d] = dofs[d]->get_value();
         //new_value[d] = sample[d];
         sample[d] = std::fmod(std::fmod(sample[d]+M_PI, 2*M_PI)+2*M_PI, 2*M_PI)-M_PI;
-        // sample[d] = 0.;
+        //sample[d] = 0.;
         //std::cout << "New torsion: " << sample[d] << "(" << mean << ")    previous: " << dofs[d]->get_value() << "\n";
         //std::cout << "New torsion: " << new_value[d];
 
