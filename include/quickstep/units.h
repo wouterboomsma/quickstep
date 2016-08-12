@@ -78,6 +78,17 @@ struct AtomicCurrentBaseUnit
 };
 
 
+// Nanosecond
+typedef qsboost::units::scaled_base_unit<
+        qsboost::units::si::second_base_unit,
+        qsboost::units::scale<10, qsboost::units::static_rational<-9> > > NanosecondBaseUnit;
+typedef NanosecondBaseUnit::unit_type NanosecondUnit;
+QSBOOST_UNITS_STATIC_CONSTANT(nanosecond, NanosecondUnit);
+QSBOOST_UNITS_STATIC_CONSTANT(nanoseconds, NanosecondUnit);
+QSBOOST_UNITS_STATIC_CONSTANT(ns, NanosecondUnit);
+typedef qsboost::units::quantity<NanosecondUnit> Time_ns;
+
+
 // Picosecond
 typedef qsboost::units::scaled_base_unit<
         qsboost::units::si::second_base_unit,
