@@ -19,7 +19,8 @@ InterpolatorMove::InterpolatorMove(std::shared_ptr<Move> move,
 		child_move(move),
 		interpolation_steps(interpolation_steps),
 		max_dof_delta_per_interpolation_step(max_dof_delta_per_interpolation_step),
-		current_step(0)
+		current_step(0),
+		interpolation_steps_original(interpolation_steps)
 {
 }
 
@@ -28,9 +29,9 @@ void InterpolatorMove::setup_move(KinematicForest& kf) {
 	current_move_info = std::make_unique<MoveInfo>( std::move(child_move->propose(kf)) );
 
 	for( auto &dd: current_move_info->dof_deltas) {
-		double dof_delta = dd.second / interpolation_steps;
-		if (dof_delta > max_dof_delta_per_interpolation_step) {
-			interpolation_steps = (int) ceil(dd.second / max_dof_delta_per_interpolation_step);
+		double dof_delta = dd.second / interpolation_steps_original;
+		if (std::abs(dof_delta) > max_dof_delta_per_interpolation_step) {
+			interpolation_steps = (int) ceil(std::abs(dd.second) / max_dof_delta_per_interpolation_step);
 			std::cout << "Changing interpolation steps to: " << interpolation_steps << "\n";
 		}
 	}

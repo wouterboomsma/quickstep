@@ -38,6 +38,7 @@ private:
 	int interpolation_steps;
     double max_dof_delta_per_interpolation_step;
 	int current_step;
+		int interpolation_steps_original;
 	std::shared_ptr<Move> child_move;
 };
 
