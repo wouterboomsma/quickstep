@@ -25,9 +25,11 @@ public:
 
 	MoveInfo *get_current_move_info();
 
-	virtual void reject() override;
+    virtual void accept() override;
 
-    int get_interpolation_steps(KinematicForest &kf);
+    virtual void reject() override;
+
+    int get_interpolation_steps();
 
 private:
 

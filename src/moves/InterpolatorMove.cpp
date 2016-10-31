@@ -30,21 +30,21 @@ void InterpolatorMove::setup_move(KinematicForest& kf) {
 
 	for( auto &dd: current_move_info->dof_deltas) {
 		double dof_delta = dd.second / interpolation_steps_original;
+
 		if (std::abs(dof_delta) > max_dof_delta_per_interpolation_step) {
 			interpolation_steps = (int) ceil(std::abs(dd.second) / max_dof_delta_per_interpolation_step);
-			std::cout << "Changing interpolation steps to: " << interpolation_steps << "\n";
+			//std::cout << "Changing interpolation steps to: " << interpolation_steps << "\n";
 		}
 	}
 }
 
-MoveInfo InterpolatorMove::propose(KinematicForest& kf)
-{
-	if(current_step==interpolation_steps) {
-		current_step = 0;
-		current_move_info = nullptr;
-	}
+MoveInfo InterpolatorMove::propose(KinematicForest& kf) {
 
-	if(current_step==0){
+    if(current_step==interpolation_steps) {
+        current_step = 0;
+    }
+
+    if(current_step==0){
 		if (!current_move_info)
 			setup_move(kf);
 	}
@@ -62,7 +62,7 @@ MoveInfo InterpolatorMove::propose(KinematicForest& kf)
 
 	current_step++;
 
-	return move_info;
+    return move_info;
 }
 
 //void InterpolatorMove::step_fractional(KinematicForest&, MoveInfo&, double fraction)
@@ -75,13 +75,16 @@ MoveInfo *InterpolatorMove::get_current_move_info() {
 	return current_move_info.get();
 }
 
-void InterpolatorMove::reject() {
-	current_step = interpolation_steps;
+void InterpolatorMove::accept() {
+    current_move_info = nullptr;
 }
 
-int InterpolatorMove::get_interpolation_steps(KinematicForest &kf) {
-	if (!current_move_info)
-		setup_move(kf);
+void InterpolatorMove::reject() {
+	current_step = interpolation_steps;
+    current_move_info = nullptr;
+}
+
+int InterpolatorMove::get_interpolation_steps() {
 	return interpolation_steps;
 }
 
