@@ -49,7 +49,7 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
     std::string mean_label = "mean";
     std::string dof_label = "dof";
-    std::string stddev_label = "stddev";
+    std::string var_label = "var";
     for (int i=0; i<dimension; ++i) {
         std::string mean_label_suffixed = mean_label + std::to_string(i+1);
         std::string dof_label_suffixed = dof_label + std::to_string(i+1);
@@ -69,15 +69,15 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
         }
 
         for (int j=i; j<dimension; ++j) {
-            std::string stddev_label_suffixed1 = stddev_label + std::to_string(i + 1) + std::to_string(j + 1);
-            std::string stddev_label_suffixed2 = stddev_label + std::to_string(j + 1) + std::to_string(i + 1);
+            std::string var_label_suffixed1 = var_label + std::to_string(i + 1) + std::to_string(j + 1);
+            std::string var_label_suffixed2 = var_label + std::to_string(j + 1) + std::to_string(i + 1);
 
-            qsboost::optional<double> sigma_val;
-            if ((          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed1))) ||
-                (          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed2))) ||
-                (i == 0 && (sigma_val = root_node->second.get_optional<double>(stddev_label)))) {
-                cov(i, j) = (*sigma_val * conversion_factor) * (*sigma_val * conversion_factor);
-                cov(j, i) = (*sigma_val * conversion_factor) * (*sigma_val * conversion_factor);
+            qsboost::optional<double> sigma2_val;
+            if ((          (sigma2_val = root_node->second.get_optional<double>(var_label_suffixed1))) ||
+                (          (sigma2_val = root_node->second.get_optional<double>(var_label_suffixed2))) ||
+                (i == 0 && (sigma2_val = root_node->second.get_optional<double>(var_label)))) {
+                cov(i, j) = (*sigma2_val * conversion_factor * conversion_factor);
+                cov(j, i) = (*sigma2_val * conversion_factor * conversion_factor);
             }
         }
     }

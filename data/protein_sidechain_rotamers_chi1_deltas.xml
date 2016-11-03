@@ -1,3 +1,20 @@
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
+stddev11="10.0" var11="100.0"
 <CompositeMove name="ProteinSidechainRotamerDunbrack1997Deltas">
 
     <Residues>
@@ -2535,75 +2552,76 @@
     </Dofs>
 
     <MixtureMove name="ARG">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ARG_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ARG_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="ASN">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ASN_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ASN_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="ASP">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ASP_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ASP_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="CYS">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="CYS_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="CYS_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="GLN">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="GLN_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="GLN_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="GLU">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="GLU_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="GLU_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="HIS">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="HIS_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="HIS_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="ILE">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ILE_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="ILE_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="LEU">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="LEU_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="LEU_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="LYS">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="LYS_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="LYS_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="MET">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="MET_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="MET_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="PHE">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="PHE_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="PHE_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <!--<MixtureMove name="PRO">-->
     <!--</MixtureMove>-->
 
     <MixtureMove name="SER">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="SER_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="SER_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="THR">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="THR_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="THR_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="TRP">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="TRP_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="TRP_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="TYR">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="TYR_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="TYR_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
     <MixtureMove name="VAL">
-        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="VAL_CHI1" mean1="120.0" stddev11="10.0" unit="degr" position="relative"/></SymmetrizedMove>
+        <SymmetrizedMove><GaussianMove dim="1" weight="1.0" dof1="VAL_CHI1" mean1="120.0" var11="100.0" unit="degr" position="relative"/></SymmetrizedMove>
     </MixtureMove>
 
 
 </CompositeMove>
+
