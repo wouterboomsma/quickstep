@@ -41,7 +41,7 @@ Eigen::Array<double, 2, 1> MixtureMove::calc_log_bias_impl(const MoveInfo &move_
     Eigen::Array<double, Eigen::Dynamic, 1> weights =
             Eigen::Array<double, Eigen::Dynamic, 1>::Map(this->accum_weights.data(), this->accum_weights.size());
     //std::cout << "weights before: " << weights << "\n";
-    weights.bottomRows(weights.rows()-1) -= weights.topRows(weights.rows()-1);
+    weights.bottomRows(weights.rows()-1) -= weights.topRows(weights.rows()-1).eval();
     //std::cout << "weights after1: " << weights << "\n";
     weights /= weights.sum();
     //std::cout << "weights after2: " << weights << "\n";
