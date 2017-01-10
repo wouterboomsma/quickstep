@@ -40,7 +40,7 @@ void MoveCommonDefinitions::parse_dofs(const qsboost::property_tree::ptree &para
                                       "Multiple definitions of dof: " << name);
             }
             dof_data[name] = data;
-        } else if (dofs_node.first == "BondAngle") {
+        } else if (dofs_node.first == "Angle" || dofs_node.first == "BondAngle") {
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
 
@@ -61,7 +61,7 @@ void MoveCommonDefinitions::parse_dofs(const qsboost::property_tree::ptree &para
                                         "Multiple definitions of dof: " << name);
             }
             dof_data[name] = data;
-        } else if (dofs_node.first == "BondLength") {
+        } else if (dofs_node.first == "Length" || dofs_node.first == "BondLength") {
 
             std::string name = dofs_node.second.get<std::string>("<xmlattr>.name");
 
