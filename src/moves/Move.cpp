@@ -288,7 +288,8 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename,
 void Move::perform(KinematicForest& kf, MoveInfo& info)
 {
     for( const auto& dof_val_pair: info.dof_deltas ){
-        dof_val_pair.first->add_value(dof_val_pair.second);
+        kf.modify_dof(dof_val_pair.first, dof_val_pair.second);
+        //dof_val_pair.first->add_value(dof_val_pair.second);
         //switch(dof_val_pair.first->get_type()){
         //    case Dof::LENGTH:
         //        kf.change_length(  dof_val_pair.first->get_atom_index(), dof_val_pair.second * units::nm);

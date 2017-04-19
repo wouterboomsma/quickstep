@@ -1,5 +1,4 @@
-
-#include "quickstep/moves/GaussianMove.h"
+#include "quickstep/moves/GaussianAbsoluteMove.h"
 #include "quickstep/moves/GaussianMoveKernel.h"
 #include "quickstep/MoveCommonDefinitions.h"
 #include "quickstep/FatalError.h"
@@ -12,16 +11,16 @@ namespace quickstep {
 
 
 // Register move generator with factory
-const GaussianMove::MoveGenerator::Registrator GaussianMove::MoveGenerator::registrator;
+const GaussianAbsoluteMove::MoveGenerator::Registrator GaussianAbsoluteMove::MoveGenerator::registrator;
 
-std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
-                                                                           Topology &topology,
-                                                                           const MoveCommonDefinitions &move_common_defs,
-                                                                           const std::vector<std::shared_ptr<MoveSettings>> &move_settings) {
+std::vector<std::unique_ptr<Move>> GaussianAbsoluteMove::MoveGenerator::operator()(const qsboost::property_tree::ptree &parameter_input,
+                                                                                   Topology &topology,
+                                                                                   const MoveCommonDefinitions &move_common_defs,
+                                                                                   const std::vector<std::shared_ptr<MoveSettings>> &move_settings) {
     auto root_node = parameter_input.begin();
     const std::string &node_name = root_node->first;
 
-    auto settings = Move::find_settings<GaussianMove::Settings>(move_settings);
+    auto settings = Move::find_settings<GaussianAbsoluteMove::Settings>(move_settings);
 
     int dimension = root_node->second.get<int>("dim");
 
@@ -38,9 +37,14 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
             conversion_factor = M_PI/180.;
     }
 
+    qsboost::optional<double> minimum_delta = root_node->second.get_optional<double>("minimum_delta");
+    if (minimum_delta) {
+        settings.minimum_delta = *minimum_delta;
+    }
+
     std::string mean_label = "mean";
     std::string dof_label = "dof";
-    std::string var_label = "var";
+    std::string stddev_label = "stddev";
     for (int i=0; i<dimension; ++i) {
         std::string mean_label_suffixed = mean_label + std::to_string(i+1);
         std::string dof_label_suffixed = dof_label + std::to_string(i+1);
@@ -60,15 +64,15 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
         }
 
         for (int j=i; j<dimension; ++j) {
-            std::string var_label_suffixed1 = var_label + std::to_string(i + 1) + std::to_string(j + 1);
-            std::string var_label_suffixed2 = var_label + std::to_string(j + 1) + std::to_string(i + 1);
+            std::string stddev_label_suffixed1 = stddev_label + std::to_string(i + 1) + std::to_string(j + 1);
+            std::string stddev_label_suffixed2 = stddev_label + std::to_string(j + 1) + std::to_string(i + 1);
 
-            qsboost::optional<double> sigma2_val;
-            if ((          (sigma2_val = root_node->second.get_optional<double>(var_label_suffixed1))) ||
-                (          (sigma2_val = root_node->second.get_optional<double>(var_label_suffixed2))) ||
-                (i == 0 && (sigma2_val = root_node->second.get_optional<double>(var_label)))) {
-                cov(i, j) = (*sigma2_val * conversion_factor * conversion_factor);
-                cov(j, i) = (*sigma2_val * conversion_factor * conversion_factor);
+            qsboost::optional<double> sigma_val;
+            if ((          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed1))) ||
+                (          (sigma_val = root_node->second.get_optional<double>(stddev_label_suffixed2))) ||
+                (i == 0 && (sigma_val = root_node->second.get_optional<double>(stddev_label)))) {
+                cov(i, j) = (*sigma_val * conversion_factor) * (*sigma_val * conversion_factor);
+                cov(j, i) = (*sigma_val * conversion_factor) * (*sigma_val * conversion_factor);
             }
         }
     }
@@ -132,14 +136,19 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
     std::vector<std::unique_ptr<Move>> return_value;
     for (auto &realization_dof_atoms: dof_atoms) {
         // std::cout << "GaussianMove residue: " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.index << " " << topology.get_atoms().at(realization_dof_atoms.front().front()).residue.name << "\n";
-        return_value.push_back(std::move(std::make_unique<GaussianMove>(mean, cov, realization_dof_atoms, dof_atom_names, settings)));
+        return_value.push_back(std::move(std::make_unique<GaussianAbsoluteMove>(mean, cov, realization_dof_atoms, dof_atom_names, settings)));
     }
 
     return std::move(return_value);
 }
 
 
-MoveInfo GaussianMove::propose(KinematicForest &forest) {
+void GaussianAbsoluteMove::initialize(const Platform &platform) {
+    std::cout << "GaussianMove Kernel initialized!\n";
+    kernel = platform.create_kernel(GaussianMoveKernel::Name());
+}
+
+MoveInfo GaussianAbsoluteMove::propose(KinematicForest &forest) {
 
     if (dofs.empty() || &(dofs[0]->get_forest()) != &forest) {
         dofs.clear();
@@ -174,6 +183,14 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //std::cout << "New torsion: " << new_value[d];
 
         double value = sample[d];
+        value = sample[d] - dofs[d]->get_value();
+            //a = (a>180) ? -360 : (a<-180) ? 360 : 0;
+            //a += (a>180) ? -360 : (a<-180) ? 360 : 0;
+        value += (value > M_PI) ? -2 * M_PI : (value < -M_PI) ? 2 * M_PI : 0; // Might not strictly be necessary
+            //        delta_vals[d] = a;
+            //        dofs[d]->add_value(a);
+            //ret.dof_deltas.push_back( std::make_pair( *dofs[d].get(), a ) );
+            //DOFIndex di = dofs[d]->get_dofindex();
         int dof_atom_index = dofs[d]->get_atom_index();
         //ret.dof_deltas.push_back( std::make_pair( di, a ) );
 
@@ -187,6 +204,12 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //ret.dof_deltas.push_back(std::make_pair(std::make_unique<DihedralDof>(forest, dof_atom_index), value));
         move_info.dof_deltas.push_back(std::make_pair(dofs[d], value));
         //ret.atoms.push_back({(int)di.atom_index, parent_index, atom_index3, atom_index4});
+
+        // Flag move for early rejection if proposed move is smaller than threshold
+        if (std::fabs(value) < settings.minimum_delta) {
+            std::cerr << "Flagging for early reject: " << value << " " << settings.minimum_delta << "\n";
+            move_info.early_reject = true;
+        }
 
         ////Add all children of parent
         //for(size_t i=0; i<forest.adjacency_list[parent_index].size();++i){
@@ -234,10 +257,10 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
 ////    forest.updatePositions();
 //}
 
-GaussianMove::GaussianMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &cov,
-                           std::vector<std::vector<int>> &dof_atoms,
-                           std::vector<std::vector<std::string>> &dof_atom_names,
-                           const Settings &settings)
+GaussianAbsoluteMove::GaussianAbsoluteMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &cov,
+                                           std::vector<std::vector<int>> &dof_atoms,
+                                           std::vector<std::vector<std::string>> &dof_atom_names,
+                                           const Settings &settings)
         : mean(mean),
           inverse_cov(cov.inverse()),
           //old_value(mean.rows()),
@@ -264,7 +287,7 @@ GaussianMove::GaussianMove(const Eigen::VectorXd &mean, const Eigen::MatrixXd &c
 
 }
 
-Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move_info) const {
+Eigen::Array<double, 2, 1> GaussianAbsoluteMove::calc_log_bias_impl(const MoveInfo &move_info) const {
 
     //std::cout << "mean: " << mean << "   cov: " << inverse_cov.inverse()<< "\n";
 
@@ -284,8 +307,23 @@ Eigen::Array<double, 2, 1> GaussianMove::calc_log_bias_impl(const MoveInfo &move
         delta[d] = move_info.dof_deltas[d].second;
     }
 
+    if (move_info.early_reject) {
+        return Eigen::Array<double, 2, 1>(0., std::numeric_limits<double>::infinity());
+    }
+
     Eigen::VectorXd new_value = delta;
     Eigen::VectorXd old_value = Eigen::VectorXd::Zero(delta.size());
+
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        new_value[d] = move_info.dof_deltas[d].first->get_value();
+    }
+
+    old_value = new_value - delta;
+    for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
+        //std::cout << "old value: " << old_value[d] << " " << std::fmod((old_value[d] + 3*M_PI),(2*M_PI)) - M_PI << " " << std::fmod(std::fmod(old_value[d], 2*M_PI)+2*M_PI, 2*M_PI) << "\n";
+        //old_value[d] = std::fmod(std::fmod(old_value[d] + M_PI, 2 * M_PI) + 2 * M_PI, 2 * M_PI) - M_PI;
+        old_value[d] = move_info.dof_deltas[d].first->wrap_to_domain(old_value[d]);
+    }
 
     //Eigen::VectorXd new_value = delta;
     //Eigen::VectorXd old_value = -delta;

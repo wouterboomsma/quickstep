@@ -1,0 +1,8 @@
+#ifndef QUICKSTEP_KERNEL_FACTORY_H
+#define QUICKSTEP_KERNEL_FACTORY_H
+
+class KernelFactory {
+
+};
+
+#endif // QUICKSTEP_KERNEL_FACTORY_H

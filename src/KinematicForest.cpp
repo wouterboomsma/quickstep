@@ -8,6 +8,7 @@
 
 #include "quickstep/utils.h"
 #include "quickstep/DisjointSet.h"
+#include "quickstep/KinematicForestKernel.h"
 
 
 using namespace std;
@@ -26,83 +27,97 @@ using namespace quickstep;
 //    }
 //}
 
-KinematicForest::KinematicForest():
-		n_atoms(0),
-		topology(NULL)
-{
+//KinematicForest::KinematicForest(const Platform &platform):
+//		n_atoms(0),
+//		topology(NULL)
+//{
+//
+////	Eigen::Transform translation_A(Eigen::Translation<float,3>(Eigen::Vector3f(1,1,1)));
+//	Eigen::Translation<float,3> translation_A(Eigen::Vector3f(1,1, 1));
+//	Eigen::Translation<float,3> translation_B(Eigen::Vector3f(1,1,-1));
+//	Eigen::AngleAxis<float> aa(0.1, Eigen::Vector3f(1,0,0));
+//	Eigen::Transform<float,3,Eigen::Affine> trans(translation_A);
+//
+//}
 
-//	Eigen::Transform translation_A(Eigen::Translation<float,3>(Eigen::Vector3f(1,1,1)));
-	Eigen::Translation<float,3> translation_A(Eigen::Vector3f(1,1, 1));
-	Eigen::Translation<float,3> translation_B(Eigen::Vector3f(1,1,-1));
-	Eigen::AngleAxis<float> aa(0.1, Eigen::Vector3f(1,0,0));
-	Eigen::Transform<float,3,Eigen::Affine> trans(translation_A);
+//KinematicForest::KinematicForest(quickstep::Topology &topology, const CoordinatesWrapper &coordinates)
+//        : KinematicForest(topology),
+//          positions(make_unique<CoordinatesWrapper>(coordinates)),
+//          stored_positions(coordinates.rows(), coordinates.cols()) // Stored positions is a matrix and must be initialized with two sizes
+//{
+//
+//}
 
-}
 
 KinematicForest::KinematicForest(quickstep::Topology &topology, const CoordinatesWrapper &coordinates):
 		topology(&topology),
-		positions(make_unique<CoordinatesWrapper>(coordinates)),
-		stored_positions(coordinates.rows(), coordinates.cols()) // Stored positions is a matrix and must be initialized with two sizes
-{
-	//Associate each atom with a unique index between 0 and the total number of atoms
-	n_atoms = 0;
-	unordered_map<int, int> atomIdxMap;
-	for( const quickstep::Topology::Chain& chain: topology.get_chains() ){
-		for( const quickstep::Topology::Residue& res: chain.residues ){
-			//for( const quickstep::Topology::Atom& atom: res.atoms ){
-			for( unsigned int atom_idx: res.atom_indices){
-//				atomIdxMap[atom.index] = n_atoms;
-//				id_atom_map[n_atoms] = &atom;
-				atomIdxMap[atom_idx] = n_atoms;
-				id_atom_map[n_atoms] = &topology.atoms[atom_idx];
-				n_atoms++;
-			}
-		}
-	}
+        positions(make_unique<CoordinatesWrapper>(coordinates)),
+        stored_positions(coordinates.rows(), coordinates.cols()) // Stored positions is a matrix and must be initialized with two sizes
+        {
+	////Associate each atom with a unique index between 0 and the total number of atoms
+	//n_atoms = 0;
+	//unordered_map<int, int> atomIdxMap;
+	//for( const quickstep::Topology::Chain& chain: topology.get_chains() ){
+	//	for( const quickstep::Topology::Residue& res: chain.residues ){
+	//		for( unsigned int atom_idx: res.atom_indices){
+	//			atomIdxMap[atom_idx] = n_atoms;
+	//			id_atom_map[n_atoms] = &topology.atoms[atom_idx];
+	//			n_atoms++;
+	//		}
+	//	}
+	//}
 
-	//Allocate space for tree, positions and transformations
-	adjacency_list.resize(n_atoms);
-	transformations.resize(n_atoms);
+	////Allocate space for tree, positions and transformations
+	//adjacency_list.resize(n_atoms);
+	//transformations.resize(n_atoms);
 //	transformations_queue.resize(n_atoms);
 
-    //Kruskals algorithm for finding minimum spanning forest
-    DisjointSet ds(n_atoms);
-    for( auto bond: topology.get_bonds() ){
-    	const quickstep::Topology::Atom& a1 = topology.atoms[bond.first];
-    	const quickstep::Topology::Atom& a2 = topology.atoms[bond.second];
-    	int a1Idx = atomIdxMap[a1.index];
-    	int a2Idx = atomIdxMap[a2.index];
-    	if(!ds.connected(a1Idx, a2Idx)){
-    		adjacency_list[a1Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
-    		adjacency_list[a2Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
-    		ds.merge(a1Idx, a2Idx);
-    	}
-    }
+    ////Kruskals algorithm for finding minimum spanning forest
+    //DisjointSet ds(n_atoms);
+    //for( auto bond: topology.get_bonds() ){
+    //	const quickstep::Topology::Atom& a1 = topology.atoms[bond.first];
+    //	const quickstep::Topology::Atom& a2 = topology.atoms[bond.second];
+    //	int a1Idx = atomIdxMap[a1.index];
+    //	int a2Idx = atomIdxMap[a2.index];
+    //	if(!ds.connected(a1Idx, a2Idx)){
+    //		adjacency_list[a1Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
+    //		adjacency_list[a2Idx].push_back( pair<int,int>(a1Idx, a2Idx) );
+    //		ds.merge(a1Idx, a2Idx);
+    //	}
+    //}
 
-    //Root all trees
-    roots.push_back(0);
-    root_tree(0, -1);
-    for(int v=1;v<n_atoms;v++){
-        bool vShouldBeRoot = true;
-        for(int r=0;r<roots.size();r++){
-            if(ds.connected(roots[r], v)){
-                vShouldBeRoot = false;
-                break;
-            }
-        }
+    ////Root all trees
+    //roots.push_back(0);
+    //root_tree(0, -1);
+    //for(int v=1;v<n_atoms;v++){
+    //    bool vShouldBeRoot = true;
+    //    for(int r=0;r<roots.size();r++){
+    //        if(ds.connected(roots[r], v)){
+    //            vShouldBeRoot = false;
+    //            break;
+    //        }
+    //    }
+    //
+    //    if(vShouldBeRoot){
+    //        roots.push_back(v);
+    //        root_tree(v,-1);
+    //    }
+    //}
+    //update_pseudo_roots();
+    //
+    ////Reset transformations
+    //for(int i=0;i<n_atoms;i++){
+    //    transformations[i].setIdentity();
+    //}
 
-        if(vShouldBeRoot){
-            roots.push_back(v);
-            root_tree(v,-1);
-        }
-    }
-    update_pseudo_roots();
+}
 
-    //Reset transformations
-    for(int i=0;i<n_atoms;i++){
-        transformations[i].setIdentity();
-    }
-
+void KinematicForest::initialize(const Platform &platform, const CoordinatesWrapper &coordinates) {
+    positions = make_unique<CoordinatesWrapper>(coordinates);
+    stored_positions = Coordinates(coordinates.rows(), coordinates.cols());
+    std::cout << "Initializing KinematicForest\n";
+    kernel = platform.create_kernel(KinematicForestKernel::Name());
+    kernel.get_as<KinematicForestKernel>().initialize(*this);
 }
 
 CoordinatesWrapper &KinematicForest::get_positions()
@@ -236,6 +251,10 @@ void KinematicForest::change_torsion(int atom, units::Angle value)
 //    if(!pseudoRootsSet)	update_pseudo_roots();
 //    if(atom==0) return;
 
+    //modified_indices.push_back(atom);
+    //modified_values.push_back(value);
+    //modified_dof_types.push_back(Dof::DIHEDRAL);
+
     int a1 = parent(atom);
     int a2 = parent(a1);
 
@@ -253,6 +272,10 @@ void KinematicForest::change_torsion(int atom, units::Angle value)
     moved_subtrees.insert(atom);
 }
 
+void KinematicForest::modify_dof(Dof &dof, double delta_value) {
+    modified_dofs.push_back(std::make_pair(dof, delta_value));
+}
+
 void KinematicForest::change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t)
 {
 //	if(!pseudoRootsSet)	update_pseudo_roots();
@@ -264,7 +287,10 @@ void KinematicForest::change_global(int chain, Eigen::Transform<double, 3, Eigen
 
 void KinematicForest::update_positions()
 {
-//	if(!pseudoRootsSet)	update_pseudo_roots();
+
+    kernel.get_as<KinematicForestKernel>().update_positions(modified_dofs);
+
+    //	if(!pseudoRootsSet)	update_pseudo_roots();
     //forward_propagate_transformations(-1);
 
     //Ensure that moved_subtrees dont contain two vertices where one is an ancestor of the other
@@ -292,35 +318,35 @@ void KinematicForest::update_positions()
 }
 
 
-void KinematicForest::forward_propagate_transformations(int atom)
-{
-//	std::cout<<"forwardPropagateTransformations "<<atom<<std::endl;
-    if(atom<0){
-        for(size_t i=0;i<roots.size();i++){
-            forward_propagate_transformations(roots[i]);
-        }
-    }else{
-        int p = parent(atom);
-
-        if(p>=0)
-        	transformations[atom] = transformations[p]*transformations[atom];
-
-        backup_pos(atom);
-
-        stored_positions.col(atom) = positions->col(atom);
-        positions->col(atom) = transformations[atom] * positions->col(atom).matrix();
-
-        stored_indices.insert(atom);
-
-
-        for(int c=0;c<adjacency_list[atom].size();c++){
-            if(adjacency_list[atom][c].second!=atom)
-                forward_propagate_transformations(adjacency_list[atom][c].second);
-        }
-        transformations[atom].setIdentity();
-
-    }
-}
+//void KinematicForest::forward_propagate_transformations(int atom)
+//{
+////	std::cout<<"forwardPropagateTransformations "<<atom<<std::endl;
+//    if(atom<0){
+//        for(size_t i=0;i<roots.size();i++){
+//            forward_propagate_transformations(roots[i]);
+//        }
+//    }else{
+//        int p = parent(atom);
+//
+//        if(p>=0)
+//        	transformations[atom] = transformations[p]*transformations[atom];
+//
+//        backup_pos(atom);
+//
+//        stored_positions.col(atom) = positions->col(atom);
+//        positions->col(atom) = transformations[atom] * positions->col(atom).matrix();
+//
+//        stored_indices.insert(atom);
+//
+//
+//        for(int c=0;c<adjacency_list[atom].size();c++){
+//            if(adjacency_list[atom][c].second!=atom)
+//                forward_propagate_transformations(adjacency_list[atom][c].second);
+//        }
+//        transformations[atom].setIdentity();
+//
+//    }
+//}
 
 void KinematicForest::restore_positions()
 {
@@ -355,13 +381,13 @@ Coordinate KinematicForest::pos(int i) const
     return positions->col(i);
 }
 
-void KinematicForest::backup_pos(int i)
-{
-    assert(i>=0 && i<n_atoms);
-
-    stored_positions.col(i) = positions->col(i);
-
-}
+//void KinematicForest::backup_pos(int i)
+//{
+//    assert(i>=0 && i<n_atoms);
+//
+//    stored_positions.col(i) = positions->col(i);
+//
+//}
 
 //void KinematicForest::apply_transformation_at_pos(int i)
 //{
@@ -398,17 +424,17 @@ void KinematicForest::root_tree(int v, int p)
     }
 }
 
-int KinematicForest::parent(int v) const
-{
-    if(v<0) return v-1;
-
-    for(int c=0;c<adjacency_list[v].size();c++){
-        if(adjacency_list[v][c].second==v)
-            return adjacency_list[v][c].first;
-
-    }
-    return -1;
-}
+//int KinematicForest::parent(int v) const
+//{
+//    if(v<0) return v-1;
+//
+//    for(int c=0;c<adjacency_list[v].size();c++){
+//        if(adjacency_list[v][c].second==v)
+//            return adjacency_list[v][c].first;
+//
+//    }
+//    return -1;
+//}
 
 bool KinematicForest::ancestor_of(int v1, int v2)
 {
@@ -435,7 +461,7 @@ void KinematicForest::print()
 
 }
 
-Topology* KinematicForest::get_topology()
+const Topology* KinematicForest::get_topology() const
 {
 	return topology;
 }

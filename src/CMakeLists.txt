@@ -9,6 +9,7 @@ add_library(quickstep
     DisjointSet.cpp
     Element.cpp
     KinematicForest.cpp
+    KinematicForestKernel.cpp
     Topology.cpp
     Selection.cpp
     MoveInfo.cpp
@@ -20,6 +21,8 @@ add_library(quickstep
     moves/InterpolatorMove.cpp
     moves/SymmetrizedMove.cpp
     moves/GaussianMove.cpp
+    moves/GaussianAbsoluteMove.cpp
+    moves/GaussianMoveKernel.cpp
     moves/Move.cpp
     MolecularCommonDefinitions.cpp
     MoveCommonDefinitions.cpp
@@ -30,6 +33,8 @@ add_library(quickstep
     dofs/AngleDof.cpp
     dofs/DihedralDof.cpp
     random.cpp
+    Kernel.cpp
+    KernelImpl.cpp
 
     ${PROJECT_SOURCE_DIR}/include/quickstep/BondGraph.h
     ${PROJECT_SOURCE_DIR}/include/quickstep/DisjointSet.h

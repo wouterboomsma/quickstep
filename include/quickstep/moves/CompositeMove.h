@@ -20,6 +20,7 @@
 
 namespace quickstep {
 
+class Platform;
 
 class CompositeMove: public Move {
 public:
@@ -42,6 +43,8 @@ public:
 	CompositeMove();
 	~CompositeMove(){}
 	CompositeMove(CompositeMove &&other) = default;
+
+	virtual void initialize(const Platform &platform);
 
 	virtual MoveInfo propose(KinematicForest& kf);
 

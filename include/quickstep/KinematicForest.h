@@ -1,5 +1,5 @@
-#ifndef KINEMATICFOREST_H
-#define KINEMATICFOREST_H
+#ifndef QUICKSTEP_KINEMATIC_FOREST_H
+#define QUICKSTEP_KINEMATIC_FOREST_H
 
 #include <vector>
 #include <utility>
@@ -11,11 +11,13 @@
 #include "quickstep/FatalError.h"
 #include "quickstep/utils.h"
 #include "quickstep/dofs/Dof.h"
+#include "quickstep/Platform.h"
 #include <Eigen/Geometry>
 
 namespace quickstep{
 
 class KinematicForest;
+class Kernel;
 
 ///**
 // * Indicates the index of a DOF in the KinematicForest. Each DOF is defined by an atom-index
@@ -213,9 +215,13 @@ public:
 //    };
 
     /** Construct a kinematic forest spanning all atoms in the topology. */
-    KinematicForest(quickstep::Topology& topology, const CoordinatesWrapper &coordinates);
+    KinematicForest(quickstep::Topology& topology, const CoordinatesWrapper &coordinates = CoordinatesWrapper(nullptr, 3, 0));
 
-    KinematicForest();
+    //KinematicForest(quickstep::Topology& topology);
+
+    void initialize(const Platform &platform, const CoordinatesWrapper &coordinates);
+
+    //KinematicForest(const Platform &platform);
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
@@ -241,6 +247,8 @@ public:
     void change_angle(int atom, units::Angle value);
     void change_torsion(int atom, units::Angle value);
 
+    void modify_dof(Dof &dof, double delta_value);
+
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
     void change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
 
@@ -263,7 +271,7 @@ public:
     /** Print a textual representation of the forest for debugging purposes. */
     void print();
 
-    Topology* get_topology();
+    const Topology* get_topology() const;
 
     const Topology::Atom& get_atom(int atom);
 
@@ -290,7 +298,7 @@ private:
      * Return the parent of vertex v. If v is a root return -1,
      * if v<0 return (v-1)
      */
-    int parent(int v) const;
+    //int parent(int v) const;
 
     /** Return true iff v1 is an ancestor of v2 */
     bool ancestor_of(int v1, int v2);
@@ -298,11 +306,11 @@ private:
     /// Number of atoms
     int n_atoms;
 
-    /// Indices of root-atoms
-    std::vector<int> roots;
-
-    /// Adjacency list specifying edges in the tree
-    std::vector< std::vector< std::pair<int,int> > > adjacency_list;
+    ///// Indices of root-atoms
+    //std::vector<int> roots;
+    //
+    ///// Adjacency list specifying edges in the tree
+    //std::vector< std::vector< std::pair<int,int> > > adjacency_list;
 
     /// Positions of atoms
     std::unique_ptr<CoordinatesWrapper> positions;
@@ -319,13 +327,13 @@ private:
     CoordinatesWrapper::ColXpr pos(int i);
     Coordinate pos(int i) const;
 
-    void backup_pos(int i);
+    //void backup_pos(int i);
 
 //    void apply_transformation_at_pos(int i);
 
 
-    /// Each atom has an associated transformation
-    std::vector< QSTransform > transformations;
+    ///// Each atom has an associated transformation
+    //std::vector< QSTransform > transformations;
 
     /**
      * \brief Recurse through the tree, update transformations, apply them to atoms, and
@@ -335,17 +343,20 @@ private:
      * atom a that is not root. If a is a root the previous transformation is assumed to
      * be identity.
      */
-    void forward_propagate_transformations(int a=-1);
+    //void forward_propagate_transformations(int a=-1);
 
     /** Indices of all roots of all subtrees that had their positions changed. When only few atoms are moving this
     presents a significant speedup. */
     std::unordered_set<int> moved_subtrees;
 
-    std::unordered_set<int> stored_indices;
+    //std::unordered_set<int> stored_indices;
+
+    std::vector<std::pair<Dof, double> > modified_dofs;
 
 //    bool pseudoRootsSet = false;
     void update_pseudo_roots();
 
+    Kernel kernel;
 
     friend class CofMMove;
     friend class FreeBondRotateMove;
@@ -354,4 +365,4 @@ private:
 
 }
 
-#endif // KINEMATICFOREST_H
+#endif // QUICKSTEP_KINEMATIC_FOREST_H

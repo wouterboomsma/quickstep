@@ -21,6 +21,13 @@ CompositeMove::CompositeMove() {
 
 }
 
+void CompositeMove::initialize(const Platform &platform) {
+	//std::cout << "CompositeMove Kernel initialized!\n";
+	for (auto &move: moves) {
+		move->initialize(platform);
+	}
+}
+
 MoveInfo CompositeMove::propose(KinematicForest& kf)
 {
 	assert(accum_weights.size()>0);

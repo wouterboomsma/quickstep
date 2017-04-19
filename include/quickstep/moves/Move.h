@@ -31,6 +31,8 @@ public:
 
 	virtual ~Move(){}
 
+	virtual void initialize(const Platform &platform) {};
+
 	/** Suggest a conformational move using the provided kinematic forest.  */
 	virtual MoveInfo propose(KinematicForest&) = 0;
 

@@ -13,4 +13,4 @@ if(NOT quickstep_BINARY_DIR)
 endif()
 
 # These are IMPORTED targets created by quickstepTargets.cmake
-set(quickstep_LIBRARIES quickstep @quickstep_EXTERNAL_LIBRARIES@)
+set(quickstep_LIBRARIES @quickstep_LIBRARIES@ @quickstep_EXTERNAL_LIBRARIES@)

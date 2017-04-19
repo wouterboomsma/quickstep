@@ -5,18 +5,17 @@
  *      Author: rfonseca
  */
 
-#ifndef EXTERNAL_QUICKSTEP_INCLUDE_QUICKSTEP_MOVEINFO_H_
-#define EXTERNAL_QUICKSTEP_INCLUDE_QUICKSTEP_MOVEINFO_H_
+#ifndef QUICKSTEP_MOVE_INFO_H_
+#define QUICKSTEP_MOVE_INFO_H_
 
 #include <list>
 #include <quickstep/dofs/Dof.h>
-#include <utility> //pair
-
-#include "quickstep/KinematicForest.h"
+#include <utility>
 
 namespace quickstep{
 
 class Move;
+class KinematicForest;
 //struct SubTree{
 //	int root_atom;
 //	std::list<int> excluded_atoms;
@@ -71,4 +70,4 @@ private:
 
 }
 
-#endif /* EXTERNAL_QUICKSTEP_INCLUDE_QUICKSTEP_MOVEINFO_H_ */
+#endif
