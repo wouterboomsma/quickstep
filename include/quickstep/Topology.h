@@ -186,7 +186,7 @@ public:
     const std::vector<std::reference_wrapper<const Residue>> &get_residues_by_signature(
             const std::string &signature_str);
 
-    const std::vector<std::set<int>> &get_bond_adjacency_list();
+    const std::vector<std::set<int>> &get_bond_adjacency_list() const;
 
     std::vector<unsigned int> n_residues;
     unsigned int n_atoms;
@@ -210,7 +210,7 @@ private:
 
     //    std::map<std::string, std::vector<std::pair<int,int> > > residue_template_signatures;
     //std::map<std::string, std::vector<std::reference_wrapper<const Residue>>> residue_template_signatures;
-    std::vector<std::set<int>> bond_adjacency_list;
+    mutable std::vector<std::set<int>> bond_adjacency_list;
 
     qsboost::optional<Array3d> unit_cell_dimensions;
 

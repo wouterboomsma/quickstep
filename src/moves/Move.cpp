@@ -285,10 +285,12 @@ std::unique_ptr<Move> Move::parse(const std::string &xml_filename,
 }
 
 
-void Move::perform(KinematicForest& kf, MoveInfo& info)
-{
-    for( const auto& dof_val_pair: info.dof_deltas ){
-        kf.modify_dof(dof_val_pair.first, dof_val_pair.second);
+void Move::perform(KinematicForest& kf, MoveInfo& info) {
+
+    // Perhaps we should just have a modify_dofs that records the updated dof values into the MoveInfo object?
+    //kf.modify_dofs(info);
+    for( const auto& dof_val_pair: info.dof_deltas ) {
+        kf.modify_dof(*dof_val_pair.first.get(), dof_val_pair.second);
         //dof_val_pair.first->add_value(dof_val_pair.second);
         //switch(dof_val_pair.first->get_type()){
         //    case Dof::LENGTH:
@@ -304,6 +306,7 @@ void Move::perform(KinematicForest& kf, MoveInfo& info)
         //        break;
         //}
     }
+    kf.update_positions();
 }
 
 double Move::calc_log_bias(const MoveInfo &move_info) const {
@@ -331,8 +334,10 @@ double Move::calc_jacobian(const MoveInfo &move_info) const {
     }
 
     Eigen::VectorXd new_value(delta.size());
+    std::cout << "\n\t\t\tERROR in Move::calc_jacobian: FIXME: does not have access to move value.\n\n";
     for (unsigned int d = 0; d < move_info.dof_deltas.size(); ++d) {
-        new_value[d] = move_info.dof_deltas[d].first->get_value();
+        // TODO: figure out how to extract current values from kernel
+        //new_value[d] = move_info.dof_deltas[d].first->get_value();
     }
 
     Eigen::VectorXd old_value = new_value - delta;

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.8)
 project(quickstep CXX)
 
 # Set version information
-SET(quickstep_LIBRARY_NAME QuickStep)
+SET(quickstep_LIBRARY_NAME quickstep)
 set(quickstep_MAJOR_VERSION 0)
 set(quickstep_MINOR_VERSION 1)
 set(quickstep_PATCH_VERSION 0)

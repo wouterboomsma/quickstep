@@ -15,22 +15,26 @@ using namespace quickstep;
 //
 //}
 
-DihedralDof::DihedralDof(KinematicForest &forest, int atom_index)
-    : Dof(forest, atom_index, Dof::DIHEDRAL){
+//DihedralDof::DihedralDof(KinematicForest &forest, int atom_index)
+//    : Dof(forest, atom_index, Dof::DIHEDRAL){
+DihedralDof::DihedralDof(std::vector<int> atom_indices,
+                         std::vector<int> sibling_atom_indices)
+    : Dof(atom_indices, Dof::DIHEDRAL),
+      sibling_atom_indices(sibling_atom_indices) {
 
-    //Collect all children of parent
-    int parent_index = forest.get_parent(atom_index);
-    sibling_atom_indices = forest.get_children(parent_index);
+    ////Collect all children of parent
+    //int parent_index = forest.get_parent(atom_index);
+    //sibling_atom_indices = forest.get_children(parent_index);
 }
 
-double DihedralDof::get_value() {
-    return forest.get_torsion(this->atom_index).value();
-};
-
-void DihedralDof::add_value(double delta_value) {
-    for(int i: sibling_atom_indices)
-        forest.change_torsion(i, units::Angle::from_value(delta_value));
-}
+//double DihedralDof::get_value() {
+//    return forest.get_torsion(this->atom_index).value();
+//};
+//
+//void DihedralDof::add_value(double delta_value) {
+//    for(int i: sibling_atom_indices)
+//        forest.change_torsion(i, units::Angle::from_value(delta_value));
+//}
 
 double DihedralDof::log_jacobian(double value) {
     return 0.;

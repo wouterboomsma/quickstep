@@ -11,12 +11,13 @@ public:
     //          std::vector<int> atom_indices,
     //          std::vector<std::string> atom_names);
 
-    LengthDof(KinematicForest &forest,
-              int atom_index);
+    //LengthDof(KinematicForest &forest,
+    //          int atom_index);
+    LengthDof(std::vector<int> atom_indices);
 
-    double get_value() override;
-
-    void add_value(double delta_value) override;
+    //double get_value() override;
+    //
+    //void add_value(double delta_value) override;
 
     double log_jacobian(double value) override;
 

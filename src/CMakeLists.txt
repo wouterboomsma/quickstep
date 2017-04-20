@@ -15,19 +15,19 @@ add_library(quickstep
     MoveInfo.cpp
     moves/CompositeMove.cpp
     moves/MixtureMove.cpp
-    moves/CofMMove.cpp
-    moves/StdDoFMove.cpp
-    moves/FreeBondRotateMove.cpp
+    #moves/CofMMove.cpp
+    #moves/StdDoFMove.cpp
+    #moves/FreeBondRotateMove.cpp
     moves/InterpolatorMove.cpp
-    moves/SymmetrizedMove.cpp
+    #moves/SymmetrizedMove.cpp
     moves/GaussianMove.cpp
-    moves/GaussianAbsoluteMove.cpp
+    #moves/GaussianAbsoluteMove.cpp
     moves/GaussianMoveKernel.cpp
     moves/Move.cpp
     MolecularCommonDefinitions.cpp
     MoveCommonDefinitions.cpp
     MoveFactory.cpp
-    dofControllers/StdDoFController.cpp
+    #dofControllers/StdDoFController.cpp
     dofs/Dof.cpp
     dofs/LengthDof.cpp
     dofs/AngleDof.cpp

@@ -215,7 +215,8 @@ public:
 //    };
 
     /** Construct a kinematic forest spanning all atoms in the topology. */
-    KinematicForest(quickstep::Topology& topology, const CoordinatesWrapper &coordinates = CoordinatesWrapper(nullptr, 3, 0));
+    //KinematicForest(quickstep::Topology& topology, const CoordinatesWrapper &coordinates = CoordinatesWrapper(nullptr, 3, 0));
+    KinematicForest(quickstep::Topology& topology);
 
     //KinematicForest(quickstep::Topology& topology);
 
@@ -225,32 +226,34 @@ public:
 
     /** Get a reference to the vector of positions. Subsequent changes to DOFs will be
      * reflected in the returned vector. */
-    CoordinatesWrapper &get_positions();
-
-    int get_parent(int atom_index);
-
-    std::vector<int> get_ancestors(int atom_index, Dof::Type dof_type);
-
-    // TODO: This function should return a reference - requires change of underlying representation
-    std::vector<int> get_children(int parent_index);
+    //CoordinatesWrapper &get_positions();
+    //
+    //int get_parent(int atom_index);
+    //
+    //std::vector<int> get_ancestors(int atom_index, Dof::Type dof_type);
+    //
+    //// TODO: This function should return a reference - requires change of underlying representation
+    std::vector<int> get_children(int parent_index) const;
 //    std::vector< Math3D::Vector3 >& getPositions();
 
-    int get_num_roots();
-    int get_root_atom(int chain_idx);
-    int get_num_atoms();
+    //int get_num_roots();
+    //int get_root_atom(int chain_idx);
+    //int get_num_atoms();
+    //
+    units::Length get_length(int atom_index);
+    void increment_length(int atom_index, units::Length value);
 
-    units::Length get_length(int atom);
-    units::Angle get_angle(int atom);
-    units::Angle get_torsion(int atom) const;
-
-    void change_length(int atom, units::Length value);
-    void change_angle(int atom, units::Angle value);
-    void change_torsion(int atom, units::Angle value);
+    //units::Angle get_angle(int atom);
+    //units::Angle get_torsion(int atom) const;
+    //
+    //void change_length(int atom, units::Length value);
+    //void change_angle(int atom, units::Angle value);
+    //void change_torsion(int atom, units::Angle value);
 
     void modify_dof(Dof &dof, double delta_value);
 
 //    void changeDOFglobal(int chain, Math3D::RigidTransform t);
-    void change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
+//    void change_global(int chain, Eigen::Transform<double, 3, Eigen::Affine>& t);
 
     /**
      * Goes through the forest and updates positions so they reflect the requested
@@ -269,23 +272,38 @@ public:
     // Various helper functions below here
 
     /** Print a textual representation of the forest for debugging purposes. */
-    void print();
-
+    //void print();
+    //
     const Topology* get_topology() const;
-
-    const Topology::Atom& get_atom(int atom);
+    //
+    //const Topology::Atom& get_atom(int atom);
 
     /** Indicate if atom is the last in the sequence of atom_names */
-    bool atom_matches_names(int atom, const std::vector<std::string>& atom_names);
+    bool atom_matches_names(int atom, const std::vector<std::string>& atom_names) const;
+
+    /**
+     * Return the parent of vertex v. If v is a root return -1,
+     * if v<0 return (v-1)
+     */
+    int get_parent(int v) const;
+
+    std::vector<int> get_ancestors(int atom_index, Dof::Type dof_type) const;
+
+    // Construct a Dof for a set of atom indices.
+    // This functionality is placed here to allow the forest to check that the
+    // indices and names correspond to a well-defined Dof.
+    std::unique_ptr<Dof> construct_dof(const std::vector<int> &atom_indices,
+                                       const std::vector<std::string> &atom_names={}) const;
+
 
 private:
-    friend class DOFIndex;
-
-    typedef Eigen::Transform<double, 3, Eigen::AffineCompact> QSTransform;
-
+    //friend class DOFIndex;
+    //
+    //typedef Eigen::Transform<double, 3, Eigen::AffineCompact> QSTransform;
+    //
     quickstep::Topology* topology;
-
-    std::unordered_map<int, const quickstep::Topology::Atom*> id_atom_map;
+    //
+    //std::unordered_map<int, const quickstep::Topology::Atom*> id_atom_map;
 
     /**
      * Set v to be the parent of all adjacent vertices except p. This function is
@@ -294,29 +312,26 @@ private:
      */
     void root_tree(int v, int p);
 
-    /**
-     * Return the parent of vertex v. If v is a root return -1,
-     * if v<0 return (v-1)
-     */
-    //int parent(int v) const;
 
-    /** Return true iff v1 is an ancestor of v2 */
-    bool ancestor_of(int v1, int v2);
+    //
+    ///** Return true iff v1 is an ancestor of v2 */
+    //bool ancestor_of(int v1, int v2);
 
     /// Number of atoms
     int n_atoms;
 
     ///// Indices of root-atoms
-    //std::vector<int> roots;
+    std::vector<int> roots;
     //
     ///// Adjacency list specifying edges in the tree
-    //std::vector< std::vector< std::pair<int,int> > > adjacency_list;
+    std::vector< std::vector< std::pair<int,int> > > adjacency_list;
+    //std::vector< std::vector<int> > adjacency_list;
 
-    /// Positions of atoms
-    std::unique_ptr<CoordinatesWrapper> positions;
-    Coordinates stored_positions;
-
-    Coordinates pseudo_root_positions;
+    ///// Positions of atoms
+    //std::unique_ptr<CoordinatesWrapper> positions;
+    //Coordinates stored_positions;
+    //
+    //Coordinates pseudo_root_positions;
 //    units::Coordinates stored_pseudo_root_positions;
 
     /**
@@ -324,8 +339,8 @@ private:
      * If n_atoms <= i < n_atoms+roots.size()*2 the corresponding member of pseudo_roots
      * is returned.
      */
-    CoordinatesWrapper::ColXpr pos(int i);
-    Coordinate pos(int i) const;
+    //CoordinatesWrapper::ColXpr pos(int i);
+    //Coordinate pos(int i) const;
 
     //void backup_pos(int i);
 
@@ -347,20 +362,20 @@ private:
 
     /** Indices of all roots of all subtrees that had their positions changed. When only few atoms are moving this
     presents a significant speedup. */
-    std::unordered_set<int> moved_subtrees;
+    //std::unordered_set<int> moved_subtrees;
 
     //std::unordered_set<int> stored_indices;
 
-    std::vector<std::pair<Dof, double> > modified_dofs;
+    std::vector<std::pair<std::reference_wrapper<Dof>, double> > modified_dofs;
 
 //    bool pseudoRootsSet = false;
     void update_pseudo_roots();
 
     Kernel kernel;
 
-    friend class CofMMove;
-    friend class FreeBondRotateMove;
-    friend class GaussianMove;
+    //friend class CofMMove;
+    //friend class FreeBondRotateMove;
+    //friend class GaussianMove;
 };
 
 }

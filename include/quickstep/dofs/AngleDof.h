@@ -11,13 +11,14 @@ public:
     //         std::vector<int> atom_indices,
     //         std::vector<std::string> atom_names);
 
-    AngleDof(KinematicForest &forest,
-             int atom_index);
+    //AngleDof(KinematicForest &forest,
+    //         int atom_index);
+    AngleDof(std::vector<int> atom_indices);
 
-    double get_value() override;
-
-    void add_value(double delta_value) override;
-
+    //double get_value() override;
+    //
+    //void add_value(double delta_value) override;
+    //
     double log_jacobian(double value) override;
 
     double wrap_to_domain(double value) override;

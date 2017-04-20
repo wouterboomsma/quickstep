@@ -54,7 +54,7 @@ public:
 
 	Move *add_move(std::unique_ptr<Move> c, double weight=1.);
 
-	static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
+	//static std::unique_ptr<CompositeMove> create_standard_move(std::default_random_engine &rand_eng);
 
 	const std::vector<std::unique_ptr<Move>> &get_moves() const;
 

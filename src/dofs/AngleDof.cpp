@@ -13,16 +13,18 @@ using namespace quickstep;
 //    }
 //}
 
-AngleDof::AngleDof(KinematicForest &forest, int atom_index):
-        Dof(forest, atom_index, Dof::ANGLE){}
+//AngleDof::AngleDof(KinematicForest &forest, int atom_index):
+//        Dof(forest, atom_index, Dof::ANGLE){}
+AngleDof::AngleDof(std::vector<int> atom_indices):
+        Dof(atom_indices, Dof::ANGLE){}
 
-double AngleDof::get_value() {
-    return forest.get_angle(this->atom_index).value();
-};
-
-void AngleDof::add_value(double delta_value) {
-    forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
-}
+//double AngleDof::get_value() {
+//    return forest.get_angle(this->atom_index).value();
+//};
+//
+//void AngleDof::add_value(double delta_value) {
+//    forest.change_angle(this->atom_index, units::Angle::from_value(delta_value));
+//}
 
 double AngleDof::log_jacobian(double value) {
     return log(sin(value));

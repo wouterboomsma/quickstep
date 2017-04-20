@@ -4,9 +4,9 @@
 
 namespace quickstep {
 
-// Register kernel
-namespace {
-KernelImpl::Registrar<ReferencePlatform, GaussianMoveKernel> registrar();
-}
+//// Register kernel
+//namespace {
+//KernelImpl::Registrar<ReferencePlatform, GaussianMoveKernel> registrar();
+//}
 
 }

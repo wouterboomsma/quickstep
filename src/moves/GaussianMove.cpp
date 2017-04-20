@@ -5,7 +5,7 @@
 #include "quickstep/FatalError.h"
 #include <qsboost/property_tree/ptree.hpp>
 #include "quickstep/random.h"
-#include <quickstep/dofs/DihedralDof.h>
+//#include <quickstep/dofs/DihedralDof.h>
 #include <quickstep/platforms/ReferencePlatform.h>
 
 namespace quickstep {
@@ -141,10 +141,12 @@ std::vector<std::unique_ptr<Move>> GaussianMove::MoveGenerator::operator()(const
 
 MoveInfo GaussianMove::propose(KinematicForest &forest) {
 
-    if (dofs.empty() || &(dofs[0]->get_forest()) != &forest) {
-        dofs.clear();
+    //if (dofs.empty() || &(dofs[0]->get_forest()) != &forest) {
+    //    dofs.clear();
+    if (dofs.empty()) {
         for (unsigned int i=0; i<dof_atoms.size(); ++i) {
-            dofs.push_back(Dof::construct(forest, dof_atoms[i], dof_atom_names[i])  );
+            dofs.push_back(forest.construct_dof(dof_atoms[i],
+                                                dof_atom_names[i]));
         }
     }
 
@@ -174,7 +176,7 @@ MoveInfo GaussianMove::propose(KinematicForest &forest) {
         //std::cout << "New torsion: " << new_value[d];
 
         double value = sample[d];
-        int dof_atom_index = dofs[d]->get_atom_index();
+        //int dof_atom_index = dofs[d]->get_atom_index();
         //ret.dof_deltas.push_back( std::make_pair( di, a ) );
 
         //int parent_index = forest.parent(dof_atom_index);

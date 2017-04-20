@@ -228,7 +228,7 @@ const std::vector<std::reference_wrapper<const Topology::Residue>> &Topology::ge
         return residue_template_signatures.at("");
 }
 
-const std::vector<std::set<int>> &Topology::get_bond_adjacency_list() {
+const std::vector<std::set<int>> &Topology::get_bond_adjacency_list() const {
     if (bond_adjacency_list.empty()) {
         for (int i = 0; i < n_atoms; ++i) {
             bond_adjacency_list.push_back(std::set<int>());

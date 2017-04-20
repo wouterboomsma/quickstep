@@ -12,38 +12,42 @@ class Dof {
 public:
     typedef enum {UNDEFINED=0, LENGTH=1, ANGLE=2, DIHEDRAL=3} Type;
 
-    virtual double get_value() = 0;
-
-    virtual void add_value(double value) = 0;
-
-    virtual void set_value(double value);
-
+    //virtual double get_value() = 0;
+    //
+    //virtual void add_value(double value) = 0;
+    //
+    //virtual void set_value(double value);
+    //
     virtual Type get_type();
 
-    static std::unique_ptr<Dof> construct(KinematicForest &forest,
-                                          const std::vector<int> &atom_indices,
-                                          const std::vector<std::string> &atom_names={});
+    //static std::unique_ptr<Dof> construct(KinematicForest &forest,
+    //                                      const std::vector<int> &atom_indices,
+    //                                      const std::vector<std::string> &atom_names={});
+    //static std::unique_ptr<Dof> construct(const std::vector<int> &atom_indices,
+    //                                      const std::vector<std::string> &atom_names={});
 
-    const int get_atom_index();
+    int get_primary_atom_index();
 
-    const std::vector<std::vector<int>> get_atoms();
+    //const std::vector<std::vector<int>> get_atom_indices();
+    const std::vector<int> &get_atom_indices();
 
     virtual double log_jacobian(double value) = 0;
 
     virtual double wrap_to_domain(double value) = 0;
 
-    KinematicForest &get_forest();
+    //KinematicForest &get_forest();
 
 protected:
-    Dof(KinematicForest &forest,
-        int atom_index,
+    //Dof(KinematicForest &forest,
+    Dof(std::vector<int> atom_indices,
         Type type)
-            : forest(forest),
-              atom_index(atom_index),
+            // : forest(forest),
+            : atom_indices(atom_indices),
               type(type){}
 
-    KinematicForest &forest;
-    int atom_index;
+    //KinematicForest &forest;
+    // int atom_index;
+    std::vector<int> atom_indices;
     Type type;
 };
 

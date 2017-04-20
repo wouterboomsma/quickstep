@@ -13,16 +13,17 @@ using namespace quickstep;
 //    }
 //}
 
-LengthDof::LengthDof(KinematicForest &forest, int atom_index):
-        Dof(forest, atom_index, Dof::LENGTH) {}
+//LengthDof::LengthDof(KinematicForest &forest, int atom_index):
+LengthDof::LengthDof(std::vector<int> atom_indices):
+        Dof(atom_indices, Dof::LENGTH) {}
 
-double LengthDof::get_value() {
-    return forest.get_length(this->atom_index).value();
-};
-
-void LengthDof::add_value(double delta_value) {
-    forest.change_length(this->atom_index, units::Length::from_value(delta_value));
-}
+//double LengthDof::get_value() {
+//    return forest.get_length(this->atom_index).value();
+//};
+//
+//void LengthDof::add_value(double delta_value) {
+//    forest.change_length(this->atom_index, units::Length::from_value(delta_value));
+//}
 
 double LengthDof::log_jacobian(double value) {
     return 2.*std::log(value);
